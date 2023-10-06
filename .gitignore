@@ -3,3 +3,4 @@ package
 .env
 *.code-workspace
 .next
+*.tsbuildinfo
