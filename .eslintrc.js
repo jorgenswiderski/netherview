@@ -19,6 +19,12 @@ module.exports = {
                 '@typescript-eslint/lines-between-class-members': 'off',
             },
         },
+        {
+            files: ['*.jsx', '*.tsx'],
+            rules: {
+                'import/no-default-export': 'off', // Default export is necessary for react
+            },
+        },
     ],
     settings: {
         react: {

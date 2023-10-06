@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { error } from '../models/logger';
 
-export function HomePage() {
+export default function HomePage() {
     const [data, setData] = useState<CharacterClassData[]>();
 
     useEffect(() => {
