@@ -6,6 +6,7 @@
     "scripts": {
         "test": "jest --passWithNoTests",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+        "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
         "format": "prettier --write .",
         "prepare": "husky install",
         "dev": "next dev",
