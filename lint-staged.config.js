@@ -1,8 +1,6 @@
-// lint-staged.config.js
 module.exports = {
-    '*.{js,jsx}': ['npm run lint', 'npm run format', 'npm run test'],
-    '*.{ts,tsx}': [
-        'npm run lint',
+    '*.{js,jsx,ts,tsx}': [
+        'eslint . --ext .js,.jsx,.ts,.tsx --cache',
         'npm run format',
         () => 'npm run type-check',
         'npm run test',

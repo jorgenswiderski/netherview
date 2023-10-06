@@ -4,3 +4,4 @@ package
 *.code-workspace
 .next
 *.tsbuildinfo
+*.eslintcache
