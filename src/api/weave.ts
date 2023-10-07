@@ -18,4 +18,7 @@ export class WeaveApi {
     static getClassProgression = async (classNames: string[]) => {
         return fetchFromApi(`/classes/progression/${classNames.join(',')}`);
     };
+    static getRacesInfo = async () => {
+        return fetchFromApi('/races/info');
+    };
 }

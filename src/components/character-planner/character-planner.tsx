@@ -1,9 +1,9 @@
 // character-planner.tsx
-
 import styled from 'styled-components';
 import React, { useCallback, useState } from 'react';
-import { Character } from '../../models/character';
-import ClassSelector from './character-class-selector';
+import { Character } from '../../models/character/character';
+import { CharacterStateInfo } from '../../models/character/character-states';
+import { CharacterEvents } from '../../models/character/types';
 
 const Container = styled.div`
     display: flex;
@@ -20,18 +20,16 @@ const Title = styled.h1`
 export default function CharacterPlanner() {
     const [character, setCharacter] = useState(new Character());
 
-    const handleAddClass = useCallback((selectedClass: string) => {
-        setCharacter(character.addClass(selectedClass));
+    const handleEvent = useCallback((event: CharacterEvents, value: any) => {
+        setCharacter((prevCharacter) => prevCharacter.onEvent(event, value));
     }, []);
 
     return (
         <Container>
-            {character.levels.length === 0 && (
-                <>
-                    <Title>Select Your Starting Class</Title>
-                    <ClassSelector onAddClass={handleAddClass} />
-                </>
-            )}
+            <Title>{CharacterStateInfo[character.state].title}</Title>
+            {CharacterStateInfo[character.state].render({
+                onEvent: handleEvent,
+            })}
         </Container>
     );
 }
