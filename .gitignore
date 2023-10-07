@@ -1,6 +1,7 @@
 node_modules
 package
 .env
+.env.*
 *.code-workspace
 .next
 *.tsbuildinfo

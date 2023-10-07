@@ -3,12 +3,12 @@ class Logger {
     static base(func: Function, ...args: any[]) {
         if (args.length === 1 && typeof args[0] === 'string') {
             func(
-                `%c[bg3cpfe]%c: ${args[0]}`,
+                `%c[netherview]%c: ${args[0]}`,
                 'color: orange; font-weight: bold;',
                 'color: initial; font-weight: initial;',
             );
         } else {
-            func(...['[bg3cpfe]:', ...args]);
+            func(...['[netherview]:', ...args]);
         }
     }
 
@@ -17,6 +17,7 @@ class Logger {
 
     static error = (...args: any[]) => {
         this.log(`!!! Logged an error !!!`);
+
         return console.error(...args);
     };
 }

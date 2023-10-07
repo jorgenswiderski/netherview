@@ -101,10 +101,8 @@
         "allowJs": true,
         "noEmit": true,
         "incremental": true,
-        "moduleResolution": "node",
         "resolveJsonModule": true,
-        "isolatedModules": true,
-        "jsx": "preserve"
+        "isolatedModules": true
     },
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
     "exclude": ["node_modules"]

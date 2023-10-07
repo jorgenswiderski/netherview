@@ -1,5 +1,5 @@
 {
-    "name": "bg3-character-planner-fe",
+    "name": "netherview",
     "version": "0.0.1",
     "description": "A character planner for Baldur's Gate 3",
     "main": "index.html",
@@ -20,6 +20,7 @@
         "@types/jest": "^29.5.5",
         "@types/node": "^20.8.2",
         "@types/react": "^18.2.25",
+        "@types/react-dom": "^18.2.11",
         "@typescript-eslint/eslint-plugin": "^6.7.4",
         "@typescript-eslint/parser": "^6.7.4",
         "eslint": "^8.50.0",
@@ -37,6 +38,12 @@
         "typescript": "^5.2.2"
     },
     "dependencies": {
-        "next": "^13.5.4"
+        "@babel/plugin-transform-react-jsx": "^7.22.15",
+        "@babel/preset-env": "^7.22.20",
+        "@babel/preset-react": "^7.22.15",
+        "babel-plugin-styled-components": "^2.1.4",
+        "next": "^13.5.4",
+        "react": "^18.2.0",
+        "styled-components": "^6.0.8"
     }
 }
