@@ -4,14 +4,17 @@ import { BeatLoader } from 'react-spinners';
 import { WeaveApi } from '../../api/weave';
 import { CharacterEvents } from '../../models/character/types';
 import { CharacterWidgetProps } from './types';
+import { PickerCard, PickerGrid } from './picker-card';
 
-const ClassSelect = styled.select`
+const ConfirmButton = styled.button`
+    margin-top: 20px;
     padding: 10px 15px;
     font-size: 1rem;
 `;
 
 export default function ClassSelector({ onEvent }: CharacterWidgetProps) {
     const [classes, setClasses] = useState<any>([]);
+    const [selectedClass, setSelectedClass] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -24,17 +27,35 @@ export default function ClassSelector({ onEvent }: CharacterWidgetProps) {
         fetchClasses();
     }, []);
 
+    const handleClassSelection = (cls: any) => {
+        setSelectedClass(cls.name);
+    };
+
+    const handleConfirm = () => {
+        if (selectedClass) {
+            onEvent(CharacterEvents.ADD_LEVEL, selectedClass);
+        }
+    };
+
     return loading ? (
         <BeatLoader />
     ) : (
-        <ClassSelect
-            onChange={(e) => onEvent(CharacterEvents.ADD_LEVEL, e.target.value)}
-        >
-            {classes.map((cls: any) => (
-                <option key={cls.name} value={cls.name.toLowerCase()}>
-                    {cls.name}
-                </option>
-            ))}
-        </ClassSelect>
+        <>
+            <PickerGrid>
+                {classes.map((cls: any) => (
+                    <PickerCard
+                        key={cls.name}
+                        isSelected={selectedClass === cls.name}
+                        onClick={() => handleClassSelection(cls)}
+                    >
+                        <img src={cls.image} alt={cls.name} />
+                        <p>{cls.name}</p>
+                    </PickerCard>
+                ))}
+            </PickerGrid>
+            <ConfirmButton onClick={handleConfirm} disabled={!selectedClass}>
+                Confirm
+            </ConfirmButton>
+        </>
     );
 }

@@ -1,11 +1,13 @@
-import { CharacterEvents, CharacterState } from './types';
+import { AbilityScores, CharacterEvents, CharacterState } from './types';
 
 export class Character {
     static MAX_LEVEL = 12;
 
     state: CharacterState = CharacterState.CHOOSE_CLASS;
+    name: string = 'Tav';
     levels: string[] = [];
     race?: string;
+    baseAbilityScores?: AbilityScores;
 
     clone(): Character {
         return Object.assign(new Character(), this);
@@ -18,6 +20,10 @@ export class Character {
 
         if (event === CharacterEvents.SET_RACE) {
             return this.setRace(value);
+        }
+
+        if (event === CharacterEvents.SET_ABILITY_SCORES) {
+            return this.setAbilityScores(value);
         }
 
         throw new Error('Invalid character event');
@@ -49,5 +55,21 @@ export class Character {
         c.race = raceName;
 
         return c;
+    }
+
+    racialAbilityBonuses?: (keyof AbilityScores)[];
+
+    setAbilityScores(values: {
+        abilityScores: AbilityScores;
+        bonusTwo: keyof AbilityScores;
+        bonusOne: keyof AbilityScores;
+    }): Character {
+        this.baseAbilityScores = values.abilityScores;
+        this.racialAbilityBonuses = [values.bonusTwo, values.bonusOne];
+
+        // set next state
+        // TODO: does this still rerender twice?
+
+        return this.clone();
     }
 }
