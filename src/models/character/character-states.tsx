@@ -6,6 +6,7 @@ import ClassSelector from '../../components/character-planner/character-class-se
 import RacePicker from '../../components/character-planner/race-picker';
 import { CharacterWidgetProps } from '../../components/character-planner/types';
 import { CharacterEvents, CharacterState } from './types';
+import BackgroundPicker from '../../components/character-planner/background-picker';
 
 interface StateInfo {
     title: string;
@@ -16,15 +17,20 @@ interface StateInfo {
 export const CharacterStateInfo: {
     [key: number]: StateInfo;
 } = {
+    [CharacterState.CHOOSE_RACE]: {
+        title: 'Select your race',
+        render: (props) => <RacePicker {...props} />,
+        event: CharacterEvents.SET_RACE,
+    },
     [CharacterState.CHOOSE_CLASS]: {
         title: 'Select your starting class',
         render: (props) => <ClassSelector {...props} />,
         event: CharacterEvents.ADD_LEVEL,
     },
-    [CharacterState.CHOOSE_RACE]: {
-        title: 'Select your race',
-        render: (props) => <RacePicker {...props} />,
-        event: CharacterEvents.SET_RACE,
+    [CharacterState.CHOOSE_BACKGROUND]: {
+        title: 'Choose a background',
+        render: (props) => <BackgroundPicker {...props} />,
+        event: CharacterEvents.SET_BACKGROUND,
     },
     [CharacterState.CHOOSE_ABILITY_SCORES]: {
         title: 'Choose your ability scores',

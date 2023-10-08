@@ -17,6 +17,22 @@ const Container = styled.div`
     background-color: #1a1a1a; // Darker background for the main container
 `;
 
+const ResetButton = styled.button`
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #555; // Dark background for the button
+    color: #e0e0e0; // Light gray for text
+    cursor: pointer;
+
+    &:hover {
+        background-color: #777; // Slightly lighter on hover
+    }
+`;
+
 const PanelContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -44,19 +60,26 @@ export default function CharacterPlanner() {
         setCharacter((prevCharacter) => prevCharacter.onEvent(event, values));
     }, []);
 
+    const handleReset = () => {
+        setCharacter(new Character()); // Reset the character to its initial state
+    };
+
     return (
-        <Container>
-            <PanelContainer>
-                <Title>{CharacterStateInfo[character.state].title}</Title>
-                {CharacterStateInfo[character.state].render({
-                    onEvent: handleEvent,
-                })}
-            </PanelContainer>
-            {character.race && character.levels.length && (
+        <>
+            <ResetButton onClick={handleReset}>Reset</ResetButton>
+            <Container>
                 <PanelContainer>
-                    <CharacterDisplay character={character} />
+                    <Title>{CharacterStateInfo[character.state].title}</Title>
+                    {CharacterStateInfo[character.state].render({
+                        onEvent: handleEvent,
+                    })}
                 </PanelContainer>
-            )}
-        </Container>
+                {character.race && character.levels.length && (
+                    <PanelContainer>
+                        <CharacterDisplay character={character} />
+                    </PanelContainer>
+                )}
+            </Container>
+        </>
     );
 }

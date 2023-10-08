@@ -1,5 +1,5 @@
 import { CONFIG } from '../../models/config';
-import { RacesInfo } from './types';
+import { BackgroundsInfo, RacesInfo } from './types';
 
 async function fetchFromApi(endpoint: string) {
     const response = await fetch(`${CONFIG.WEAVE.API_URL}${endpoint}`);
@@ -19,7 +19,12 @@ export class WeaveApi {
     static getClassProgression = async (classNames: string[]) => {
         return fetchFromApi(`/classes/progression/${classNames.join(',')}`);
     };
+
     static getRacesInfo = async (): Promise<RacesInfo> => {
         return fetchFromApi('/races/info');
+    };
+
+    static getBackgroundsInfo = async (): Promise<BackgroundsInfo> => {
+        return fetchFromApi('/backgrounds/info');
     };
 }

@@ -1,11 +1,11 @@
-import { RaceInfo } from '../../api/weave/types';
+import { BackgroundInfo, RaceInfo } from '../../api/weave/types';
 import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/choice-picker/types';
 import { AbilityScores, CharacterEvents, CharacterState } from './types';
 
 export class Character {
     static MAX_LEVEL = 12;
 
-    state: CharacterState = CharacterState.CHOOSE_CLASS;
+    state: CharacterState = CharacterState.CHOOSE_RACE;
     name: string = 'Tav';
     levels: string[] = [];
     race?: RaceInfo;
@@ -29,6 +29,10 @@ export class Character {
             return this.setAbilityScores(value);
         }
 
+        if (event === CharacterEvents.SET_BACKGROUND) {
+            return this.setBackground(value);
+        }
+
         throw new Error('Invalid character event');
     }
 
@@ -40,7 +44,7 @@ export class Character {
         const c = this.clone();
 
         if (c.state === CharacterState.CHOOSE_CLASS) {
-            c.state = CharacterState.CHOOSE_RACE;
+            c.state = CharacterState.CHOOSE_BACKGROUND;
         }
 
         c.levels.push(className);
@@ -57,14 +61,20 @@ export class Character {
     }): Character {
         const c = this.clone();
 
-        if (c.state === CharacterState.CHOOSE_RACE) {
-            c.state = CharacterState.CHOOSE_ABILITY_SCORES;
-        }
-
+        c.state = CharacterState.CHOOSE_CLASS;
         c.race = race;
         c.subrace = subrace;
 
         return c;
+    }
+
+    background?: BackgroundInfo;
+
+    setBackground(background: BackgroundInfo) {
+        this.background = background;
+        this.state = CharacterState.CHOOSE_ABILITY_SCORES;
+
+        return this.clone();
     }
 
     racialAbilityBonuses?: (keyof AbilityScores)[];

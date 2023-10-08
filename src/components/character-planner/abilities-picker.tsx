@@ -1,5 +1,5 @@
 // abilities-picker.tsx
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { CharacterWidgetProps } from './types';
 import { AbilityScores, CharacterEvents } from '../../models/character/types';
@@ -90,7 +90,6 @@ const ConfirmButton = styled.button`
 
 export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {
     const TOTAL_POINTS = 27;
-    const [pointsLeft, setPointsLeft] = useState(TOTAL_POINTS);
     const [abilities, setAbilities] = useState<AbilityScores>({
         Strength: 8,
         Dexterity: 8,
@@ -103,6 +102,25 @@ export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {
     const [bonusTwo, setBonusTwo] = useState<string | null>(null);
     const [bonusOne, setBonusOne] = useState<string | null>(null);
 
+    const calculatePointsSpent = () => {
+        let totalSpent = 0;
+
+        Object.values(abilities).forEach((score) => {
+            if (score <= 13) {
+                totalSpent += score - 8; // Each point costs 1 point if the score is less than or equal to 13
+            } else {
+                totalSpent += 5 + 2 * (score - 13); // 5 points for the first 5 scores, then 2 points for each score above 13
+            }
+        });
+
+        return totalSpent;
+    };
+
+    const pointsLeft = useMemo(
+        () => TOTAL_POINTS - calculatePointsSpent(),
+        [abilities],
+    );
+
     const canIncrease = (score: number) => {
         const cost = score < 13 ? 1 : 2;
 
@@ -112,29 +130,25 @@ export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {
     const canDecrease = (score: number) => score > 8;
 
     const handleIncrease = (ability: keyof AbilityScores) => {
-        const cost = abilities[ability] < 13 ? 1 : 2;
-
-        if (canIncrease(abilities[ability])) {
-            setAbilities({
-                ...abilities,
-                [ability]: abilities[ability] + 1,
-            });
-
-            setPointsLeft(pointsLeft - cost);
+        if (!canIncrease(abilities[ability])) {
+            return;
         }
+
+        setAbilities({
+            ...abilities,
+            [ability]: abilities[ability] + 1,
+        });
     };
 
     const handleDecrease = (ability: keyof AbilityScores) => {
-        const refund = abilities[ability] <= 13 ? 1 : 2;
-
-        if (canDecrease(abilities[ability])) {
-            setAbilities({
-                ...abilities,
-                [ability]: abilities[ability] - 1,
-            });
-
-            setPointsLeft(pointsLeft + refund);
+        if (!canDecrease(abilities[ability])) {
+            return;
         }
+
+        setAbilities({
+            ...abilities,
+            [ability]: abilities[ability] - 1,
+        });
     };
 
     const handleConfirm = () => {
