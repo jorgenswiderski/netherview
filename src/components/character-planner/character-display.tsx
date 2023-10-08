@@ -26,7 +26,9 @@ export default function CharacterDisplay({ character }: CharacterDisplayProps) {
         <>
             <CharacterName>{character.name}</CharacterName>
             <CharacterInfo>
-                {`${character.race} ${character.levels[0]}`}
+                {`${character.subrace?.name ?? character.race?.name} ${
+                    character.levels[0]
+                }`}
             </CharacterInfo>
         </>
     );

@@ -63,5 +63,6 @@ module.exports = {
                 next: '*',
             },
         ],
+        'react/prop-types': 'off',
     },
 };

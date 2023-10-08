@@ -7,10 +7,12 @@ import { AbilityScores, CharacterEvents } from '../../models/character/types';
 const AbilitiesTable = styled.table`
     width: 100%;
     border-collapse: collapse;
+    color: #e0e0e0; // Light gray for text
+    background-color: #2a2a2a; // Base dark gray
 `;
 
 const AbilityRow = styled.tr`
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #444;
     &:last-child {
         border-bottom: 0;
     }
@@ -24,6 +26,22 @@ const AbilityCell = styled.td`
 
 const AbilityButton = styled.button`
     margin: 5px;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    border: 1px solid #8a8a8a;
+    transition:
+        background-color 0.3s,
+        opacity 0.3s;
+
+    &:hover {
+        background-color: #333;
+    }
+
+    &:disabled {
+        background-color: #1a1a1a;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 `;
 
 const DotContainer = styled.div`
@@ -37,8 +55,8 @@ const Dot = styled.div<{ filled: boolean; bonus: boolean }>`
     border-radius: 50%;
     background-color: ${({ filled, bonus }) =>
         // eslint-disable-next-line no-nested-ternary
-        filled ? (bonus ? '#9f9' : 'white') : 'transparent'};
-    border: 1px solid ${({ bonus }) => (bonus ? '#9f9' : 'white')};
+        filled ? (bonus ? '#9f9' : '#e0e0e0') : 'transparent'};
+    border: 1px solid ${({ bonus }) => (bonus ? '#9f9' : '#e0e0e0')};
 `;
 
 const ScoreContainer = styled.div`
@@ -52,6 +70,22 @@ const ConfirmButton = styled.button`
     margin-top: 20px;
     padding: 10px 15px;
     font-size: 1rem;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    border: 1px solid #8a8a8a;
+    transition:
+        background-color 0.3s,
+        opacity 0.3s;
+
+    &:hover {
+        background-color: #333;
+    }
+
+    &:disabled {
+        background-color: #1a1a1a;
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 `;
 
 export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {

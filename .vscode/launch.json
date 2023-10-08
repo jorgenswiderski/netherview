@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:3000",
+            "webRoot": "C:/Code/bg3-character-planner/netherview/src",
+            "name": "Launch localhost with Firefox",
+            "pathMappings": [
+                {
+                    "url": "webpack://_n_e",
+                    "path": "${workspaceFolder}"
+                }
+            ]
+        },
+        {
+            "type": "firefox",
+            "request": "attach",
+            "url": "http://localhost:3000",
+            "webRoot": "C:/Code/bg3-character-planner/netherview/src",
+            "name": "Attach to Firefox"
+        }
+    ]
+}

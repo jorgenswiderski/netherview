@@ -1,3 +1,5 @@
+import { RaceInfo } from '../../api/weave/types';
+import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/choice-picker/types';
 import { AbilityScores, CharacterEvents, CharacterState } from './types';
 
 export class Character {
@@ -6,7 +8,8 @@ export class Character {
     state: CharacterState = CharacterState.CHOOSE_CLASS;
     name: string = 'Tav';
     levels: string[] = [];
-    race?: string;
+    race?: RaceInfo;
+    subrace?: ICharacterFeatureCustomizationOption;
     baseAbilityScores?: AbilityScores;
 
     clone(): Character {
@@ -45,14 +48,21 @@ export class Character {
         return c;
     }
 
-    setRace(raceName: string): Character {
+    setRace({
+        race,
+        subrace,
+    }: {
+        race: RaceInfo;
+        subrace?: ICharacterFeatureCustomizationOption;
+    }): Character {
         const c = this.clone();
 
         if (c.state === CharacterState.CHOOSE_RACE) {
             c.state = CharacterState.CHOOSE_ABILITY_SCORES;
         }
 
-        c.race = raceName;
+        c.race = race;
+        c.subrace = subrace;
 
         return c;
     }

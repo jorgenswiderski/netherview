@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { BeatLoader } from 'react-spinners';
-import { WeaveApi } from '../../api/weave';
+import { WeaveApi } from '../../api/weave/weave';
 import { CharacterEvents } from '../../models/character/types';
 import { CharacterWidgetProps } from './types';
 import { PickerCard, PickerGrid } from './picker-card';
