@@ -1,92 +1,43 @@
 // abilities-picker.tsx
 import React, { useMemo, useState } from 'react';
-import styled from 'styled-components';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Box from '@mui/material/Box';
 import { CharacterWidgetProps } from './types';
 import { AbilityScores, CharacterEvents } from '../../models/character/types';
 
-const AbilitiesTable = styled.table`
-    width: 100%;
-    border-collapse: collapse;
-    color: #e0e0e0; // Light gray for text
-    background-color: #2a2a2a; // Base dark gray
-`;
-
-const AbilityRow = styled.tr`
-    border-bottom: 1px solid #444;
-    &:last-child {
-        border-bottom: 0;
-    }
-`;
-
-const AbilityCell = styled.td`
-    padding: 10px;
-    vertical-align: middle;
-    font-size: 1.25rem;
-`;
-
-const AbilityButton = styled.button`
-    margin: 5px;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    border: 1px solid #8a8a8a;
-    transition:
-        background-color 0.3s,
-        opacity 0.3s;
-
-    &:hover {
-        background-color: #333;
-    }
-
-    &:disabled {
-        background-color: #1a1a1a;
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-`;
-
-const DotContainer = styled.div`
-    display: flex;
-    gap: 3px;
-`;
-
-const Dot = styled.div<{ filled: boolean; bonus: boolean }>`
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: ${({ filled, bonus }) =>
-        // eslint-disable-next-line no-nested-ternary
-        filled ? (bonus ? '#9f9' : '#e0e0e0') : 'transparent'};
-    border: 1px solid ${({ bonus }) => (bonus ? '#9f9' : '#e0e0e0')};
-`;
-
-const ScoreContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-`;
-
-const ConfirmButton = styled.button`
-    margin-top: 20px;
-    padding: 10px 15px;
-    font-size: 1rem;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    border: 1px solid #8a8a8a;
-    transition:
-        background-color 0.3s,
-        opacity 0.3s;
-
-    &:hover {
-        background-color: #333;
-    }
-
-    &:disabled {
-        background-color: #1a1a1a;
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-`;
+function Dot({
+    filled,
+    racialBonus,
+}: {
+    filled: boolean;
+    racialBonus: boolean;
+}) {
+    return (
+        <Box
+            sx={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                // eslint-disable-next-line no-nested-ternary
+                backgroundColor: racialBonus
+                    ? '#99f'
+                    : filled
+                    ? '#e0e0e0'
+                    : 'transparent',
+                border: `1px solid ${racialBonus ? '#99f' : '#e0e0e0'}`,
+                mr: 0.5,
+                display: 'inline-block',
+            }}
+        />
+    );
+}
 
 export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {
     const TOTAL_POINTS = 27;
@@ -179,113 +130,156 @@ export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {
 
     return (
         <div>
-            <h2>
+            <Typography variant="h6">
                 Points Used: {pointsSpent} / {TOTAL_POINTS}
-            </h2>
+            </Typography>
 
-            <AbilitiesTable>
-                {Object.keys(abilities).map((abilityString) => {
-                    const ability: keyof AbilityScores =
-                        abilityString as keyof AbilityScores;
-                    const score = abilities[ability];
+            <Table sx={{ userSelect: 'none' }}>
+                <TableBody>
+                    {Object.keys(abilities).map((abilityString) => {
+                        const ability: keyof AbilityScores =
+                            abilityString as keyof AbilityScores;
+                        const score = abilities[ability];
 
-                    return (
-                        <AbilityRow key={ability}>
-                            <AbilityCell>{ability}</AbilityCell>
-                            <AbilityCell>
-                                <ScoreContainer>
-                                    <AbilityButton
-                                        onClick={() => handleDecrease(ability)}
-                                        disabled={
-                                            !canDecrease(abilities[ability])
-                                        }
-                                    >
-                                        -
-                                    </AbilityButton>
-                                    {score + getBonusDots(ability)}
-                                    <AbilityButton
-                                        onClick={() => handleIncrease(ability)}
-                                        disabled={
-                                            !canIncrease(abilities[ability])
-                                        }
-                                    >
-                                        +
-                                    </AbilityButton>
-                                </ScoreContainer>
-                            </AbilityCell>
-                            <AbilityCell>
-                                <DotContainer>
-                                    {Array.from({ length: 17 }).map(
-                                        (_, index) => (
-                                            <Dot
-                                                // eslint-disable-next-line react/no-array-index-key
-                                                key={index}
-                                                filled={
-                                                    index <
-                                                    score +
-                                                        getBonusDots(ability)
-                                                }
-                                                bonus={
-                                                    index >= score &&
-                                                    index <
-                                                        score +
-                                                            getBonusDots(
-                                                                ability,
-                                                            )
-                                                }
-                                            />
-                                        ),
-                                    )}
-                                </DotContainer>
-                            </AbilityCell>
-                        </AbilityRow>
-                    );
-                })}
-            </AbilitiesTable>
+                        return (
+                            <TableRow key={ability}>
+                                <TableCell>
+                                    <Typography variant="h6">
+                                        {ability}
+                                    </Typography>{' '}
+                                </TableCell>
+                                <TableCell>
+                                    <Box display="flex" alignItems="center">
+                                        <Button
+                                            variant="outlined"
+                                            sx={{
+                                                width: 40,
+                                                minWidth: 'unset',
+                                            }}
+                                            onClick={() =>
+                                                handleDecrease(ability)
+                                            }
+                                            disabled={
+                                                !canDecrease(abilities[ability])
+                                            }
+                                        >
+                                            -
+                                        </Button>
+                                        <Box
+                                            mx={2}
+                                            sx={{
+                                                width: 24,
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            {' '}
+                                            <Typography>
+                                                {score + getBonusDots(ability)}
+                                            </Typography>
+                                        </Box>
+                                        <Button
+                                            variant="outlined"
+                                            sx={{
+                                                width: 40,
+                                                minWidth: 'unset',
+                                            }}
+                                            onClick={() =>
+                                                handleIncrease(ability)
+                                            }
+                                            disabled={
+                                                !canIncrease(abilities[ability])
+                                            }
+                                        >
+                                            +
+                                        </Button>
+                                    </Box>
+                                </TableCell>
+                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                    <Box display="flex" alignItems="center">
+                                        <Box
+                                            mx={2}
+                                            sx={{
+                                                display: 'flex',
+                                                flexWrap: 'nowrap',
+                                            }}
+                                        >
+                                            {Array.from({ length: 17 }).map(
+                                                (_, index) => (
+                                                    <Dot
+                                                        // eslint-disable-next-line react/no-array-index-key
+                                                        key={index}
+                                                        filled={index < score}
+                                                        racialBonus={
+                                                            index >= score &&
+                                                            index <
+                                                                score +
+                                                                    getBonusDots(
+                                                                        ability,
+                                                                    )
+                                                        }
+                                                    />
+                                                ),
+                                            )}
+                                        </Box>
+                                    </Box>
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
 
-            <div>
-                +2 Racial Bonus:
-                <select
-                    id="bonusTwo"
+            <Box mt={2}>
+                <Typography>+2 Racial Bonus:</Typography>
+                <Select
                     value={bonusTwo || ''}
-                    onChange={(e) => {
-                        setBonusTwo(e.target.value);
-                    }}
+                    onChange={(e) => setBonusTwo(e.target.value as string)}
+                    fullWidth
                 >
-                    <option value="">Select Ability</option>
+                    <MenuItem value="">
+                        <em>Select Ability</em>
+                    </MenuItem>
                     {Object.keys(abilities)
                         .filter((ability) => ability !== bonusOne)
                         .map((ability) => (
-                            <option key={ability} value={ability}>
+                            <MenuItem key={ability} value={ability}>
                                 {ability}
-                            </option>
+                            </MenuItem>
                         ))}
-                </select>
-            </div>
+                </Select>
+            </Box>
 
-            <div>
-                +1 Racial Bonus:
-                <select
-                    id="bonusOne"
+            <Box mt={2}>
+                <Typography>+1 Racial Bonus:</Typography>
+                <Select
                     value={bonusOne || ''}
-                    onChange={(e) => {
-                        setBonusOne(e.target.value);
-                    }}
+                    onChange={(e) => setBonusOne(e.target.value as string)}
+                    fullWidth
                 >
-                    <option value="">Select Ability</option>
+                    <MenuItem value="">
+                        <em>Select Ability</em>
+                    </MenuItem>
                     {Object.keys(abilities)
                         .filter((ability) => ability !== bonusTwo)
                         .map((ability) => (
-                            <option key={ability} value={ability}>
+                            <MenuItem key={ability} value={ability}>
                                 {ability}
-                            </option>
+                            </MenuItem>
                         ))}
-                </select>
-            </div>
+                </Select>
+            </Box>
 
-            <ConfirmButton onClick={handleConfirm} disabled={!isButtonEnabled}>
-                Confirm
-            </ConfirmButton>
+            <Box mt={3}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleConfirm}
+                    disabled={!isButtonEnabled}
+                    fullWidth
+                >
+                    Confirm
+                </Button>
+            </Box>
         </div>
     );
 }

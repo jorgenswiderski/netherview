@@ -4,7 +4,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BeatLoader } from 'react-spinners';
 import Typography from '@mui/material/Typography';
 import { Character } from '../../models/character/character';
-import { CharacterDecisionInfo } from '../../models/character/character-states';
+import {
+    CharacterDecision,
+    CharacterDecisionInfo,
+    DecisionStateInfo,
+} from '../../models/character/character-states';
 import { CharacterEvents } from '../../models/character/types';
 import CharacterDisplay from './character-display';
 import { ICharacterFeatureCustomizationOption } from './feature-picker/types';
@@ -60,26 +64,65 @@ export default function CharacterPlanner() {
         [nextDecision],
     );
 
-    useEffect(() => {
-        async function fetchChoices() {
-            if (
-                nextDecision &&
-                !nextDecision.choices &&
-                nextDecisionInfo &&
-                nextDecisionInfo.getChoices
-            ) {
-                setLoading(true);
-                const gc = nextDecisionInfo.getChoices as () => Promise<
-                    ICharacterFeatureCustomizationOption[][]
-                >;
+    const loadChoices = async (
+        decision: CharacterDecision,
+        decisionInfo: DecisionStateInfo,
+    ) => {
+        if (
+            decision &&
+            !decision.choices &&
+            decisionInfo &&
+            decisionInfo.getChoices
+        ) {
+            setLoading(true);
+            const gc = decisionInfo.getChoices as () => Promise<
+                ICharacterFeatureCustomizationOption[][]
+            >;
 
-                nextDecision.choices = (await gc()) ?? undefined;
-                setLoading(false);
-            }
+            const choices = (await gc()) ?? undefined;
+
+            // Preload the images for the choices
+            choices?.forEach((choiceArray) =>
+                choiceArray.forEach((choice) => {
+                    if (choice.image) {
+                        new Image().src = choice.image;
+                    }
+                }),
+            );
+
+            setCharacter((prevCharacter) => {
+                const updatedCharacter = prevCharacter.clone();
+                const updatedDecision = updatedCharacter.decisionQueue.find(
+                    (cd) => cd.type === decision.type,
+                );
+
+                if (updatedDecision) {
+                    updatedDecision.choices = choices;
+                }
+
+                return updatedCharacter;
+            });
+
+            setLoading(false);
         }
+    };
 
-        fetchChoices();
+    useEffect(() => {
+        if (nextDecision && nextDecisionInfo) {
+            loadChoices(nextDecision, nextDecisionInfo);
+        }
     }, [nextDecision, nextDecisionInfo]);
+
+    useEffect(() => {
+        const secondDecision = character.decisionQueue[1];
+
+        if (secondDecision) {
+            loadChoices(
+                secondDecision,
+                CharacterDecisionInfo[secondDecision.type],
+            );
+        }
+    }, [character.decisionQueue[1]]);
 
     const handleEvent = useCallback((event: CharacterEvents, values: any) => {
         setCharacter((prevCharacter) => prevCharacter.onEvent(event, values));

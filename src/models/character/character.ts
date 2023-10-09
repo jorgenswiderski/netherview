@@ -1,11 +1,7 @@
 import { BackgroundInfo } from '../../api/weave/types';
 import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/feature-picker/types';
+import { CharacterDecision } from './character-states';
 import { AbilityScores, CharacterEvents } from './types';
-
-interface CharacterDecision {
-    type: CharacterEvents;
-    choices?: ICharacterFeatureCustomizationOption[][];
-}
 
 export class Character {
     static MAX_LEVEL = 12;
@@ -52,8 +48,6 @@ export class Character {
         } else {
             throw new Error('Invalid character event');
         }
-
-        // log(this.decisionQueue);
 
         return this.clone();
     }

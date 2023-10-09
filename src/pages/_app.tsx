@@ -3,7 +3,7 @@
 import React from 'react';
 import '../styles/global.css';
 import { AppProps } from 'next/app';
-import { ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material'; // FIXME: Not tree shakeable
 import { theme } from '../models/theme';
 
 function MyApp({ Component, pageProps }: AppProps) {

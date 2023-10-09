@@ -40,8 +40,6 @@
     },
     "dependencies": {
         "@babel/plugin-transform-react-jsx": "^7.22.15",
-        "@babel/preset-env": "^7.22.20",
-        "@babel/preset-react": "^7.22.15",
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
         "@mui/material": "^5.14.12",

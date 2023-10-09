@@ -7,15 +7,20 @@ import { CharacterEvents } from './types';
 import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/feature-picker/types';
 import { WeaveApi } from '../../api/weave/weave';
 
-interface StateInfo {
+export interface DecisionStateInfo {
     title: string;
     render?: (props: CharacterWidgetProps) => JSX.Element;
     event: CharacterEvents;
     getChoices?: () => Promise<ICharacterFeatureCustomizationOption[][]>;
 }
 
+export interface CharacterDecision {
+    type: CharacterEvents;
+    choices?: ICharacterFeatureCustomizationOption[][];
+}
+
 export const CharacterDecisionInfo: {
-    [key: number]: StateInfo;
+    [key: number]: DecisionStateInfo;
 } = {
     [CharacterEvents.SET_RACE]: {
         title: 'Select your race',
