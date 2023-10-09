@@ -1,19 +1,9 @@
-// enum CharacterFeatureTypes {
-//     RACE,
-//     SUBRACE,
-//     CLASS,
-// }
+import { CharacterEvents } from '../../../models/character/types';
 
 export interface ICharacterFeatureCustomizationOption {
     name: string;
     description?: string;
     choices?: ICharacterFeatureCustomizationOption[][];
     image?: string;
+    choiceType?: CharacterEvents;
 }
-
-export interface CharacterRaceOption
-    extends ICharacterFeatureCustomizationOption {}
-export interface CharacterClassOption
-    extends ICharacterFeatureCustomizationOption {}
-export interface CharacterBackgroundOption
-    extends ICharacterFeatureCustomizationOption {}

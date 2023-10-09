@@ -11,7 +11,9 @@ export interface DecisionStateInfo {
     title: string;
     render?: (props: CharacterWidgetProps) => JSX.Element;
     event: CharacterEvents;
-    getChoices?: () => Promise<ICharacterFeatureCustomizationOption[][]>;
+    getChoices?: (
+        character: any,
+    ) => Promise<ICharacterFeatureCustomizationOption[][]>;
 }
 
 export interface CharacterDecision {
@@ -20,7 +22,7 @@ export interface CharacterDecision {
 }
 
 export const CharacterDecisionInfo: {
-    [key: number]: DecisionStateInfo;
+    [key: number | string]: DecisionStateInfo;
 } = {
     [CharacterEvents.SET_RACE]: {
         title: 'Select your race',
@@ -46,5 +48,17 @@ export const CharacterDecisionInfo: {
         render: (props) => <AbilitiesPicker {...props} />,
         event: CharacterEvents.SET_ABILITY_SCORES,
         getChoices: async () => [],
+    },
+    [CharacterEvents.CHOOSE_SUBCLASS]: {
+        title: 'Choose your subclass',
+        event: CharacterEvents.CHOOSE_SUBCLASS,
+    },
+    [CharacterEvents.LEVEL_UP]: {
+        title: 'Select your class',
+        event: CharacterEvents.LEVEL_UP,
+    },
+    [CharacterEvents.MULTICLASS]: {
+        title: 'Choose a class to add',
+        event: CharacterEvents.MULTICLASS,
     },
 };

@@ -4,6 +4,9 @@ export enum CharacterEvents {
     SET_SUBRACE,
     SET_BACKGROUND,
     SET_ABILITY_SCORES,
+    LEVEL_UP,
+    MULTICLASS,
+    CHOOSE_SUBCLASS = 'CHOOSE_SUBCLASS',
 }
 
 export interface AbilityScores {

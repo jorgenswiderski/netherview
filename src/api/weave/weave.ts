@@ -1,8 +1,8 @@
 import {
-    CharacterBackgroundOption,
     CharacterClassOption,
     CharacterRaceOption,
-} from '../../components/character-planner/feature-picker/types';
+    CharacterBackgroundOption,
+} from '../../components/character-planner/feature-picker/types-2';
 import { CONFIG } from '../../models/config';
 
 async function fetchFromApi(endpoint: string) {
@@ -18,10 +18,6 @@ async function fetchFromApi(endpoint: string) {
 export class WeaveApi {
     static getClassesInfo = async (): Promise<CharacterClassOption[]> => {
         return fetchFromApi('/classes/info');
-    };
-
-    static getClassProgression = async (classNames: string[]) => {
-        return fetchFromApi(`/classes/progression/${classNames.join(',')}`);
     };
 
     static getRacesInfo = async (): Promise<CharacterRaceOption[]> => {

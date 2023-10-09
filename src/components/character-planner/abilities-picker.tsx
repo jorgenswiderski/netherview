@@ -42,16 +42,16 @@ function Dot({
 export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {
     const TOTAL_POINTS = 27;
     const [abilities, setAbilities] = useState<AbilityScores>({
-        Strength: 8,
-        Dexterity: 8,
-        Constitution: 8,
+        Strength: 15,
+        Dexterity: 14,
+        Constitution: 14,
         Intelligence: 8,
-        Wisdom: 8,
+        Wisdom: 12,
         Charisma: 8,
     });
 
-    const [bonusTwo, setBonusTwo] = useState<string | null>(null);
-    const [bonusOne, setBonusOne] = useState<string | null>(null);
+    const [bonusTwo, setBonusTwo] = useState<string | null>('Dexterity');
+    const [bonusOne, setBonusOne] = useState<string | null>('Strength');
 
     const calculatePointsSpent = () => {
         let totalSpent = 0;

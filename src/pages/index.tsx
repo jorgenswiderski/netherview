@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { BeatLoader } from 'react-spinners';
 import CharacterPlanner from '../components/character-planner/character-planner';
+import { WeaveApi } from '../api/weave/weave';
+import { CharacterClassOption } from '../components/character-planner/feature-picker/types-2';
 
 const PageContainer = styled.div`
     color: #e0e0e0;
@@ -16,9 +19,23 @@ const PageContainer = styled.div`
 `;
 
 export default function HomePage() {
+    const [classData, setClassData] = useState<CharacterClassOption[] | null>();
+
+    useEffect(() => {
+        async function fetchClassData() {
+            return WeaveApi.getClassesInfo();
+        }
+
+        fetchClassData().then((data) => setClassData(data));
+    }, []);
+
     return (
         <PageContainer>
-            <CharacterPlanner />
+            {!classData ? (
+                <BeatLoader />
+            ) : (
+                <CharacterPlanner classData={classData} />
+            )}
         </PageContainer>
     );
 }

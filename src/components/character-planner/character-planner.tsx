@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BeatLoader } from 'react-spinners';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import { Character } from '../../models/character/character';
 import {
     CharacterDecision,
@@ -13,6 +14,8 @@ import { CharacterEvents } from '../../models/character/types';
 import CharacterDisplay from './character-display';
 import { ICharacterFeatureCustomizationOption } from './feature-picker/types';
 import FeaturePicker from './feature-picker/feature-picker';
+import { log } from '../../models/logger';
+import { CharacterClassOption } from './feature-picker/types-2';
 
 const Container = styled.div`
     display: flex;
@@ -55,62 +58,74 @@ const PanelContainer = styled.div`
     background-color: #2a2a2a; // Base dark gray
 `;
 
-export default function CharacterPlanner() {
-    const [character, setCharacter] = useState(new Character());
+interface CharacterPlannerProps {
+    classData: CharacterClassOption[];
+}
+
+export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
+    const [character, setCharacter] = useState(new Character(classData));
     const [loading, setLoading] = useState(false);
-    const nextDecision = useMemo(() => character.nextDecision(), [character]);
+    const nextDecision = useMemo(
+        () => character.decisionQueue[0],
+        [character.decisionQueue[0]],
+    );
     const nextDecisionInfo = useMemo(
         () => (nextDecision ? CharacterDecisionInfo[nextDecision.type] : null),
         [nextDecision],
     );
 
-    const loadChoices = async (
-        decision: CharacterDecision,
-        decisionInfo: DecisionStateInfo,
-    ) => {
-        if (
-            decision &&
-            !decision.choices &&
-            decisionInfo &&
-            decisionInfo.getChoices
-        ) {
-            setLoading(true);
-            const gc = decisionInfo.getChoices as () => Promise<
-                ICharacterFeatureCustomizationOption[][]
-            >;
+    const loadChoices = useCallback(
+        async (
+            decision: CharacterDecision,
+            decisionInfo: DecisionStateInfo,
+        ) => {
+            if (
+                decision &&
+                !decision.choices &&
+                decisionInfo &&
+                decisionInfo.getChoices
+            ) {
+                setLoading(true);
+                const gc = decisionInfo.getChoices as (
+                    character: Character,
+                ) => Promise<ICharacterFeatureCustomizationOption[][]>;
 
-            const choices = (await gc()) ?? undefined;
+                const choices = (await gc(character)) ?? undefined;
 
-            // Preload the images for the choices
-            choices?.forEach((choiceArray) =>
-                choiceArray.forEach((choice) => {
-                    if (choice.image) {
-                        new Image().src = choice.image;
-                    }
-                }),
-            );
-
-            setCharacter((prevCharacter) => {
-                const updatedCharacter = prevCharacter.clone();
-                const updatedDecision = updatedCharacter.decisionQueue.find(
-                    (cd) => cd.type === decision.type,
+                // Preload the images for the choices
+                choices?.forEach((choiceArray) =>
+                    choiceArray.forEach((choice) => {
+                        if (choice.image) {
+                            new Image().src = choice.image;
+                        }
+                    }),
                 );
 
-                if (updatedDecision) {
-                    updatedDecision.choices = choices;
-                }
+                setCharacter((prevCharacter) => {
+                    const updatedCharacter = prevCharacter.clone();
+                    const updatedDecision = updatedCharacter.decisionQueue.find(
+                        (cd) => cd.type === decision.type,
+                    );
 
-                return updatedCharacter;
-            });
+                    if (updatedDecision) {
+                        updatedDecision.choices = choices;
+                    }
 
-            setLoading(false);
-        }
-    };
+                    return updatedCharacter;
+                });
+
+                setLoading(false);
+            }
+        },
+        [character],
+    );
 
     useEffect(() => {
         if (nextDecision && nextDecisionInfo) {
             loadChoices(nextDecision, nextDecisionInfo);
         }
+
+        log(nextDecision);
     }, [nextDecision, nextDecisionInfo]);
 
     useEffect(() => {
@@ -128,36 +143,74 @@ export default function CharacterPlanner() {
         setCharacter((prevCharacter) => prevCharacter.onEvent(event, values));
     }, []);
 
+    const levelUpCharacter = () => {
+        setCharacter((prevCharacter) => prevCharacter.levelUp());
+    };
+
     const handleReset = () => {
-        setCharacter(new Character()); // Reset the character to its initial state
+        setCharacter(new Character(classData)); // Reset the character to its initial state
+    };
+
+    const renderDecisionPanel = () => {
+        if (!nextDecision) {
+            if (character.canLevel()) {
+                return (
+                    <PanelContainer>
+                        <Typography variant="h4" gutterBottom>
+                            Ready to level up?
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={levelUpCharacter}
+                        >
+                            Level Up
+                        </Button>
+                    </PanelContainer>
+                );
+            }
+
+            return null;
+        }
+
+        if (!nextDecisionInfo) {
+            return (
+                <PanelContainer>
+                    <Typography variant="h4" color="error" gutterBottom>
+                        {`Warning: Invalid decision type '${nextDecision.type}'.`}
+                    </Typography>
+                </PanelContainer>
+            );
+        }
+
+        if (loading || typeof nextDecision.choices === 'undefined') {
+            return <BeatLoader />;
+        }
+
+        return (
+            <PanelContainer>
+                <Typography variant="h4" gutterBottom>
+                    {nextDecisionInfo.title}
+                </Typography>
+                {nextDecisionInfo.render
+                    ? nextDecisionInfo.render({ onEvent: handleEvent })
+                    : nextDecision.choices.map((choice) => (
+                          <FeaturePicker
+                              choices={choice}
+                              onEvent={handleEvent}
+                              event={nextDecision.type}
+                          />
+                      ))}
+            </PanelContainer>
+        );
     };
 
     return (
         <>
             <ResetButton onClick={handleReset}>Reset</ResetButton>
             <Container>
-                {nextDecision &&
-                    nextDecisionInfo &&
-                    (loading || typeof nextDecision.choices === 'undefined' ? (
-                        <BeatLoader />
-                    ) : (
-                        <PanelContainer>
-                            <Typography variant="h4" gutterBottom>
-                                {nextDecisionInfo.title}
-                            </Typography>
-                            {nextDecisionInfo.render
-                                ? nextDecisionInfo.render({
-                                      onEvent: handleEvent,
-                                  })
-                                : nextDecision.choices.map((choice) => (
-                                      <FeaturePicker
-                                          choices={choice}
-                                          onEvent={handleEvent}
-                                          event={nextDecision.type}
-                                      />
-                                  ))}
-                        </PanelContainer>
-                    ))}
+                {renderDecisionPanel()}
+
                 {character.race && character.levels.length > 0 && (
                     <PanelContainer>
                         <CharacterDisplay character={character} />
