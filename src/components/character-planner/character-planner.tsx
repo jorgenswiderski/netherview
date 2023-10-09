@@ -106,7 +106,7 @@ export default function CharacterPlanner() {
                             ))}
                         </PanelContainer>
                     ))}
-                {character.race && character.levels.length && (
+                {character.race && character.levels.length > 0 && (
                     <PanelContainer>
                         <CharacterDisplay character={character} />
                     </PanelContainer>
