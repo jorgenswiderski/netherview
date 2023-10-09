@@ -1,11 +1,17 @@
+/* eslint-disable react/jsx-props-no-spreading */
 // _app.tsx
 import React from 'react';
 import '../styles/global.css';
 import { AppProps } from 'next/app';
+import { ThemeProvider } from '@mui/material';
+import { theme } from '../models/theme';
 
 function MyApp({ Component, pageProps }: AppProps) {
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    return <Component {...pageProps} />;
+    return (
+        <ThemeProvider theme={theme}>
+            <Component {...pageProps} />
+        </ThemeProvider>
+    );
 }
 
 export default MyApp;

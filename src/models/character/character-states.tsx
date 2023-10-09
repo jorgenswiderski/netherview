@@ -2,37 +2,40 @@
 // character-states.ts
 import React from 'react';
 import AbilitiesPicker from '../../components/character-planner/abilities-picker';
-import ClassSelector from '../../components/character-planner/character-class-selector';
-import RacePicker from '../../components/character-planner/race-picker';
 import { CharacterWidgetProps } from '../../components/character-planner/types';
-import { CharacterEvents, CharacterState } from './types';
-import BackgroundPicker from '../../components/character-planner/background-picker';
+import { CharacterEvents } from './types';
+import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/choice-picker/types';
+import { WeaveApi } from '../../api/weave/weave';
 
 interface StateInfo {
     title: string;
-    render: (props: CharacterWidgetProps) => JSX.Element;
+    render?: (props: CharacterWidgetProps) => JSX.Element;
     event: CharacterEvents;
+    getChoices?: () => Promise<ICharacterFeatureCustomizationOption[][]>;
 }
 
-export const CharacterStateInfo: {
+export const CharacterDecisionInfo: {
     [key: number]: StateInfo;
 } = {
-    [CharacterState.CHOOSE_RACE]: {
+    [CharacterEvents.SET_RACE]: {
         title: 'Select your race',
-        render: (props) => <RacePicker {...props} />,
         event: CharacterEvents.SET_RACE,
+        getChoices: async () => WeaveApi.getRacesInfo(),
     },
-    [CharacterState.CHOOSE_CLASS]: {
+    [CharacterEvents.SET_SUBRACE]: {
+        title: 'Select your subrace',
+        event: CharacterEvents.SET_SUBRACE,
+    },
+    [CharacterEvents.SET_CLASS]: {
         title: 'Select your starting class',
-        render: (props) => <ClassSelector {...props} />,
-        event: CharacterEvents.ADD_LEVEL,
+        event: CharacterEvents.SET_CLASS,
+        getChoices: async () => WeaveApi.getClassesInfo(),
     },
-    [CharacterState.CHOOSE_BACKGROUND]: {
+    [CharacterEvents.SET_BACKGROUND]: {
         title: 'Choose a background',
-        render: (props) => <BackgroundPicker {...props} />,
         event: CharacterEvents.SET_BACKGROUND,
     },
-    [CharacterState.CHOOSE_ABILITY_SCORES]: {
+    [CharacterEvents.SET_ABILITY_SCORES]: {
         title: 'Choose your ability scores',
         render: (props) => <AbilitiesPicker {...props} />,
         event: CharacterEvents.SET_ABILITY_SCORES,

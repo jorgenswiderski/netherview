@@ -1,95 +1,111 @@
-import { BackgroundInfo, RaceInfo } from '../../api/weave/types';
+import { BackgroundInfo } from '../../api/weave/types';
 import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/choice-picker/types';
-import { AbilityScores, CharacterEvents, CharacterState } from './types';
+import { AbilityScores, CharacterEvents } from './types';
+
+interface CharacterDecision {
+    type: CharacterEvents;
+    choices?: ICharacterFeatureCustomizationOption[][];
+}
 
 export class Character {
     static MAX_LEVEL = 12;
 
-    state: CharacterState = CharacterState.CHOOSE_RACE;
+    decisionQueue: CharacterDecision[] = [
+        CharacterEvents.SET_RACE,
+        CharacterEvents.SET_CLASS,
+        CharacterEvents.SET_BACKGROUND,
+        CharacterEvents.SET_ABILITY_SCORES,
+    ].map((cd) => ({
+        type: cd,
+    }));
+
     name: string = 'Tav';
-    levels: string[] = [];
-    race?: RaceInfo;
-    subrace?: ICharacterFeatureCustomizationOption;
-    baseAbilityScores?: AbilityScores;
+
+    nextDecision(): CharacterDecision | null {
+        return this.decisionQueue[0] || null;
+    }
+
+    completeDecision(decision: CharacterEvents) {
+        const index = this.decisionQueue.findIndex(
+            (value) => value.type === decision,
+        );
+
+        if (index > -1) {
+            this.decisionQueue.splice(index, 1);
+        }
+    }
+
+    // In the onEvent method, complete the respective decision after processing.
+    onEvent(event: CharacterEvents, value: any): Character {
+        this.completeDecision(event);
+
+        if (event === CharacterEvents.SET_CLASS) {
+            this.addClass(value);
+        } else if (event === CharacterEvents.SET_RACE) {
+            this.setRace(value);
+        } else if (event === CharacterEvents.SET_SUBRACE) {
+            this.setSubrace(value);
+        } else if (event === CharacterEvents.SET_ABILITY_SCORES) {
+            this.setAbilityScores(value);
+        } else if (event === CharacterEvents.SET_BACKGROUND) {
+            this.setBackground(value);
+        } else {
+            throw new Error('Invalid character event');
+        }
+
+        // log(this.decisionQueue);
+
+        return this.clone();
+    }
 
     clone(): Character {
         return Object.assign(new Character(), this);
     }
 
-    onEvent(event: CharacterEvents, value: any): Character {
-        if (event === CharacterEvents.ADD_LEVEL) {
-            return this.addClass(value);
-        }
+    levels: string[] = [];
 
-        if (event === CharacterEvents.SET_RACE) {
-            return this.setRace(value);
-        }
-
-        if (event === CharacterEvents.SET_ABILITY_SCORES) {
-            return this.setAbilityScores(value);
-        }
-
-        if (event === CharacterEvents.SET_BACKGROUND) {
-            return this.setBackground(value);
-        }
-
-        throw new Error('Invalid character event');
-    }
-
-    addClass(className: string): Character {
+    addClass(className: string): void {
         if (this.levels.length >= Character.MAX_LEVEL) {
             throw new Error('Cannot exceed level 12');
         }
 
-        const c = this.clone();
-
-        if (c.state === CharacterState.CHOOSE_CLASS) {
-            c.state = CharacterState.CHOOSE_BACKGROUND;
-        }
-
-        c.levels.push(className);
-
-        return c;
+        this.levels.push(className);
     }
 
-    setRace({
-        race,
-        subrace,
-    }: {
-        race: RaceInfo;
-        subrace?: ICharacterFeatureCustomizationOption;
-    }): Character {
-        const c = this.clone();
+    race?: ICharacterFeatureCustomizationOption;
 
-        c.state = CharacterState.CHOOSE_CLASS;
-        c.race = race;
-        c.subrace = subrace;
+    setRace(race: ICharacterFeatureCustomizationOption): void {
+        this.race = race;
 
-        return c;
+        if (race.choices) {
+            this.decisionQueue.unshift({
+                type: CharacterEvents.SET_SUBRACE,
+                choices: race.choices,
+            });
+        }
+    }
+
+    subrace?: ICharacterFeatureCustomizationOption;
+
+    setSubrace(subrace: ICharacterFeatureCustomizationOption): void {
+        this.subrace = subrace;
     }
 
     background?: BackgroundInfo;
 
-    setBackground(background: BackgroundInfo) {
+    setBackground(background: BackgroundInfo): void {
         this.background = background;
-        this.state = CharacterState.CHOOSE_ABILITY_SCORES;
-
-        return this.clone();
     }
 
+    baseAbilityScores?: AbilityScores;
     racialAbilityBonuses?: (keyof AbilityScores)[];
 
     setAbilityScores(values: {
         abilityScores: AbilityScores;
         bonusTwo: keyof AbilityScores;
         bonusOne: keyof AbilityScores;
-    }): Character {
+    }): void {
         this.baseAbilityScores = values.abilityScores;
         this.racialAbilityBonuses = [values.bonusTwo, values.bonusOne];
-
-        // set next state
-        // TODO: does this still rerender twice?
-
-        return this.clone();
     }
 }
