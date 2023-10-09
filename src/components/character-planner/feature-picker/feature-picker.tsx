@@ -80,17 +80,18 @@ export default function FeaturePicker({
             </Typography>
 
             {/* Button to submit the selected choice */}
-            {selectedOption && (
-                <div style={{ textAlign: 'center' }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => onEvent(event, selectedOption)}
-                    >
-                        Confirm {selectedOption.name}
-                    </Button>
-                </div>
-            )}
+            <div style={{ textAlign: 'center' }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => onEvent(event, selectedOption)}
+                    style={{
+                        visibility: selectedOption ? 'visible' : 'hidden',
+                    }}
+                >
+                    Next
+                </Button>
+            </div>
         </div>
     );
 }
