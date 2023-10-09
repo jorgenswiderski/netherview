@@ -15,3 +15,5 @@ export interface CharacterRaceOption
     extends ICharacterFeatureCustomizationOption {}
 export interface CharacterClassOption
     extends ICharacterFeatureCustomizationOption {}
+export interface CharacterBackgroundOption
+    extends ICharacterFeatureCustomizationOption {}

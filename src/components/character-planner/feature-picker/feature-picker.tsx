@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { CharacterEvents } from '../../../models/character/types';
-import { ICharacterFeatureCustomizationOption } from '../choice-picker/types';
+import { ICharacterFeatureCustomizationOption } from './types';
 
 interface FeaturePickerProps {
     choices: ICharacterFeatureCustomizationOption[];

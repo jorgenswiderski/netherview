@@ -1,5 +1,5 @@
 import { BackgroundInfo } from '../../api/weave/types';
-import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/choice-picker/types';
+import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/feature-picker/types';
 import { AbilityScores, CharacterEvents } from './types';
 
 interface CharacterDecision {

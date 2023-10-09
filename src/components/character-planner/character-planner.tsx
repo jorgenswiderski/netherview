@@ -7,7 +7,7 @@ import { Character } from '../../models/character/character';
 import { CharacterDecisionInfo } from '../../models/character/character-states';
 import { CharacterEvents } from '../../models/character/types';
 import CharacterDisplay from './character-display';
-import { ICharacterFeatureCustomizationOption } from './choice-picker/types';
+import { ICharacterFeatureCustomizationOption } from './feature-picker/types';
 import FeaturePicker from './feature-picker/feature-picker';
 
 const Container = styled.div`
@@ -53,19 +53,23 @@ const PanelContainer = styled.div`
 
 export default function CharacterPlanner() {
     const [character, setCharacter] = useState(new Character());
-    const nextDecision = useMemo(() => character.nextDecision(), [character]);
     const [loading, setLoading] = useState(false);
+    const nextDecision = useMemo(() => character.nextDecision(), [character]);
+    const nextDecisionInfo = useMemo(
+        () => (nextDecision ? CharacterDecisionInfo[nextDecision.type] : null),
+        [nextDecision],
+    );
 
     useEffect(() => {
         async function fetchChoices() {
             if (
                 nextDecision &&
                 !nextDecision.choices &&
-                CharacterDecisionInfo[nextDecision.type].getChoices
+                nextDecisionInfo &&
+                nextDecisionInfo.getChoices
             ) {
                 setLoading(true);
-                const gc = CharacterDecisionInfo[nextDecision.type]
-                    .getChoices as () => Promise<
+                const gc = nextDecisionInfo.getChoices as () => Promise<
                     ICharacterFeatureCustomizationOption[][]
                 >;
 
@@ -75,7 +79,7 @@ export default function CharacterPlanner() {
         }
 
         fetchChoices();
-    }, [nextDecision]);
+    }, [nextDecision, nextDecisionInfo]);
 
     const handleEvent = useCallback((event: CharacterEvents, values: any) => {
         setCharacter((prevCharacter) => prevCharacter.onEvent(event, values));
@@ -90,20 +94,25 @@ export default function CharacterPlanner() {
             <ResetButton onClick={handleReset}>Reset</ResetButton>
             <Container>
                 {nextDecision &&
-                    (loading || !nextDecision.choices ? (
+                    nextDecisionInfo &&
+                    (loading || typeof nextDecision.choices === 'undefined' ? (
                         <BeatLoader />
                     ) : (
                         <PanelContainer>
                             <Typography variant="h4" gutterBottom>
-                                {CharacterDecisionInfo[nextDecision.type].title}
+                                {nextDecisionInfo.title}
                             </Typography>
-                            {nextDecision.choices.map((choice) => (
-                                <FeaturePicker
-                                    choices={choice}
-                                    onEvent={handleEvent}
-                                    event={nextDecision.type}
-                                />
-                            ))}
+                            {nextDecisionInfo.render
+                                ? nextDecisionInfo.render({
+                                      onEvent: handleEvent,
+                                  })
+                                : nextDecision.choices.map((choice) => (
+                                      <FeaturePicker
+                                          choices={choice}
+                                          onEvent={handleEvent}
+                                          event={nextDecision.type}
+                                      />
+                                  ))}
                         </PanelContainer>
                     ))}
                 {character.race && character.levels.length > 0 && (
