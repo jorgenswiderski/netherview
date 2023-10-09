@@ -77,7 +77,7 @@ export class Character {
     setRace(race: ICharacterFeatureCustomizationOption): void {
         this.race = race;
 
-        if (race.choices) {
+        if (race.choices?.[0].length) {
             this.decisionQueue.unshift({
                 type: CharacterEvents.SET_SUBRACE,
                 choices: race.choices,
