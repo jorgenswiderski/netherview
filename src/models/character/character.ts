@@ -207,4 +207,59 @@ export class Character {
 
         return this.clone();
     }
+
+    // ========================================================================
+
+    getClasses(): { levels: number; class: string }[] {
+        // Create a map to count occurrences of each class
+        const classCount = new Map<string, number>();
+
+        this.levels.forEach((cls) => {
+            classCount.set(cls.name, (classCount.get(cls.name) || 0) + 1);
+        });
+
+        // Convert the map to an array of objects
+        const classesArray = Array.from(classCount).map(
+            ([className, count]) => ({
+                class: className,
+                levels: count,
+            }),
+        );
+
+        // Sort the array
+        classesArray.sort((a, b) => {
+            // If one of the classes is the first class in levels, prioritize it
+            if (this.levels[0].name === a.class) return -1;
+            if (this.levels[0].name === b.class) return 1;
+
+            // For all other classes, sort by the number of levels in descending order
+            return b.levels - a.levels;
+        });
+
+        return classesArray;
+    }
+
+    getTotalAbilityScores(): AbilityScores {
+        if (!this.baseAbilityScores) {
+            throw new Error(
+                'Base ability scores are not set for the character.',
+            );
+        }
+
+        // Start with a clone of the base ability scores
+        const totalAbilityScores = { ...this.baseAbilityScores };
+
+        // Apply racial ability bonuses if they exist
+        if (this.racialAbilityBonuses) {
+            if (this.racialAbilityBonuses[0]) {
+                totalAbilityScores[this.racialAbilityBonuses[0]] += 2;
+            }
+
+            if (this.racialAbilityBonuses[1]) {
+                totalAbilityScores[this.racialAbilityBonuses[1]] += 1;
+            }
+        }
+
+        return totalAbilityScores;
+    }
 }

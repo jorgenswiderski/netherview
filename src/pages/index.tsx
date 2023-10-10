@@ -1,3 +1,4 @@
+// index.tsx
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { BeatLoader } from 'react-spinners';
@@ -8,14 +9,13 @@ import { CharacterClassOption } from '../components/character-planner/feature-pi
 const PageContainer = styled.div`
     color: #e0e0e0;
     background-color: #1a1a1a;
-    min-height: 100vh;
+    height: 100vh;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 50px;
     box-sizing: border-box;
-    overflow: hidden;
 `;
 
 export default function HomePage() {

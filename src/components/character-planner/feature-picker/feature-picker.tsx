@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
@@ -20,54 +19,77 @@ export default function FeaturePicker({
     onEvent,
     event,
 }: FeaturePickerProps) {
-    // State to track the current selection
     const [selectedOption, setSelectedOption] =
         useState<ICharacterFeatureCustomizationOption | null>(null);
+    const gridSize = {
+        xs: 12,
+        sm: choices.length < 4 ? 12 / choices.length : 6,
+        md: choices.length < 4 ? 12 / choices.length : 4,
+        lg: choices.length < 4 ? 12 / choices.length : 3,
+    };
 
     return (
-        <div>
+        <>
             <Grid container spacing={3}>
                 {choices.map((option) => (
-                    <Grid item xs={6} sm={4} md={3} key={option.name}>
+                    <Grid
+                        item
+                        // eslint-disable-next-line react/jsx-props-no-spreading
+                        {...gridSize}
+                        key={option.name}
+                        style={{ display: 'flex' }}
+                    >
                         <Card
                             style={{
+                                maxWidth: '100%',
                                 opacity: selectedOption === option ? 0.85 : 1,
                                 border:
                                     selectedOption === option
                                         ? '3px solid #3f51b5'
                                         : '3px solid transparent',
-                                boxShadow:
-                                    selectedOption === option
-                                        ? '0px 4px 20px rgba(0, 0, 0, 0.2)'
-                                        : 'none',
+                                flex: 1,
                             }}
                         >
                             <CardActionArea
                                 onClick={() => setSelectedOption(option)}
+                                style={{
+                                    position: 'relative',
+                                    minHeight: '160px',
+                                }}
                             >
-                                <CardMedia
-                                    component="img"
-                                    alt={option.name}
-                                    height="140"
-                                    image={option.image}
-                                    title={option.name}
-                                />
-                                <CardContent>
-                                    <Typography
-                                        gutterBottom
-                                        variant="h6"
-                                        component="div"
-                                    >
-                                        {option.name}
-                                    </Typography>
-                                </CardContent>
+                                {option.image && (
+                                    <CardMedia
+                                        component="img"
+                                        alt={option.name}
+                                        image={option.image}
+                                        title={option.name}
+                                        style={{
+                                            height: '160px',
+                                            objectFit: 'cover',
+                                            objectPosition: 'center',
+                                            opacity: 0.33, // Fading the image a bit
+                                        }}
+                                    />
+                                )}
+                                <Typography
+                                    variant="h6"
+                                    component="div"
+                                    style={{
+                                        position: 'absolute',
+                                        bottom: '8px',
+                                        left: '8px',
+                                        textShadow:
+                                            '3px 3px 5px rgba(0, 0, 0, 0.7)', // Pronounced shadow for better contrast
+                                    }}
+                                >
+                                    {option.name}
+                                </Typography>
                             </CardActionArea>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
 
-            {/* Description of the selected choice */}
             <Typography
                 variant="body2"
                 style={{
@@ -79,7 +101,6 @@ export default function FeaturePicker({
                 {selectedOption?.description}
             </Typography>
 
-            {/* Button to submit the selected choice */}
             <div style={{ textAlign: 'center' }}>
                 <Button
                     variant="contained"
@@ -92,6 +113,6 @@ export default function FeaturePicker({
                     Next
                 </Button>
             </div>
-        </div>
+        </>
     );
 }

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
     CharacterClassOption,
     CharacterRaceOption,
@@ -6,13 +7,21 @@ import {
 import { CONFIG } from '../../models/config';
 
 async function fetchFromApi(endpoint: string) {
-    const response = await fetch(`${CONFIG.WEAVE.API_URL}${endpoint}`);
+    try {
+        const response = await axios.get(`${CONFIG.WEAVE.API_URL}${endpoint}`);
 
-    if (!response.ok) {
-        throw new Error(`Failed to fetch from API. Status: ${response.status}`);
+        return response.data;
+    } catch (error) {
+        // Check if the error is an Axios error
+        if (axios.isAxiosError(error) && error.response) {
+            throw new Error(
+                `Failed to fetch from API. Status: ${error.response.status}`,
+            );
+        }
+
+        // If the error is not an Axios error or any other unknown error
+        throw error;
     }
-
-    return response.json();
 }
 
 export class WeaveApi {
