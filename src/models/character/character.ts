@@ -1,3 +1,4 @@
+// character.ts
 import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/feature-picker/types';
 import { CharacterClassOption } from '../../components/character-planner/feature-picker/types-2';
 import { CharacterDecision } from './character-states';
@@ -162,6 +163,7 @@ export class Character {
         this.background = background;
     }
 
+    // FIXME: Character can have multiple
     subclass?: ICharacterFeatureCustomizationOption;
 
     setSubclass(subclass: ICharacterFeatureCustomizationOption) {
