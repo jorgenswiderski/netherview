@@ -5,6 +5,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import {
     ICharacterFeatureCustomizationOption,
     CharacterPlannerStep,
@@ -96,14 +97,37 @@ export default function FeaturePicker({
                 variant="body2"
                 style={{
                     minHeight: '60px',
-                    margin: '20px 0',
+                    margin: '20px 0 10px',
                     textAlign: 'center',
                 }}
             >
                 {selectedOption?.description}
             </Typography>
 
-            <div style={{ textAlign: 'center' }}>
+            {/* Display grantable effects for the selected feature */}
+            {selectedOption?.grants && (
+                <div style={{ margin: '10px 0', textAlign: 'center' }}>
+                    <Typography variant="body2" style={{ margin: '0 0 5px' }}>
+                        You will gain:
+                    </Typography>
+                    {selectedOption.grants
+                        .filter((grant) => !grant.hidden)
+                        .map((grant) => (
+                            <Tooltip
+                                title={grant.description || ''}
+                                key={grant.name}
+                            >
+                                <div>
+                                    <Typography variant="body2">
+                                        {grant.name}
+                                    </Typography>
+                                </div>
+                            </Tooltip>
+                        ))}
+                </div>
+            )}
+
+            <div style={{ textAlign: 'center', margin: '10px 0 0' }}>
                 <Button
                     variant="contained"
                     color="primary"
