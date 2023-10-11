@@ -69,7 +69,7 @@ export default function FeaturePicker({
                                         style={{
                                             height: '160px',
                                             objectFit: 'cover',
-                                            objectPosition: 'center',
+                                            objectPosition: 'center -20px',
                                             opacity: 0.33, // Fading the image a bit
                                         }}
                                     />
