@@ -10,6 +10,7 @@ import {
     CharacterPlannerStep,
 } from 'planner-types/src/types/character-feature-customization-option';
 import GrantedEffect from '../granted-effect';
+import { Utils } from '../../../models/utils';
 
 interface FeaturePickerProps {
     choices: ICharacterFeatureCustomizationOption[];
@@ -28,6 +29,14 @@ export default function FeaturePicker({
     useEffect(() => {
         setSelectedOption(null);
     }, [choices]);
+
+    // Preload subchoice assets for the selected options
+    useEffect(() => {
+        if (selectedOption?.choices) {
+            // Only need to preload first choice, others handled by decision queue preloader
+            Utils.preloadChoiceImages(selectedOption.choices[0]);
+        }
+    }, [selectedOption]);
 
     const gridSize = {
         xs: 12,

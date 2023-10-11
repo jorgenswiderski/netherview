@@ -74,6 +74,10 @@ module.exports = {
             },
         ],
         'react/prop-types': 'off',
+        curly: ['error', 'all'],
+
+        // style rules
         'prettier/prettier': 'warn',
+        'object-shorthand': 'warn',
     },
 };

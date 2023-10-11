@@ -18,6 +18,7 @@ import CharacterDisplay from './character-display';
 import { CharacterClassOption } from './feature-picker/types';
 import FeaturePicker from './feature-picker/feature-picker';
 import { log } from '../../models/logger';
+import { Utils } from '../../models/utils';
 
 const Container = styled.div`
     display: flex;
@@ -88,20 +89,13 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
                 decisionInfo.getChoices
             ) {
                 setLoading(true);
+
                 const gc = decisionInfo.getChoices as (
                     character: Character,
                 ) => Promise<ICharacterFeatureCustomizationOption[][]>;
 
                 const choices = (await gc(character)) ?? undefined;
-
-                // Preload the images for the choices
-                choices?.forEach((choiceArray) =>
-                    choiceArray.forEach((choice) => {
-                        if (choice.image) {
-                            new Image().src = choice.image;
-                        }
-                    }),
-                );
+                Utils.preloadChoiceImages(choices[0]);
 
                 setCharacter((prevCharacter) => {
                     const updatedCharacter = prevCharacter.clone();
