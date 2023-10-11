@@ -4,18 +4,20 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BeatLoader } from 'react-spinners';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import {
+    ICharacterFeatureCustomizationOption,
+    CharacterEvents,
+} from 'planner-types/src/types/character-feature-customization-option';
 import { Character } from '../../models/character/character';
 import {
     CharacterDecision,
     CharacterDecisionInfo,
     DecisionStateInfo,
 } from '../../models/character/character-states';
-import { CharacterEvents } from '../../models/character/types';
 import CharacterDisplay from './character-display';
-import { ICharacterFeatureCustomizationOption } from './feature-picker/types';
+import { CharacterClassOption } from './feature-picker/types';
 import FeaturePicker from './feature-picker/feature-picker';
 import { log } from '../../models/logger';
-import { CharacterClassOption } from './feature-picker/types-2';
 
 const Container = styled.div`
     display: flex;

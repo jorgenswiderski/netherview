@@ -9,8 +9,9 @@ import TableCell from '@mui/material/TableCell';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
+import { CharacterEvents } from 'planner-types/src/types/character-feature-customization-option';
 import { CharacterWidgetProps } from './types';
-import { AbilityScores, CharacterEvents } from '../../models/character/types';
+import { AbilityScores } from '../../models/character/types';
 
 function Dot({
     filled,

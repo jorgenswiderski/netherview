@@ -5,8 +5,10 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { CharacterEvents } from '../../../models/character/types';
-import { ICharacterFeatureCustomizationOption } from './types';
+import {
+    ICharacterFeatureCustomizationOption,
+    CharacterEvents,
+} from 'planner-types/src/types/character-feature-customization-option';
 
 interface FeaturePickerProps {
     choices: ICharacterFeatureCustomizationOption[];

@@ -1,10 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 // character-states.ts
 import React from 'react';
+import {
+    CharacterEvents,
+    ICharacterFeatureCustomizationOption,
+} from 'planner-types/src/types/character-feature-customization-option';
 import AbilitiesPicker from '../../components/character-planner/abilities-picker';
 import { CharacterWidgetProps } from '../../components/character-planner/types';
-import { CharacterEvents } from './types';
-import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/feature-picker/types';
 import { WeaveApi } from '../../api/weave/weave';
 
 export interface DecisionStateInfo {
@@ -29,9 +31,9 @@ export const CharacterDecisionInfo: {
         event: CharacterEvents.SET_RACE,
         getChoices: async () => [await WeaveApi.getRacesInfo()],
     },
-    [CharacterEvents.SET_SUBRACE]: {
+    [CharacterEvents.CHOOSE_SUBRACE]: {
         title: 'Select your subrace',
-        event: CharacterEvents.SET_SUBRACE,
+        event: CharacterEvents.CHOOSE_SUBRACE,
     },
     [CharacterEvents.SET_CLASS]: {
         title: 'Select your starting class',

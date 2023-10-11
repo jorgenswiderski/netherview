@@ -25,6 +25,15 @@ module.exports = {
                 'import/no-default-export': 'off', // Default export is necessary for react
             },
         },
+        {
+            files: ['next.config.js'],
+            rules: {
+                'import/no-unresolved': 'off',
+                'import/no-extraneous-dependencies': 'off',
+                'import/order': 'off',
+                'import/no-self-import': 'off',
+            },
+        },
     ],
     settings: {
         react: {
@@ -32,6 +41,7 @@ module.exports = {
         },
         'import/parsers': {
             '@typescript-eslint/parser': ['.ts', '.tsx'],
+            espree: ['.js', '.jsx'],
         },
         'import/resolver': {
             typescript: {

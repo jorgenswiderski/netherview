@@ -3,7 +3,7 @@ import {
     CharacterClassOption,
     CharacterRaceOption,
     CharacterBackgroundOption,
-} from '../../components/character-planner/feature-picker/types-2';
+} from '../../components/character-planner/feature-picker/types';
 import { CONFIG } from '../../models/config';
 
 async function fetchFromApi(endpoint: string) {

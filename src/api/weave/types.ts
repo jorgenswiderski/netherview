@@ -1,4 +1,4 @@
-import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/feature-picker/types';
+import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
 
 export interface CharacterClassProgressionLevel {
     Level: number;

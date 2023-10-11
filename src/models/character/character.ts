@@ -1,8 +1,12 @@
 // character.ts
-import { ICharacterFeatureCustomizationOption } from '../../components/character-planner/feature-picker/types';
-import { CharacterClassOption } from '../../components/character-planner/feature-picker/types-2';
+
+import {
+    ICharacterFeatureCustomizationOption,
+    CharacterEvents,
+} from 'planner-types/src/types/character-feature-customization-option';
+import { CharacterClassOption } from '../../components/character-planner/feature-picker/types';
 import { CharacterDecision } from './character-states';
-import { AbilityScores, CharacterEvents } from './types';
+import { AbilityScores } from './types';
 
 export class Character {
     static MAX_LEVEL = 12;
@@ -54,7 +58,7 @@ export class Character {
             }
         } else if (event === CharacterEvents.SET_RACE) {
             this.setRace(feature);
-        } else if (event === CharacterEvents.SET_SUBRACE) {
+        } else if (event === CharacterEvents.CHOOSE_SUBRACE) {
             this.setSubrace(feature);
         } else if (event === CharacterEvents.SET_BACKGROUND) {
             this.setBackground(feature);
