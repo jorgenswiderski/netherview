@@ -2,7 +2,7 @@
 // character-states.ts
 import React from 'react';
 import {
-    CharacterEvents,
+    CharacterPlannerStep,
     ICharacterFeatureCustomizationOption,
 } from 'planner-types/src/types/character-feature-customization-option';
 import AbilitiesPicker from '../../components/character-planner/abilities-picker';
@@ -12,55 +12,55 @@ import { WeaveApi } from '../../api/weave/weave';
 export interface DecisionStateInfo {
     title: string;
     render?: (props: CharacterWidgetProps) => JSX.Element;
-    event: CharacterEvents;
+    event: CharacterPlannerStep;
     getChoices?: (
         character: any,
     ) => Promise<ICharacterFeatureCustomizationOption[][]>;
 }
 
 export interface CharacterDecision {
-    type: CharacterEvents;
+    type: CharacterPlannerStep;
     choices?: ICharacterFeatureCustomizationOption[][];
 }
 
 export const CharacterDecisionInfo: {
     [key: number | string]: DecisionStateInfo;
 } = {
-    [CharacterEvents.SET_RACE]: {
+    [CharacterPlannerStep.SET_RACE]: {
         title: 'Select your race',
-        event: CharacterEvents.SET_RACE,
+        event: CharacterPlannerStep.SET_RACE,
         getChoices: async () => [await WeaveApi.getRacesInfo()],
     },
-    [CharacterEvents.CHOOSE_SUBRACE]: {
+    [CharacterPlannerStep.CHOOSE_SUBRACE]: {
         title: 'Select your subrace',
-        event: CharacterEvents.CHOOSE_SUBRACE,
+        event: CharacterPlannerStep.CHOOSE_SUBRACE,
     },
-    [CharacterEvents.SET_CLASS]: {
+    [CharacterPlannerStep.SET_CLASS]: {
         title: 'Select your starting class',
-        event: CharacterEvents.SET_CLASS,
+        event: CharacterPlannerStep.SET_CLASS,
         getChoices: async () => [await WeaveApi.getClassesInfo()],
     },
-    [CharacterEvents.SET_BACKGROUND]: {
+    [CharacterPlannerStep.SET_BACKGROUND]: {
         title: 'Choose a background',
-        event: CharacterEvents.SET_BACKGROUND,
+        event: CharacterPlannerStep.SET_BACKGROUND,
         getChoices: async () => [await WeaveApi.getBackgroundsInfo()],
     },
-    [CharacterEvents.SET_ABILITY_SCORES]: {
+    [CharacterPlannerStep.SET_ABILITY_SCORES]: {
         title: 'Choose your ability scores',
         render: (props) => <AbilitiesPicker {...props} />,
-        event: CharacterEvents.SET_ABILITY_SCORES,
+        event: CharacterPlannerStep.SET_ABILITY_SCORES,
         getChoices: async () => [],
     },
-    [CharacterEvents.CHOOSE_SUBCLASS]: {
+    [CharacterPlannerStep.CHOOSE_SUBCLASS]: {
         title: 'Choose your subclass',
-        event: CharacterEvents.CHOOSE_SUBCLASS,
+        event: CharacterPlannerStep.CHOOSE_SUBCLASS,
     },
-    [CharacterEvents.LEVEL_UP]: {
+    [CharacterPlannerStep.LEVEL_UP]: {
         title: 'Select your class',
-        event: CharacterEvents.LEVEL_UP,
+        event: CharacterPlannerStep.LEVEL_UP,
     },
-    [CharacterEvents.MULTICLASS]: {
+    [CharacterPlannerStep.MULTICLASS]: {
         title: 'Choose a class to add',
-        event: CharacterEvents.MULTICLASS,
+        event: CharacterPlannerStep.MULTICLASS,
     },
 };

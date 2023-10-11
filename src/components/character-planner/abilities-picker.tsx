@@ -9,7 +9,7 @@ import TableCell from '@mui/material/TableCell';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
-import { CharacterEvents } from 'planner-types/src/types/character-feature-customization-option';
+import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
 import { CharacterWidgetProps } from './types';
 import { AbilityScores } from '../../models/character/types';
 
@@ -105,7 +105,7 @@ export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {
 
     const handleConfirm = () => {
         // Call the event with the abilities and the racial bonuses
-        onEvent(CharacterEvents.SET_ABILITY_SCORES, {
+        onEvent(CharacterPlannerStep.SET_ABILITY_SCORES, {
             abilityScores: abilities,
             bonusTwo,
             bonusOne,

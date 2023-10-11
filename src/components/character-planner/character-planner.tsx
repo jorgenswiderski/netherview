@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {
     ICharacterFeatureCustomizationOption,
-    CharacterEvents,
+    CharacterPlannerStep,
 } from 'planner-types/src/types/character-feature-customization-option';
 import { Character } from '../../models/character/character';
 import {
@@ -141,9 +141,14 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
         }
     }, [character.decisionQueue[1]]);
 
-    const handleEvent = useCallback((event: CharacterEvents, values: any) => {
-        setCharacter((prevCharacter) => prevCharacter.onEvent(event, values));
-    }, []);
+    const handleEvent = useCallback(
+        (event: CharacterPlannerStep, values: any) => {
+            setCharacter((prevCharacter) =>
+                prevCharacter.onEvent(event, values),
+            );
+        },
+        [],
+    );
 
     const levelUpCharacter = () => {
         setCharacter((prevCharacter) => prevCharacter.levelUp());

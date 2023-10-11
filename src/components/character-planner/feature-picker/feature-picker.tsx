@@ -7,13 +7,13 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import {
     ICharacterFeatureCustomizationOption,
-    CharacterEvents,
+    CharacterPlannerStep,
 } from 'planner-types/src/types/character-feature-customization-option';
 
 interface FeaturePickerProps {
     choices: ICharacterFeatureCustomizationOption[];
-    onEvent: (event: CharacterEvents, value: any) => void;
-    event: CharacterEvents;
+    onEvent: (event: CharacterPlannerStep, value: any) => void;
+    event: CharacterPlannerStep;
 }
 
 export default function FeaturePicker({

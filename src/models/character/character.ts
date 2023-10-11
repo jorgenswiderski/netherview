@@ -2,7 +2,7 @@
 
 import {
     ICharacterFeatureCustomizationOption,
-    CharacterEvents,
+    CharacterPlannerStep,
 } from 'planner-types/src/types/character-feature-customization-option';
 import { CharacterClassOption } from '../../components/character-planner/feature-picker/types';
 import { CharacterDecision } from './character-states';
@@ -14,16 +14,16 @@ export class Character {
     static multiclassOption: ICharacterFeatureCustomizationOption = {
         name: 'Add a class',
         description: 'Add a level in a new class.',
-        choiceType: CharacterEvents.MULTICLASS,
+        choiceType: CharacterPlannerStep.MULTICLASS,
     };
 
     constructor(public classData: CharacterClassOption[]) {}
 
     decisionQueue: CharacterDecision[] = [
-        CharacterEvents.SET_RACE,
-        CharacterEvents.SET_CLASS,
-        CharacterEvents.SET_BACKGROUND,
-        CharacterEvents.SET_ABILITY_SCORES,
+        CharacterPlannerStep.SET_RACE,
+        CharacterPlannerStep.SET_CLASS,
+        CharacterPlannerStep.SET_BACKGROUND,
+        CharacterPlannerStep.SET_ABILITY_SCORES,
     ].map((cd) => ({
         type: cd,
     }));
@@ -34,7 +34,7 @@ export class Character {
         return this.decisionQueue[0] || null;
     }
 
-    completeDecision(decision: CharacterEvents) {
+    completeDecision(decision: CharacterPlannerStep) {
         const index = this.decisionQueue.findIndex(
             (value) => value.type === decision,
         );
@@ -45,24 +45,24 @@ export class Character {
     }
 
     addFeature(
-        event: CharacterEvents,
+        event: CharacterPlannerStep,
         feature: ICharacterFeatureCustomizationOption,
     ): void {
         if (
-            event === CharacterEvents.SET_CLASS ||
-            event === CharacterEvents.LEVEL_UP ||
-            event === CharacterEvents.MULTICLASS
+            event === CharacterPlannerStep.SET_CLASS ||
+            event === CharacterPlannerStep.LEVEL_UP ||
+            event === CharacterPlannerStep.MULTICLASS
         ) {
-            if (feature.choiceType !== CharacterEvents.MULTICLASS) {
+            if (feature.choiceType !== CharacterPlannerStep.MULTICLASS) {
                 this.addClass(feature as CharacterClassOption);
             }
-        } else if (event === CharacterEvents.SET_RACE) {
+        } else if (event === CharacterPlannerStep.SET_RACE) {
             this.setRace(feature);
-        } else if (event === CharacterEvents.CHOOSE_SUBRACE) {
+        } else if (event === CharacterPlannerStep.CHOOSE_SUBRACE) {
             this.setSubrace(feature);
-        } else if (event === CharacterEvents.SET_BACKGROUND) {
+        } else if (event === CharacterPlannerStep.SET_BACKGROUND) {
             this.setBackground(feature);
-        } else if (event === CharacterEvents.CHOOSE_SUBCLASS) {
+        } else if (event === CharacterPlannerStep.CHOOSE_SUBCLASS) {
             this.setSubclass(feature);
         } else {
             throw new Error('Invalid character event');
@@ -71,10 +71,10 @@ export class Character {
         this.queueSubchoices(feature);
     }
 
-    onEvent(event: CharacterEvents, value: any): Character {
+    onEvent(event: CharacterPlannerStep, value: any): Character {
         this.completeDecision(event);
 
-        if (event === CharacterEvents.SET_ABILITY_SCORES) {
+        if (event === CharacterPlannerStep.SET_ABILITY_SCORES) {
             this.setAbilityScores(value);
         } else {
             this.addFeature(event, value);
@@ -131,7 +131,7 @@ export class Character {
 
         this.decisionQueue.unshift(
             ...decisions.map((decision) => ({
-                type: decision.choiceType as CharacterEvents,
+                type: decision.choiceType as CharacterPlannerStep,
                 choices: decision.choices,
             })),
         );
@@ -188,7 +188,7 @@ export class Character {
         );
 
         this.decisionQueue.unshift({
-            type: CharacterEvents.LEVEL_UP,
+            type: CharacterPlannerStep.LEVEL_UP,
             choices: [
                 [
                     ...uniqueClasses,
