@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardMedia from '@mui/material/CardMedia';
@@ -24,6 +24,11 @@ export default function FeaturePicker({
 }: FeaturePickerProps) {
     const [selectedOption, setSelectedOption] =
         useState<ICharacterFeatureCustomizationOption | null>(null);
+
+    useEffect(() => {
+        setSelectedOption(null);
+    }, [choices]);
+
     const gridSize = {
         xs: 12,
         sm: choices.length < 4 ? 12 / choices.length : 6,
@@ -82,7 +87,7 @@ export default function FeaturePicker({
                                         bottom: '8px',
                                         left: '8px',
                                         textShadow:
-                                            '3px 3px 5px rgba(0, 0, 0, 0.7)', // Pronounced shadow for better contrast
+                                            '3px 3px 5px rgba(0, 0, 0, 0.7)',
                                     }}
                                 >
                                     {option.name}
