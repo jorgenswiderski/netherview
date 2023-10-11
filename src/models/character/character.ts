@@ -4,9 +4,14 @@ import {
     ICharacterFeatureCustomizationOption,
     CharacterPlannerStep,
 } from 'planner-types/src/types/character-feature-customization-option';
+import {
+    Characteristic,
+    GrantableEffectType,
+    Proficiency,
+} from 'planner-types/src/types/grantable-effect';
 import { CharacterClassOption } from '../../components/character-planner/feature-picker/types';
 import { CharacterDecision } from './character-states';
-import { AbilityScores } from './types';
+import { AbilityScores, GrantableEffectWithSource } from './types';
 
 export class Character {
     static MAX_LEVEL = 12;
@@ -68,6 +73,7 @@ export class Character {
             throw new Error('Invalid character event');
         }
 
+        this.grantEffects(feature);
         this.queueSubchoices(feature);
     }
 
@@ -265,5 +271,40 @@ export class Character {
         }
 
         return totalAbilityScores;
+    }
+
+    grantedEffects: GrantableEffectWithSource[] = [];
+
+    grantEffects(feature: ICharacterFeatureCustomizationOption): void {
+        if (!feature.grants) {
+            return;
+        }
+
+        feature.grants.forEach((fx) => {
+            const sourced = { ...fx, source: feature };
+            this.grantedEffects.push(sourced);
+        });
+    }
+
+    getProficiencies(): Proficiency[] {
+        const allProficiencies = this.grantedEffects.filter(
+            (fx) => !fx.hidden && fx.type === GrantableEffectType.PROFICIENCY,
+        ) as unknown as Proficiency[];
+
+        // TODO: remove duplicates in a graceful way
+        return allProficiencies;
+    }
+
+    getActions(): GrantableEffectWithSource[] {
+        return this.grantedEffects.filter(
+            (fx) => !fx.hidden && fx.type === GrantableEffectType.ACTION,
+        );
+    }
+
+    getCharacteristics(): Characteristic[] {
+        return this.grantedEffects.filter(
+            (fx) =>
+                !fx.hidden && fx.type === GrantableEffectType.CHARACTERISTIC,
+        ) as unknown as Characteristic[];
     }
 }

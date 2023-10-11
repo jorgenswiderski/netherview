@@ -1,13 +1,23 @@
-// character-display.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import Typography from '@mui/material/Typography';
 import { Character } from '../../models/character/character';
+import GrantedEffect from './granted-effect';
 
 interface CharacterDisplayProps {
     character: Character;
 }
 
 export default function CharacterDisplay({ character }: CharacterDisplayProps) {
+    const actions = useMemo(() => character.getActions(), [character]);
+    const characteristics = useMemo(
+        () => character.getCharacteristics(),
+        [character],
+    );
+    const proficiencies = useMemo(
+        () => character.getProficiencies(),
+        [character],
+    );
+
     return (
         <div>
             <Typography variant="h3" align="left" gutterBottom>
@@ -28,7 +38,7 @@ export default function CharacterDisplay({ character }: CharacterDisplayProps) {
 
             {character.levels.length > 0 &&
                 character.getClasses().map((cls) => (
-                    <li>
+                    <li key={`${cls.class}-${cls.levels}`}>
                         {cls.class} {`(${cls.levels})`}
                     </li>
                 ))}
@@ -45,6 +55,39 @@ export default function CharacterDisplay({ character }: CharacterDisplayProps) {
                             </Typography>
                         ),
                     )}
+                </div>
+            )}
+
+            {actions.length > 0 && (
+                <div>
+                    <Typography variant="h6" align="left" gutterBottom>
+                        Actions:
+                    </Typography>
+                    {actions.map((action) => (
+                        <GrantedEffect effect={action} />
+                    ))}
+                </div>
+            )}
+
+            {characteristics.length > 0 && (
+                <div>
+                    <Typography variant="h6" align="left" gutterBottom>
+                        Characteristics:
+                    </Typography>
+                    {characteristics.map((char) => (
+                        <GrantedEffect effect={char} />
+                    ))}
+                </div>
+            )}
+
+            {proficiencies.length > 0 && (
+                <div>
+                    <Typography variant="h6" align="left" gutterBottom>
+                        Proficiencies:
+                    </Typography>
+                    {proficiencies.map((proficiency) => (
+                        <GrantedEffect effect={proficiency} />
+                    ))}
                 </div>
             )}
         </div>

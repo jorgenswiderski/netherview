@@ -5,11 +5,11 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import {
     ICharacterFeatureCustomizationOption,
     CharacterPlannerStep,
 } from 'planner-types/src/types/character-feature-customization-option';
+import GrantedEffect from '../granted-effect';
 
 interface FeaturePickerProps {
     choices: ICharacterFeatureCustomizationOption[];
@@ -111,18 +111,9 @@ export default function FeaturePicker({
                         You will gain:
                     </Typography>
                     {selectedOption.grants
-                        .filter((grant) => !grant.hidden)
-                        .map((grant) => (
-                            <Tooltip
-                                title={grant.description || ''}
-                                key={grant.name}
-                            >
-                                <div>
-                                    <Typography variant="body2">
-                                        {grant.name}
-                                    </Typography>
-                                </div>
-                            </Tooltip>
+                        .filter((fx) => !fx.hidden)
+                        .map((fx) => (
+                            <GrantedEffect effect={fx} />
                         ))}
                 </div>
             )}
