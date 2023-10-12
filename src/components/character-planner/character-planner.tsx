@@ -17,7 +17,6 @@ import {
 import CharacterDisplay from './character-display';
 import { CharacterClassOption } from './feature-picker/types';
 import FeaturePicker from './feature-picker/feature-picker';
-import { log } from '../../models/logger';
 import { Utils } from '../../models/utils';
 
 const Container = styled.div`
@@ -120,8 +119,6 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
         if (nextDecision && nextDecisionInfo) {
             loadChoices(nextDecision, nextDecisionInfo);
         }
-
-        log(nextDecision);
     }, [nextDecision, nextDecisionInfo]);
 
     useEffect(() => {
