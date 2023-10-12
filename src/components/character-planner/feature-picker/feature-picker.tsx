@@ -11,6 +11,7 @@ import {
 } from 'planner-types/src/types/character-feature-customization-option';
 import GrantedEffect from '../granted-effect';
 import { Utils } from '../../../models/utils';
+import { CharacterPlannerStepDescriptions } from './types';
 
 interface FeaturePickerProps {
     choices: ICharacterFeatureCustomizationOption[];
@@ -119,16 +120,23 @@ export default function FeaturePicker({
             </Typography>
 
             {/* Display grantable effects for the selected feature */}
-            {selectedOption?.grants && (
+            {((selectedOption?.grants && selectedOption?.grants.length > 0) ||
+                selectedOption?.choiceType) && (
                 <div style={{ margin: '10px 0', textAlign: 'center' }}>
                     <Typography variant="body2" style={{ margin: '0 0 5px' }}>
                         You will gain:
                     </Typography>
-                    {selectedOption.grants
-                        .filter((fx) => !fx.hidden)
-                        .map((fx) => (
-                            <GrantedEffect effect={fx} />
-                        ))}
+                    {selectedOption?.grants &&
+                        selectedOption.grants
+                            .filter((fx) => !fx.hidden)
+                            .map((fx) => <GrantedEffect effect={fx} />)}
+                    {selectedOption.choiceType && (
+                        <Typography variant="body2" style={{ fontWeight: 600 }}>
+                            {CharacterPlannerStepDescriptions.get(
+                                selectedOption.choiceType,
+                            )}
+                        </Typography>
+                    )}
                 </div>
             )}
 

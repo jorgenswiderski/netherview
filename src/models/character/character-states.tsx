@@ -8,13 +8,14 @@ import {
 import AbilitiesPicker from '../../components/character-planner/abilities-picker';
 import { CharacterWidgetProps } from '../../components/character-planner/types';
 import { WeaveApi } from '../../api/weave/weave';
+import { ICharacter } from './types';
 
 export interface DecisionStateInfo {
     title: string;
     render?: (props: CharacterWidgetProps) => JSX.Element;
     event: CharacterPlannerStep;
     getChoices?: (
-        character: any,
+        character: ICharacter,
     ) => Promise<ICharacterFeatureCustomizationOption[][]>;
 }
 
@@ -38,7 +39,11 @@ export const CharacterDecisionInfo: {
     [CharacterPlannerStep.SET_CLASS]: {
         title: 'Select your starting class',
         event: CharacterPlannerStep.SET_CLASS,
-        getChoices: async () => [await WeaveApi.getClassesInfo()],
+        getChoices: async (character) => {
+            const choices = await WeaveApi.getClassesInfo();
+
+            return [character.augmentClassOptions(choices)];
+        },
     },
     [CharacterPlannerStep.SET_BACKGROUND]: {
         title: 'Choose a background',

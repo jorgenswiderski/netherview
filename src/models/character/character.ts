@@ -6,14 +6,15 @@ import {
 } from 'planner-types/src/types/character-feature-customization-option';
 import {
     Characteristic,
+    GrantableEffect,
     GrantableEffectType,
     Proficiency,
 } from 'planner-types/src/types/grantable-effect';
 import { CharacterClassOption } from '../../components/character-planner/feature-picker/types';
 import { CharacterDecision } from './character-states';
-import { AbilityScores, GrantableEffectWithSource } from './types';
+import { AbilityScores, GrantableEffectWithSource, ICharacter } from './types';
 
-export class Character {
+export class Character implements ICharacter {
     static MAX_LEVEL = 12;
 
     static multiclassOption: ICharacterFeatureCustomizationOption = {
@@ -112,35 +113,6 @@ export class Character {
         }
 
         this.levels.push(cls);
-
-        // Count the number of levels in this class
-        const levelCount = this.levels.filter(
-            (level) => level.name === cls.name,
-        ).length;
-
-        const classData = this.classData.find((data) => data.name === cls.name);
-
-        if (!classData) {
-            return;
-        }
-
-        const { progression } = classData;
-        const levelFeatures = progression[levelCount - 1].Features;
-
-        if (!levelFeatures) {
-            return;
-        }
-
-        const decisions = levelFeatures.filter(
-            (feature) => feature.choices && feature.choiceType,
-        );
-
-        this.decisionQueue.unshift(
-            ...decisions.map((decision) => ({
-                type: decision.choiceType as CharacterPlannerStep,
-                choices: decision.choices,
-            })),
-        );
     }
 
     race?: ICharacterFeatureCustomizationOption;
@@ -193,11 +165,13 @@ export class Character {
             Object.fromEntries(this.levels.map((level) => [level.name, level])),
         );
 
+        const classesWithEffects = this.augmentClassOptions(uniqueClasses);
+
         this.decisionQueue.unshift({
             type: CharacterPlannerStep.LEVEL_UP,
             choices: [
                 [
-                    ...uniqueClasses,
+                    ...classesWithEffects,
                     {
                         ...Character.multiclassOption,
                         choices: [
@@ -306,5 +280,41 @@ export class Character {
             (fx) =>
                 !fx.hidden && fx.type === GrantableEffectType.CHARACTERISTIC,
         ) as unknown as Characteristic[];
+    }
+
+    augmentClassOptions(
+        classes: CharacterClassOption[],
+    ): CharacterClassOption[] {
+        return classes.map((cls): CharacterClassOption => {
+            // Count the number of levels in this class
+            const levelCount = this.levels.filter(
+                (level) => level.name === cls.name,
+            ).length;
+
+            const classData = this.classData.find(
+                (data) => data.name === cls.name,
+            );
+
+            if (!classData) {
+                throw new Error('could not find class');
+            }
+
+            const { progression } = classData;
+            const levelFeatures = progression[levelCount].Features;
+
+            return {
+                ...cls,
+                grants: levelFeatures
+                    .flatMap((feature) => feature.grants)
+                    .filter(Boolean) as GrantableEffect[],
+                choices: levelFeatures
+                    .flatMap((feature) => feature.choices)
+                    .filter(
+                        Boolean,
+                    ) as ICharacterFeatureCustomizationOption[][],
+                choiceType: levelFeatures.find((feature) => feature.choiceType)
+                    ?.choiceType, // FIXME
+            };
+        });
     }
 }
