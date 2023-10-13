@@ -1,10 +1,11 @@
 import React from 'react';
-import { Paper, Typography } from '@mui/material';
+import Paper from '@mui/material/Paper';
 import { Character } from '../../models/character/character';
 import AbilityScoresTable from './ability-scores';
 import { CharacterEffects } from './character-effects';
 import { CharacterHeader } from './character-header';
 import CharacterItems from './character-items';
+import CharacterBackground from './character-background';
 
 interface CharacterDisplayProps {
     character: Character;
@@ -49,11 +50,9 @@ export default function CharacterDisplay({ character }: CharacterDisplayProps) {
                     )}
 
                     {/* Background */}
-                    <Paper elevation={2} style={{ padding: '1rem' }}>
-                        <Typography variant="h6">
-                            Background: {character.background?.name}
-                        </Typography>
-                    </Paper>
+                    {character.background && (
+                        <CharacterBackground character={character} />
+                    )}
 
                     {/* Equipped Items */}
                     <Paper elevation={2} style={{ padding: '1rem' }}>
