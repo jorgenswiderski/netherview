@@ -1,6 +1,6 @@
 // index.tsx
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import { BeatLoader } from 'react-spinners';
 import CharacterPlanner from '../components/character-planner/character-planner';
 import { WeaveApi } from '../api/weave/weave';
