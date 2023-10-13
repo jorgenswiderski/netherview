@@ -2,33 +2,47 @@ import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
+import Paper from '@mui/material/Paper';
+import ImageWithFallback from './image-with-fallback';
 
 interface GrantedEffectProps {
     effect: GrantableEffect;
+    elevation: number;
+    style?: React.CSSProperties;
 }
 
-export default function GrantedEffect({ effect }: GrantedEffectProps) {
+export default function GrantedEffect({
+    effect,
+    elevation,
+    style,
+}: GrantedEffectProps) {
     return (
         <Tooltip title={effect.description || ''} key={effect.name}>
-            <div
+            <Paper
+                elevation={elevation}
                 style={{
+                    ...style,
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: '8px',
+                    padding: '2px 4px',
+                    margin: '4px 0',
                 }}
             >
                 {effect.image && (
-                    <img
+                    <ImageWithFallback
                         src={effect.image}
-                        alt={effect.name}
-                        style={{ height: '100%' }}
+                        placeholder={<div>•</div>}
+                        fallback={<div>•</div>}
+                        alt=""
+                        style={{ width: '24px' }}
                     />
                 )}
                 <Typography variant="body2" style={{ fontWeight: 600 }}>
                     {effect.name}
                 </Typography>
-            </div>
+            </Paper>
         </Tooltip>
     );
 }

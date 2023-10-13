@@ -45,7 +45,10 @@ export class Utils {
         }
 
         const imagesToPreload = choices
-            .map((choice) => choice.image)
+            .flatMap((choice) => [
+                choice.image,
+                ...(choice.grants ? choice.grants.map((fx) => fx.image) : []),
+            ])
             .filter(Boolean) as string[]; // Filters out null or undefined values
 
         Utils.preloadImages(imagesToPreload);

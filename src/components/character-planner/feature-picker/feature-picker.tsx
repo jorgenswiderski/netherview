@@ -9,6 +9,7 @@ import {
     ICharacterFeatureCustomizationOption,
     CharacterPlannerStep,
 } from 'planner-types/src/types/character-feature-customization-option';
+import { Paper } from '@mui/material';
 import GrantedEffect from '../granted-effect';
 import { Utils } from '../../../models/utils';
 import { CharacterPlannerStepDescriptions } from './types';
@@ -46,8 +47,23 @@ export default function FeaturePicker({
         lg: choices.length < 4 ? 12 / choices.length : 3,
     };
 
+    const showDescription = typeof selectedOption?.description === 'string';
+    const showEffects =
+        (selectedOption?.grants && selectedOption.grants.length > 0) ||
+        selectedOption?.choiceType;
+
     return (
-        <>
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                flex: 1,
+                width: '100%',
+                alignItems: 'center',
+                gap: '1rem',
+            }}
+        >
             <Grid container spacing={3}>
                 {choices.map((option) => (
                     <Grid
@@ -58,6 +74,7 @@ export default function FeaturePicker({
                         style={{ display: 'flex' }}
                     >
                         <Card
+                            elevation={2}
                             style={{
                                 maxWidth: '100%',
                                 opacity: selectedOption === option ? 0.85 : 1,
@@ -78,9 +95,7 @@ export default function FeaturePicker({
                                 {option.image && (
                                     <CardMedia
                                         component="img"
-                                        alt={option.name}
                                         image={option.image}
-                                        title={option.name}
                                         style={{
                                             height: '160px',
                                             objectFit: 'cover',
@@ -108,36 +123,52 @@ export default function FeaturePicker({
                 ))}
             </Grid>
 
-            <Typography
-                variant="body2"
-                style={{
-                    minHeight: '60px',
-                    margin: '20px 0 10px',
-                    textAlign: 'center',
-                }}
-            >
-                {selectedOption?.description}
-            </Typography>
-
-            {/* Display grantable effects for the selected feature */}
-            {((selectedOption?.grants && selectedOption?.grants.length > 0) ||
-                selectedOption?.choiceType) && (
-                <div style={{ margin: '10px 0', textAlign: 'center' }}>
-                    <Typography variant="body2" style={{ margin: '0 0 5px' }}>
-                        You will gain:
-                    </Typography>
-                    {selectedOption?.grants &&
-                        selectedOption.grants
-                            .filter((fx) => !fx.hidden)
-                            .map((fx) => <GrantedEffect effect={fx} />)}
-                    {selectedOption.choiceType && (
-                        <Typography variant="body2" style={{ fontWeight: 600 }}>
-                            {CharacterPlannerStepDescriptions.get(
-                                selectedOption.choiceType,
-                            )}
+            {(showDescription || showEffects) && (
+                <Paper elevation={2} style={{ padding: '0.5rem' }}>
+                    {showDescription && (
+                        <Typography
+                            variant="body2"
+                            style={{
+                                minHeight: '60px',
+                                margin: '20px 0 10px',
+                                textAlign: 'center',
+                            }}
+                        >
+                            {selectedOption?.description}
                         </Typography>
                     )}
-                </div>
+
+                    {/* Display grantable effects for the selected feature */}
+                    {showEffects && (
+                        <div style={{ margin: '10px 0', textAlign: 'center' }}>
+                            <Typography
+                                variant="body2"
+                                style={{ margin: '0 0 5px' }}
+                            >
+                                You will gain:
+                            </Typography>
+                            {selectedOption?.grants &&
+                                selectedOption.grants
+                                    .filter((fx) => !fx.hidden)
+                                    .map((fx) => (
+                                        <GrantedEffect
+                                            effect={fx}
+                                            elevation={4}
+                                        />
+                                    ))}
+                            {selectedOption.choiceType && (
+                                <Typography
+                                    variant="body2"
+                                    style={{ fontWeight: 600 }}
+                                >
+                                    {CharacterPlannerStepDescriptions.get(
+                                        selectedOption.choiceType,
+                                    )}
+                                </Typography>
+                            )}
+                        </div>
+                    )}
+                </Paper>
             )}
 
             <div style={{ textAlign: 'center', margin: '10px 0 0' }}>
@@ -152,6 +183,6 @@ export default function FeaturePicker({
                     Next
                 </Button>
             </div>
-        </>
+        </div>
     );
 }

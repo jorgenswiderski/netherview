@@ -1,10 +1,10 @@
 import axios from 'axios';
+import { CONFIG } from '../../models/config';
 import {
     CharacterClassOption,
     CharacterRaceOption,
     CharacterBackgroundOption,
-} from '../../components/character-planner/feature-picker/types';
-import { CONFIG } from '../../models/config';
+} from '../../models/character/types';
 
 async function fetchFromApi(endpoint: string) {
     try {

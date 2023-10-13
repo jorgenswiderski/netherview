@@ -10,33 +10,44 @@ import {
     GrantableEffectType,
     Proficiency,
 } from 'planner-types/src/types/grantable-effect';
-import { CharacterClassOption } from '../../components/character-planner/feature-picker/types';
-import { CharacterDecision } from './character-states';
-import { AbilityScores, GrantableEffectWithSource, ICharacter } from './types';
+import { ICharacterDecision } from './character-states';
+import {
+    AbilityScores,
+    CharacterClassOption,
+    CharacterClassOptionWithSource,
+    GrantableEffectWithSource,
+    ICharacter,
+    ICharacterFeatureCustomizationOptionWithSource,
+} from './types';
+import { CharacterDecision } from './character-decision';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
 
-    static multiclassOption: ICharacterFeatureCustomizationOption = {
+    constructor(public classData: CharacterClassOption[]) {}
+
+    decisions: ICharacterFeatureCustomizationOption[] = [{ name: 'ROOT' }];
+
+    multiclassOption: ICharacterFeatureCustomizationOptionWithSource = {
         name: 'Add a class',
         description: 'Add a level in a new class.',
         choiceType: CharacterPlannerStep.MULTICLASS,
+        source: this.decisions[0],
     };
 
-    constructor(public classData: CharacterClassOption[]) {}
-
-    decisionQueue: CharacterDecision[] = [
+    decisionQueue: ICharacterDecision[] = [
         CharacterPlannerStep.SET_RACE,
         CharacterPlannerStep.SET_CLASS,
         CharacterPlannerStep.SET_BACKGROUND,
         CharacterPlannerStep.SET_ABILITY_SCORES,
     ].map((cd) => ({
         type: cd,
+        source: this.decisions[0],
     }));
 
     name: string = 'Tav';
 
-    nextDecision(): CharacterDecision | null {
+    nextDecision(): ICharacterDecision | null {
         return this.decisionQueue[0] || null;
     }
 
@@ -52,7 +63,7 @@ export class Character implements ICharacter {
 
     addFeature(
         event: CharacterPlannerStep,
-        feature: ICharacterFeatureCustomizationOption,
+        feature: ICharacterFeatureCustomizationOptionWithSource,
     ): void {
         if (
             event === CharacterPlannerStep.SET_CLASS ||
@@ -60,7 +71,7 @@ export class Character implements ICharacter {
             event === CharacterPlannerStep.MULTICLASS
         ) {
             if (feature.choiceType !== CharacterPlannerStep.MULTICLASS) {
-                this.addClass(feature as CharacterClassOption);
+                this.addClass(feature as unknown as CharacterClassOption);
             }
         } else if (event === CharacterPlannerStep.SET_RACE) {
             this.setRace(feature);
@@ -95,14 +106,11 @@ export class Character implements ICharacter {
     }
 
     private queueSubchoices(feature: ICharacterFeatureCustomizationOption) {
-        if (!feature.choiceType) {
+        if (!feature.choiceType || !feature.choices) {
             return;
         }
 
-        this.decisionQueue.unshift({
-            type: feature.choiceType,
-            choices: feature.choices,
-        });
+        this.decisionQueue.unshift(new CharacterDecision(feature));
     }
 
     levels: CharacterClassOption[] = [];
@@ -146,10 +154,10 @@ export class Character implements ICharacter {
     }
 
     // FIXME: Character can have multiple
-    subclass?: ICharacterFeatureCustomizationOption;
+    subclasses: ICharacterFeatureCustomizationOptionWithSource[] = [];
 
-    setSubclass(subclass: ICharacterFeatureCustomizationOption) {
-        this.subclass = subclass;
+    setSubclass(subclass: ICharacterFeatureCustomizationOptionWithSource) {
+        this.subclasses.push(subclass);
     }
 
     canLevel(): boolean {
@@ -161,40 +169,40 @@ export class Character implements ICharacter {
             return this;
         }
 
-        const uniqueClasses = Object.values(
-            Object.fromEntries(this.levels.map((level) => [level.name, level])),
+        const classesWithEffects = this.augmentClassOptions(this.classData);
+        const currentClasses = classesWithEffects.filter(
+            (cls) =>
+                this.levels.findIndex((level) => level.name === cls.name) > -1,
+        );
+        const newClasses = classesWithEffects.filter(
+            (cls) =>
+                this.levels.findIndex((level) => level.name === cls.name) < 0,
         );
 
-        const classesWithEffects = this.augmentClassOptions(uniqueClasses);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const a: ICharacterFeatureCustomizationOptionWithSource = newClasses[0];
 
-        this.decisionQueue.unshift({
+        const decision: ICharacterDecision = {
             type: CharacterPlannerStep.LEVEL_UP,
             choices: [
                 [
-                    ...classesWithEffects,
+                    ...currentClasses,
                     {
-                        ...Character.multiclassOption,
-                        choices: [
-                            this.classData.filter(
-                                (cls: CharacterClassOption) =>
-                                    !this.levels.find(
-                                        (
-                                            level: ICharacterFeatureCustomizationOption,
-                                        ) => level.name === cls.name,
-                                    ),
-                            ),
-                        ],
+                        ...this.multiclassOption,
+                        choices: [newClasses],
                     },
                 ],
             ],
-        });
+        };
+
+        this.decisionQueue.unshift(decision);
 
         return this.clone();
     }
 
     // ========================================================================
 
-    getClasses(): { levels: number; class: string }[] {
+    getClasses(): { levels: number; class: string; subclass?: string }[] {
         // Create a map to count occurrences of each class
         const classCount = new Map<string, number>();
 
@@ -204,10 +212,18 @@ export class Character implements ICharacter {
 
         // Convert the map to an array of objects
         const classesArray = Array.from(classCount).map(
-            ([className, count]) => ({
-                class: className,
-                levels: count,
-            }),
+            ([className, count]) => {
+                // find the subclass name, if it exists
+                const subclass = this.subclasses.find(
+                    (sc) => sc.source.name === className,
+                );
+
+                return {
+                    class: className,
+                    subclass: subclass?.name,
+                    levels: count,
+                };
+            },
         );
 
         // Sort the array
@@ -284,37 +300,54 @@ export class Character implements ICharacter {
 
     augmentClassOptions(
         classes: CharacterClassOption[],
-    ): CharacterClassOption[] {
-        return classes.map((cls): CharacterClassOption => {
+    ): CharacterClassOptionWithSource[] {
+        return classes.map((cls): CharacterClassOptionWithSource => {
             // Count the number of levels in this class
             const levelCount = this.levels.filter(
                 (level) => level.name === cls.name,
             ).length;
 
-            const classData = this.classData.find(
+            const clsData = this.classData.find(
                 (data) => data.name === cls.name,
             );
 
-            if (!classData) {
+            if (!clsData) {
                 throw new Error('could not find class');
             }
 
-            const { progression } = classData;
+            const { progression } = clsData;
             const levelFeatures = progression[levelCount].Features;
+
+            // find the highest level of this class and add it as the source
+            const source = this.levels.findLast(
+                (level) => level.name === cls.name,
+            );
+
+            const choices = levelFeatures
+                .flatMap((feature) => feature.choices)
+                .filter(Boolean) as ICharacterFeatureCustomizationOption[][];
 
             return {
                 ...cls,
                 grants: levelFeatures
                     .flatMap((feature) => feature.grants)
                     .filter(Boolean) as GrantableEffect[],
-                choices: levelFeatures
-                    .flatMap((feature) => feature.choices)
-                    .filter(
-                        Boolean,
-                    ) as ICharacterFeatureCustomizationOption[][],
+                choices,
                 choiceType: levelFeatures.find((feature) => feature.choiceType)
                     ?.choiceType, // FIXME
+                source: source ?? this.decisions[0],
             };
         });
+    }
+
+    augmentCustomizationOptionWithRoot(
+        choices: ICharacterFeatureCustomizationOption[][],
+    ): ICharacterFeatureCustomizationOptionWithSource[][] {
+        return choices.map((choiceA) =>
+            choiceA.map((choiceB) => ({
+                ...choiceB,
+                source: this.decisions[0],
+            })),
+        );
     }
 }

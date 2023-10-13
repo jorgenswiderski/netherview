@@ -44,6 +44,7 @@
         "@babel/plugin-transform-react-jsx": "^7.22.15",
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
+        "@mui/icons-material": "^5.14.13",
         "@mui/material": "^5.14.12",
         "axios": "^1.5.1",
         "babel-plugin-styled-components": "^2.1.4",

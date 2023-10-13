@@ -1,14 +1,13 @@
-/* eslint-disable react/jsx-props-no-spreading */
 // character-states.ts
 import React from 'react';
-import {
-    CharacterPlannerStep,
-    ICharacterFeatureCustomizationOption,
-} from 'planner-types/src/types/character-feature-customization-option';
+import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
 import AbilitiesPicker from '../../components/character-planner/abilities-picker';
 import { CharacterWidgetProps } from '../../components/character-planner/types';
 import { WeaveApi } from '../../api/weave/weave';
-import { ICharacter } from './types';
+import {
+    ICharacter,
+    ICharacterFeatureCustomizationOptionWithSource,
+} from './types';
 
 export interface DecisionStateInfo {
     title: string;
@@ -16,12 +15,12 @@ export interface DecisionStateInfo {
     event: CharacterPlannerStep;
     getChoices?: (
         character: ICharacter,
-    ) => Promise<ICharacterFeatureCustomizationOption[][]>;
+    ) => Promise<ICharacterFeatureCustomizationOptionWithSource[][]>;
 }
 
-export interface CharacterDecision {
+export interface ICharacterDecision {
     type: CharacterPlannerStep;
-    choices?: ICharacterFeatureCustomizationOption[][];
+    choices?: ICharacterFeatureCustomizationOptionWithSource[][];
 }
 
 export const CharacterDecisionInfo: {
@@ -30,7 +29,10 @@ export const CharacterDecisionInfo: {
     [CharacterPlannerStep.SET_RACE]: {
         title: 'Select your race',
         event: CharacterPlannerStep.SET_RACE,
-        getChoices: async () => [await WeaveApi.getRacesInfo()],
+        getChoices: async (character) =>
+            character.augmentCustomizationOptionWithRoot([
+                await WeaveApi.getRacesInfo(),
+            ]),
     },
     [CharacterPlannerStep.CHOOSE_SUBRACE]: {
         title: 'Select your subrace',
@@ -48,7 +50,10 @@ export const CharacterDecisionInfo: {
     [CharacterPlannerStep.SET_BACKGROUND]: {
         title: 'Choose a background',
         event: CharacterPlannerStep.SET_BACKGROUND,
-        getChoices: async () => [await WeaveApi.getBackgroundsInfo()],
+        getChoices: async (character) =>
+            character.augmentCustomizationOptionWithRoot([
+                await WeaveApi.getBackgroundsInfo(),
+            ]),
     },
     [CharacterPlannerStep.SET_ABILITY_SCORES]: {
         title: 'Choose your ability scores',

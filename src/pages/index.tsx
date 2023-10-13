@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { BeatLoader } from 'react-spinners';
 import CharacterPlanner from '../components/character-planner/character-planner';
 import { WeaveApi } from '../api/weave/weave';
-import { CharacterClassOption } from '../components/character-planner/feature-picker/types';
+import { CharacterClassOption } from '../models/character/types';
 
 const PageContainer = styled.div`
     color: #e0e0e0;

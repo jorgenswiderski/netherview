@@ -1,6 +1,6 @@
 import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
-import { CharacterClassOption } from '../../components/character-planner/feature-picker/types';
+import { CharacterClassProgression } from '../../api/weave/types';
 
 export interface AbilityScores {
     Strength: number;
@@ -15,8 +15,32 @@ export interface GrantableEffectWithSource extends GrantableEffect {
     source: ICharacterFeatureCustomizationOption;
 }
 
+export interface ICharacterFeatureCustomizationOptionWithSource
+    extends ICharacterFeatureCustomizationOption {
+    source: ICharacterFeatureCustomizationOption;
+}
+
+export interface CharacterRaceOption
+    extends ICharacterFeatureCustomizationOption {}
+
+export interface CharacterClassOption
+    extends ICharacterFeatureCustomizationOption {
+    progression: CharacterClassProgression;
+}
+
+export interface CharacterClassOptionWithSource
+    extends ICharacterFeatureCustomizationOptionWithSource {
+    progression: CharacterClassProgression;
+}
+export interface CharacterBackgroundOption
+    extends ICharacterFeatureCustomizationOption {}
+
 export interface ICharacter {
     augmentClassOptions(
         classes: CharacterClassOption[],
-    ): CharacterClassOption[];
+    ): CharacterClassOptionWithSource[];
+
+    augmentCustomizationOptionWithRoot(
+        choices: ICharacterFeatureCustomizationOption[][],
+    ): ICharacterFeatureCustomizationOptionWithSource[][];
 }

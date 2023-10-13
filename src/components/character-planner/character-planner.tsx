@@ -1,63 +1,61 @@
-// character-planner.tsx
-import styled from 'styled-components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BeatLoader } from 'react-spinners';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import {
-    ICharacterFeatureCustomizationOption,
-    CharacterPlannerStep,
-} from 'planner-types/src/types/character-feature-customization-option';
+import styled from '@emotion/styled';
+import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
+import Paper from '@mui/material/Paper';
 import { Character } from '../../models/character/character';
 import {
-    CharacterDecision,
+    ICharacterDecision,
     CharacterDecisionInfo,
     DecisionStateInfo,
 } from '../../models/character/character-states';
-import CharacterDisplay from './character-display';
-import { CharacterClassOption } from './feature-picker/types';
 import FeaturePicker from './feature-picker/feature-picker';
 import { Utils } from '../../models/utils';
+import {
+    CharacterClassOption,
+    ICharacterFeatureCustomizationOptionWithSource,
+} from '../../models/character/types';
+import CharacterDisplay from '../character-display/character-display';
 
-const Container = styled.div`
+const Container = styled('div')`
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     width: 100%;
-    min-height: 70%;
+    min-height: 90%;
     gap: 40px;
-    background-color: #1a1a1a; // Darker background for the main container
 `;
 
-const ResetButton = styled.button`
+const ResetButton = styled('button')`
     position: absolute;
     top: 10px;
     right: 10px;
     padding: 5px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #555; // Dark background for the button
-    color: #e0e0e0; // Light gray for text
     cursor: pointer;
-
-    &:hover {
-        background-color: #777; // Slightly lighter on hover
-    }
 `;
 
-const PanelContainer = styled.div`
+const PaperContainer = styled(Paper)`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 40px 0px;
+    margin: 40px 0;
     width: 45%;
     max-width: 600px;
-    height: 100%;
-    border: 2px solid #8a8a8a; // Light gray for border
-    border-radius: 8px;
-    padding: 20px;
-    background-color: #2a2a2a; // Base dark gray
+    padding: 1rem;
+    gap: 1rem;
+`;
+
+const PlannerHeader = styled(Paper)`
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    box-sizing: border-box;
 `;
 
 interface CharacterPlannerProps {
@@ -78,7 +76,7 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
 
     const loadChoices = useCallback(
         async (
-            decision: CharacterDecision,
+            decision: ICharacterDecision,
             decisionInfo: DecisionStateInfo,
         ) => {
             if (
@@ -91,10 +89,12 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
 
                 const gc = decisionInfo.getChoices as (
                     character: Character,
-                ) => Promise<ICharacterFeatureCustomizationOption[][]>;
+                ) => Promise<
+                    ICharacterFeatureCustomizationOptionWithSource[][]
+                >;
 
                 const choices = (await gc(character)) ?? undefined;
-                Utils.preloadChoiceImages(choices[0]);
+                choices.forEach((choice) => Utils.preloadChoiceImages(choice));
 
                 setCharacter((prevCharacter) => {
                     const updatedCharacter = prevCharacter.clone();
@@ -110,6 +110,10 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
                 });
 
                 setLoading(false);
+            } else if (decision.choices) {
+                decision.choices.forEach((choice) =>
+                    Utils.preloadChoiceImages(choice),
+                );
             }
         },
         [character],
@@ -153,10 +157,12 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
         if (!nextDecision) {
             if (character.canLevel()) {
                 return (
-                    <PanelContainer>
-                        <Typography variant="h4" gutterBottom>
-                            Ready to level up?
-                        </Typography>
+                    <>
+                        <PlannerHeader elevation={2}>
+                            <Typography variant="h4">
+                                Ready to level up?
+                            </Typography>
+                        </PlannerHeader>
                         <Button
                             variant="contained"
                             color="primary"
@@ -164,7 +170,7 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
                         >
                             Level Up
                         </Button>
-                    </PanelContainer>
+                    </>
                 );
             }
 
@@ -173,11 +179,9 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
 
         if (!nextDecisionInfo) {
             return (
-                <PanelContainer>
-                    <Typography variant="h4" color="error" gutterBottom>
-                        {`Warning: Invalid decision type '${nextDecision.type}'.`}
-                    </Typography>
-                </PanelContainer>
+                <Typography variant="h4" color="error">
+                    {`Warning: Invalid decision type '${nextDecision.type}'.`}
+                </Typography>
             );
         }
 
@@ -186,10 +190,12 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
         }
 
         return (
-            <PanelContainer>
-                <Typography variant="h4" gutterBottom>
-                    {nextDecisionInfo.title}
-                </Typography>
+            <>
+                <PlannerHeader elevation={2}>
+                    <Typography variant="h4">
+                        {nextDecisionInfo.title}
+                    </Typography>
+                </PlannerHeader>
                 {nextDecisionInfo.render
                     ? nextDecisionInfo.render({ onEvent: handleEvent })
                     : nextDecision.choices.map((choice) => (
@@ -199,7 +205,7 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
                               event={nextDecision.type}
                           />
                       ))}
-            </PanelContainer>
+            </>
         );
     };
 
@@ -207,12 +213,12 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
         <>
             <ResetButton onClick={handleReset}>Reset</ResetButton>
             <Container>
-                {renderDecisionPanel()}
+                <PaperContainer>{renderDecisionPanel()}</PaperContainer>
 
                 {character.race && character.levels.length > 0 && (
-                    <PanelContainer>
+                    <PaperContainer>
                         <CharacterDisplay character={character} />
-                    </PanelContainer>
+                    </PaperContainer>
                 )}
             </Container>
         </>
