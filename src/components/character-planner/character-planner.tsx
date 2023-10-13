@@ -21,12 +21,12 @@ import CharacterDisplay from '../character-display/character-display';
 
 const Container = styled('div')`
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap-reverse;
     flex-direction: row;
     align-items: stretch;
     justify-content: center;
     width: 100%;
-    min-height: 90%;
+    height: 100%;
     gap: 40px;
 `;
 
@@ -213,13 +213,13 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
         <>
             <ResetButton onClick={handleReset}>Reset</ResetButton>
             <Container>
-                <PaperContainer>{renderDecisionPanel()}</PaperContainer>
-
                 {character.race && character.levels.length > 0 && (
                     <PaperContainer>
                         <CharacterDisplay character={character} />
                     </PaperContainer>
                 )}
+
+                <PaperContainer>{renderDecisionPanel()}</PaperContainer>
             </Container>
         </>
     );

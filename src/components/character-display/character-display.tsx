@@ -55,7 +55,7 @@ export default function CharacterDisplay({ character }: CharacterDisplayProps) {
                     )}
 
                     {/* Equipped Items */}
-                    <Paper elevation={2} style={{ padding: '1rem' }}>
+                    <Paper elevation={2} style={{ padding: '1rem', flex: 1 }}>
                         <CharacterItems />
                     </Paper>
                 </div>
