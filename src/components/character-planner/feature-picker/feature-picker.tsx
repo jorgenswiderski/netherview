@@ -1,18 +1,115 @@
 import React, { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
+import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
+import Typography, { TypographyProps } from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import {
-    ICharacterFeatureCustomizationOption,
     CharacterPlannerStep,
+    ICharacterFeatureCustomizationOption,
 } from 'planner-types/src/types/character-feature-customization-option';
 import { Paper } from '@mui/material';
+import styled from '@emotion/styled';
 import GrantedEffect from '../granted-effect';
 import { Utils } from '../../../models/utils';
 import { CharacterPlannerStepDescriptions } from './types';
+
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    width: 100%;
+    align-items: center;
+    gap: 1rem;
+`;
+
+const StyledGridContainer = styled(Grid)`
+    & > .MuiGrid-item {
+        padding: 12px; // This is half of the 24px (spacing={3}). You may adjust as needed
+
+        @media (max-width: 600px) {
+            padding: 6px; // Reduce to half (or whatever desired value) for mobile
+        }
+    }
+`;
+
+const StyledGrid = styled(Grid)`
+    display: flex;
+`;
+
+const StyledCard = styled(Card)<{ selected: boolean }>`
+    max-width: 100%;
+    opacity: ${(props) => (props.selected ? 0.85 : 1)};
+    border: 3px solid ${(props) => (props.selected ? '#3f51b5' : 'transparent')};
+    flex: 1;
+`;
+
+const ActionArea = styled(CardActionArea)`
+    position: relative;
+    min-height: 160px;
+
+    @media (max-width: 600px) {
+        min-height: 120px; // Reduced height for mobile
+    }
+`;
+
+const CardMediaStyle = styled(CardMedia)<CardMediaProps>`
+    height: 160px;
+    object-fit: cover;
+    object-position: center -20px;
+    opacity: 0.33;
+
+    @media (max-width: 600px) {
+        height: 120px; // Matching reduced height for mobile
+    }
+`;
+
+const OptionName = styled(Typography)<TypographyProps>`
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+
+    @media (min-width: 600px) {
+        font-size: 1rem;
+    }
+`;
+
+const DescriptionText = styled(Typography)`
+    min-height: 60px;
+    margin: 10px 0;
+    text-align: center;
+
+    @media (min-width: 600px) {
+        font-size: 1rem;
+        margin: 20px 0 10px;
+    }
+`;
+
+const DescriptionPaper = styled(Paper)`
+    padding: 0.5rem;
+`;
+
+const EffectsContainer = styled.div`
+    margin: 10px 0;
+    text-align: center;
+`;
+
+const ButtonContainer = styled.div`
+    text-align: center;
+    margin: 10px 0 0;
+    width: 100%;
+`;
+
+const NextButton = styled(Button)<{ visible: boolean }>`
+    visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+
+    @media (max-width: 600px) {
+        width: 100%;
+    }
+`;
 
 interface FeaturePickerProps {
     choices: ICharacterFeatureCustomizationOption[];
@@ -41,7 +138,7 @@ export default function FeaturePicker({
     }, [selectedOption]);
 
     const gridSize = {
-        xs: 12,
+        xs: choices.length < 4 ? 6 : 4,
         sm: choices.length < 4 ? 12 / choices.length : 6,
         md: choices.length < 4 ? 12 / choices.length : 4,
         lg: choices.length < 4 ? 12 / choices.length : 3,
@@ -53,94 +150,42 @@ export default function FeaturePicker({
         selectedOption?.choiceType;
 
     return (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                flex: 1,
-                width: '100%',
-                alignItems: 'center',
-                gap: '1rem',
-            }}
-        >
-            <Grid container spacing={3}>
+        <Container>
+            <StyledGridContainer container>
                 {choices.map((option) => (
-                    <Grid
-                        item
-                        // eslint-disable-next-line react/jsx-props-no-spreading
-                        {...gridSize}
-                        key={option.name}
-                        style={{ display: 'flex' }}
-                    >
-                        <Card
+                    <StyledGrid item {...gridSize} key={option.name}>
+                        <StyledCard
                             elevation={2}
-                            style={{
-                                maxWidth: '100%',
-                                opacity: selectedOption === option ? 0.85 : 1,
-                                border:
-                                    selectedOption === option
-                                        ? '3px solid #3f51b5'
-                                        : '3px solid transparent',
-                                flex: 1,
-                            }}
+                            selected={selectedOption === option}
                         >
-                            <CardActionArea
+                            <ActionArea
                                 onClick={() => setSelectedOption(option)}
-                                style={{
-                                    position: 'relative',
-                                    minHeight: '160px',
-                                }}
                             >
                                 {option.image && (
-                                    <CardMedia
+                                    <CardMediaStyle
                                         component="img"
                                         image={option.image}
-                                        style={{
-                                            height: '160px',
-                                            objectFit: 'cover',
-                                            objectPosition: 'center -20px',
-                                            opacity: 0.33, // Fading the image a bit
-                                        }}
                                     />
                                 )}
-                                <Typography
-                                    variant="h6"
-                                    component="div"
-                                    style={{
-                                        position: 'absolute',
-                                        bottom: '8px',
-                                        left: '8px',
-                                        textShadow:
-                                            '3px 3px 5px rgba(0, 0, 0, 0.7)',
-                                    }}
-                                >
+                                <OptionName variant="h6" component="div">
                                     {option.name}
-                                </Typography>
-                            </CardActionArea>
-                        </Card>
-                    </Grid>
+                                </OptionName>
+                            </ActionArea>
+                        </StyledCard>
+                    </StyledGrid>
                 ))}
-            </Grid>
+            </StyledGridContainer>
 
             {(showDescription || showEffects) && (
-                <Paper elevation={2} style={{ padding: '0.5rem' }}>
+                <DescriptionPaper elevation={2}>
                     {showDescription && (
-                        <Typography
-                            variant="body2"
-                            style={{
-                                minHeight: '60px',
-                                margin: '20px 0 10px',
-                                textAlign: 'center',
-                            }}
-                        >
+                        <DescriptionText variant="body2">
                             {selectedOption?.description}
-                        </Typography>
+                        </DescriptionText>
                     )}
 
-                    {/* Display grantable effects for the selected feature */}
                     {showEffects && (
-                        <div style={{ margin: '10px 0', textAlign: 'center' }}>
+                        <EffectsContainer>
                             <Typography
                                 variant="body2"
                                 style={{ margin: '0 0 5px' }}
@@ -166,23 +211,21 @@ export default function FeaturePicker({
                                     )}
                                 </Typography>
                             )}
-                        </div>
+                        </EffectsContainer>
                     )}
-                </Paper>
+                </DescriptionPaper>
             )}
 
-            <div style={{ textAlign: 'center', margin: '10px 0 0' }}>
-                <Button
+            <ButtonContainer>
+                <NextButton
                     variant="contained"
                     color="primary"
                     onClick={() => onEvent(event, selectedOption)}
-                    style={{
-                        visibility: selectedOption ? 'visible' : 'hidden',
-                    }}
+                    visible={!!selectedOption}
                 >
                     Next
-                </Button>
-            </div>
-        </div>
+                </NextButton>
+            </ButtonContainer>
+        </Container>
     );
 }

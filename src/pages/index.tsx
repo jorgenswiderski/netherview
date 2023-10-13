@@ -9,13 +9,22 @@ import { CharacterClassOption } from '../models/character/types';
 const PageContainer = styled.div`
     color: #e0e0e0;
     background-color: #1a1a1a;
-    height: 100vh;
+    min-height: 100vh; // ensure at least full viewport height
     width: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: center;
     padding: 50px;
     box-sizing: border-box;
+    overflow-y: auto; // Enable vertical scrolling if content overflows
+
+    @media (max-width: 768px) {
+        padding: 20px; // Reduced padding for mobile devices
+    }
+
+    @media (max-width: 480px) {
+        padding: 10px; // Further reduced padding for very small screens
+    }
 `;
 
 export default function HomePage() {

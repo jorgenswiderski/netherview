@@ -21,34 +21,48 @@ import CharacterDisplay from '../character-display/character-display';
 
 const Container = styled('div')`
     display: flex;
-    flex-wrap: wrap-reverse;
     flex-direction: row;
     align-items: stretch;
     justify-content: center;
     width: 100%;
     height: 100%;
     gap: 40px;
+    margin: auto 0;
+
+    @media (max-width: 768px) {
+        flex-direction: column-reverse;
+        gap: 1rem;
+    }
 `;
 
 const ResetButton = styled('button')`
     position: absolute;
     top: 10px;
     right: 10px;
-    padding: 5px 15px;
+    padding: 8px 20px; // slightly larger for mobile touch
     border: none;
     border-radius: 5px;
     cursor: pointer;
+
+    @media (max-width: 768px) {
+        position: static;
+        margin-bottom: 1rem;
+    }
 `;
 
 const PaperContainer = styled(Paper)`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 40px 0;
-    width: 45%;
+    width: 50%;
     max-width: 600px;
     padding: 1rem;
     gap: 1rem;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        box-sizing: border-box;
+    }
 `;
 
 const PlannerHeader = styled(Paper)`

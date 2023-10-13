@@ -202,7 +202,11 @@ export class Character implements ICharacter {
 
     // ========================================================================
 
-    getClasses(): { levels: number; class: string; subclass?: string }[] {
+    getClasses(): {
+        levels: number;
+        class: CharacterClassOption;
+        subclass?: ICharacterFeatureCustomizationOptionWithSource;
+    }[] {
         // Create a map to count occurrences of each class
         const classCount = new Map<string, number>();
 
@@ -219,8 +223,10 @@ export class Character implements ICharacter {
                 );
 
                 return {
-                    class: className,
-                    subclass: subclass?.name,
+                    class: this.classData.find(
+                        (cls) => cls.name === className,
+                    ) as CharacterClassOption,
+                    subclass,
                     levels: count,
                 };
             },
@@ -229,8 +235,8 @@ export class Character implements ICharacter {
         // Sort the array
         classesArray.sort((a, b) => {
             // If one of the classes is the first class in levels, prioritize it
-            if (this.levels[0].name === a.class) return -1;
-            if (this.levels[0].name === b.class) return 1;
+            if (this.levels[0].name === a.class.name) return -1;
+            if (this.levels[0].name === b.class.name) return 1;
 
             // For all other classes, sort by the number of levels in descending order
             return b.levels - a.levels;
