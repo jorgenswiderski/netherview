@@ -51,7 +51,7 @@ export const CharacterDecisionInfo: {
     [CharacterPlannerStep.SET_CLASS]: {
         title: 'Select your starting class',
         event: CharacterPlannerStep.SET_CLASS,
-        getChoices: async () => [await WeaveApi.getClassesInfo()],
+        getChoices: async (character: ICharacter) => [character.classData],
     },
     [CharacterPlannerStep.SET_BACKGROUND]: {
         title: 'Choose a background',

@@ -241,9 +241,11 @@ export class CharacterTreeDecision
 
     description?: string;
     image?: string;
+    grants?: GrantableEffect[];
+    type?: CharacterPlannerStep;
+
     choiceType?: CharacterPlannerStep;
     choices?: ICharacterFeatureCustomizationOption[][];
-    grants?: GrantableEffect[];
 
     constructor(
         { name, ...rest }: ICharacterFeatureCustomizationOption,

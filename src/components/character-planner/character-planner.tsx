@@ -115,18 +115,21 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
         }
     }, [character]);
 
-    const handleDecision = (
-        decision: IPendingDecision,
-        choice: ICharacterFeatureCustomizationOption,
-    ) => {
-        setCharacter((prevCharacter) =>
-            prevCharacter.makeDecision(decision, choice),
-        );
-    };
+    const handleDecision = useCallback(
+        (
+            decision: IPendingDecision,
+            choice: ICharacterFeatureCustomizationOption,
+        ) => {
+            const newCharacter = character.makeDecision(decision, choice);
+            setCharacter(newCharacter);
+        },
+        [character],
+    );
 
-    const levelUpCharacter = () => {
-        setCharacter((prevCharacter) => prevCharacter.levelUp());
-    };
+    const levelUpCharacter = useCallback(() => {
+        const newCharacter = character.levelUp();
+        setCharacter(newCharacter);
+    }, [character]);
 
     const handleReset = () => {
         setCharacter(new Character(classData)); // Reset the character to its initial state

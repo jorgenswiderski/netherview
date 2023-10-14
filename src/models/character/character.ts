@@ -10,7 +10,6 @@ import {
     GrantableEffectType,
     Proficiency,
 } from 'planner-types/src/types/grantable-effect';
-import assert from 'assert';
 import { AbilityScores, CharacterClassOption, ICharacter } from './types';
 import { PendingDecision } from './pending-decision/pending-decision';
 import {
@@ -42,6 +41,8 @@ export class Character implements ICharacter {
     pendingDecisions: PendingDecision[] = [];
 
     constructor(public classData: CharacterClassOption[]) {
+        this.updateClassDataEffects();
+
         const initialDecisions: PendingDecision[] = [
             CharacterPlannerStep.SET_RACE,
             CharacterPlannerStep.SET_CLASS,
@@ -62,7 +63,7 @@ export class Character implements ICharacter {
     }
 
     multiclassOption: ICharacterFeatureCustomizationOption = {
-        name: 'MULTICLASS',
+        name: 'Add a class',
         description: 'Add a level in a new class.',
         choiceType: CharacterPlannerStep.MULTICLASS,
     };
@@ -105,7 +106,9 @@ export class Character implements ICharacter {
             throw new Error('Could not find parent when making decision');
         }
 
-        assert(this.root.findNode((node) => node === parent) !== null);
+        if (this.root.findNode((node) => node === parent) === null) {
+            throw new Error('Parent exists, but is not found in tree');
+        }
 
         const isProxyChoice =
             choice.choiceType === CharacterPlannerStep.MULTICLASS &&
@@ -120,9 +123,14 @@ export class Character implements ICharacter {
             targetParent.choices = choice.choices;
             this.queueSubchoices(targetParent);
         } else {
-            const decision = new CharacterTreeDecision(choice);
+            const decision = new CharacterTreeDecision({ type, ...choice });
             parent.addChild(decision);
             Character.grantEffects(decision);
+
+            if (Character.LEVEL_STEPS.includes(type)) {
+                this.updateClassDataEffects();
+            }
+
             this.queueSubchoices(decision);
         }
 
@@ -141,6 +149,32 @@ export class Character implements ICharacter {
         this.pendingDecisions.unshift(
             new PendingDecision(parent.choiceType, parent, parent.choices),
         );
+    }
+
+    updateClassDataEffects(): void {
+        const levelInfo = this.getClasses();
+
+        this.classData = this.classData.map((cls) => {
+            const level =
+                levelInfo.find((info) => info.class.name === cls.name)
+                    ?.levels ?? 0;
+
+            const choices = cls.progression[level].Features.flatMap(
+                (feature) => feature.choices,
+            ).filter(Boolean) as ICharacterFeatureCustomizationOption[][];
+
+            return {
+                ...cls,
+                choices,
+                choiceType:
+                    choices.length > 0
+                        ? CharacterPlannerStep.CHOOSE_SUBCLASS
+                        : undefined,
+                grants: cls.progression[level].Features.flatMap(
+                    (feature) => feature.grants,
+                ).filter(Boolean) as unknown as GrantableEffect[],
+            };
+        });
     }
 
     levelUp(): Character {
@@ -233,11 +267,12 @@ export class Character implements ICharacter {
         // Create a map to count occurrences of each class
         const classCount = new Map<string, number>();
 
-        const classes = this.findAllDecisionsByChoiceType(Character.LEVEL_ROOTS)
-            .flatMap((node) => node.children)
-            .filter(Boolean) as ICharacterTreeDecision[];
+        const classes = this.findAllDecisionsByOptionType(
+            Character.LEVEL_STEPS,
+        ).filter(
+            (node) => node?.choiceType !== CharacterPlannerStep.MULTICLASS,
+        ) as ICharacterTreeDecision[];
 
-        // FIXME: currently classes contains only the first level of ea class
         classes.forEach((cls) => {
             classCount.set(cls.name, (classCount.get(cls.name) || 0) + 1);
         });
@@ -385,6 +420,41 @@ export class Character implements ICharacter {
     ): CharacterTreeDecision[] {
         return this.root.findAllNodes(
             Character.findNodeByChoiceType(choiceType),
+        ) as CharacterTreeDecision[];
+    }
+
+    private static findNodeByOptionType(
+        type: CharacterPlannerStep | CharacterPlannerStep[],
+    ): (node: ICharacterTreeNode) => boolean {
+        return (node: ICharacterTreeNode) => {
+            if (node.nodeType !== CharacterTreeNodeType.DECISION) {
+                return false;
+            }
+
+            const decision = node as CharacterTreeDecision;
+
+            return (
+                typeof decision.type !== 'undefined' &&
+                (typeof type === 'string'
+                    ? decision.type === type
+                    : type.includes(decision.type))
+            );
+        };
+    }
+
+    private findDecisionByOptionType(
+        type: CharacterPlannerStep | CharacterPlannerStep[],
+    ): CharacterTreeDecision | null {
+        return this.root.findNode(
+            Character.findNodeByOptionType(type),
+        ) as CharacterTreeDecision | null;
+    }
+
+    private findAllDecisionsByOptionType(
+        type: CharacterPlannerStep | CharacterPlannerStep[],
+    ): CharacterTreeDecision[] {
+        return this.root.findAllNodes(
+            Character.findNodeByOptionType(type),
         ) as CharacterTreeDecision[];
     }
 
