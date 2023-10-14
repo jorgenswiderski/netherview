@@ -1,5 +1,4 @@
 // character.ts
-
 import {
     ICharacterFeatureCustomizationOption,
     CharacterPlannerStep,
@@ -7,95 +6,124 @@ import {
 import {
     Characteristic,
     GrantableEffect,
+    GrantableEffectSubtype,
     GrantableEffectType,
     Proficiency,
 } from 'planner-types/src/types/grantable-effect';
-import { ICharacterDecision } from './character-states';
+import assert from 'assert';
+import { AbilityScores, CharacterClassOption, ICharacter } from './types';
+import { PendingDecision } from './pending-decision/pending-decision';
 import {
-    AbilityScores,
-    CharacterClassOption,
-    CharacterClassOptionWithSource,
-    GrantableEffectWithSource,
-    ICharacter,
-    ICharacterFeatureCustomizationOptionWithSource,
-} from './types';
-import { CharacterDecision } from './character-decision';
+    CharacterTreeDecision,
+    CharacterTreeEffect,
+    CharacterTreeRoot,
+} from './character-tree-node/character-tree';
+import {
+    CharacterTreeNodeType,
+    ICharacterTreeDecision,
+    ICharacterTreeNode,
+} from './character-tree-node/types';
+import { IPendingDecision } from './character-states';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
+    static LEVEL_STEPS = [
+        CharacterPlannerStep.LEVEL_UP,
+        CharacterPlannerStep.MULTICLASS,
+        CharacterPlannerStep.SET_CLASS,
+    ];
+    static LEVEL_ROOTS = [
+        CharacterPlannerStep.MULTICLASS,
+        CharacterPlannerStep.SET_CLASS,
+    ];
 
-    constructor(public classData: CharacterClassOption[]) {}
+    root: CharacterTreeRoot = new CharacterTreeRoot();
 
-    decisions: ICharacterFeatureCustomizationOption[] = [{ name: 'ROOT' }];
+    pendingDecisions: PendingDecision[] = [];
 
-    multiclassOption: ICharacterFeatureCustomizationOptionWithSource = {
-        name: 'Add a class',
+    constructor(public classData: CharacterClassOption[]) {
+        const initialDecisions: PendingDecision[] = [
+            CharacterPlannerStep.SET_RACE,
+            CharacterPlannerStep.SET_CLASS,
+            CharacterPlannerStep.SET_BACKGROUND,
+            CharacterPlannerStep.SET_ABILITY_SCORES,
+        ].map((type) => {
+            const parent = new CharacterTreeDecision({
+                name: type,
+                choiceType: type,
+            });
+
+            this.root.addChild(parent);
+
+            return new PendingDecision(type, parent);
+        });
+
+        this.pendingDecisions.push(...initialDecisions);
+    }
+
+    multiclassOption: ICharacterFeatureCustomizationOption = {
+        name: 'MULTICLASS',
         description: 'Add a level in a new class.',
         choiceType: CharacterPlannerStep.MULTICLASS,
-        source: this.decisions[0],
     };
-
-    decisionQueue: ICharacterDecision[] = [
-        CharacterPlannerStep.SET_RACE,
-        CharacterPlannerStep.SET_CLASS,
-        CharacterPlannerStep.SET_BACKGROUND,
-        CharacterPlannerStep.SET_ABILITY_SCORES,
-    ].map((cd) => ({
-        type: cd,
-        source: this.decisions[0],
-    }));
 
     name: string = 'Tav';
 
-    nextDecision(): ICharacterDecision | null {
-        return this.decisionQueue[0] || null;
+    // State management =======================================================
+
+    getNextDecision(): PendingDecision | null {
+        return this.pendingDecisions[0] || null;
     }
 
-    completeDecision(decision: CharacterPlannerStep) {
-        const index = this.decisionQueue.findIndex(
-            (value) => value.type === decision,
+    unqueueDecision(decision: PendingDecision) {
+        const index = this.pendingDecisions.findIndex(
+            (dec) => dec === decision,
         );
 
         if (index > -1) {
-            this.decisionQueue.splice(index, 1);
+            this.pendingDecisions.splice(index, 1);
+        } else {
+            throw new Error(
+                'Attempted to complete a pending decision that was not in the queue.',
+            );
         }
     }
 
-    addFeature(
-        event: CharacterPlannerStep,
-        feature: ICharacterFeatureCustomizationOptionWithSource,
-    ): void {
-        if (
-            event === CharacterPlannerStep.SET_CLASS ||
-            event === CharacterPlannerStep.LEVEL_UP ||
-            event === CharacterPlannerStep.MULTICLASS
-        ) {
-            if (feature.choiceType !== CharacterPlannerStep.MULTICLASS) {
-                this.addClass(feature as unknown as CharacterClassOption);
-            }
-        } else if (event === CharacterPlannerStep.SET_RACE) {
-            this.setRace(feature);
-        } else if (event === CharacterPlannerStep.CHOOSE_SUBRACE) {
-            this.setSubrace(feature);
-        } else if (event === CharacterPlannerStep.SET_BACKGROUND) {
-            this.setBackground(feature);
-        } else if (event === CharacterPlannerStep.CHOOSE_SUBCLASS) {
-            this.setSubclass(feature);
-        } else {
-            throw new Error('Invalid character event');
+    makeDecision(
+        pending: IPendingDecision,
+        choice: ICharacterFeatureCustomizationOption,
+    ): Character {
+        const { type } = pending;
+        let { parent } = pending;
+        this.unqueueDecision(pending as PendingDecision);
+
+        if (!parent && Character.LEVEL_STEPS.includes(type)) {
+            parent = this.findClassParent(choice);
         }
 
-        this.grantEffects(feature);
-        this.queueSubchoices(feature);
-    }
+        if (!parent) {
+            throw new Error('Could not find parent when making decision');
+        }
 
-    onEvent(event: CharacterPlannerStep, value: any): Character {
-        this.completeDecision(event);
+        assert(this.root.findNode((node) => node === parent) !== null);
 
-        if (event === CharacterPlannerStep.SET_ABILITY_SCORES) {
-            this.setAbilityScores(value);
+        const isProxyChoice =
+            choice.choiceType === CharacterPlannerStep.MULTICLASS &&
+            parent !== this.root;
+
+        if (isProxyChoice) {
+            // impose the choices onto the proxied parent
+            const targetParent = this.findDecisionByChoiceType(
+                choice.choiceType as CharacterPlannerStep,
+            )!;
+            // FIXME: mutation here MIGHT be dangerous, but we have to keep the same object pointer or the parent won't be found
+            targetParent.choices = choice.choices;
+            this.queueSubchoices(targetParent);
         } else {
-            this.addFeature(event, value);
+            const decision = new CharacterTreeDecision(choice);
+            parent.addChild(decision);
+            Character.grantEffects(decision);
+            this.queueSubchoices(decision);
         }
 
         return this.clone();
@@ -105,63 +133,14 @@ export class Character implements ICharacter {
         return Object.assign(new Character(this.classData), this);
     }
 
-    private queueSubchoices(feature: ICharacterFeatureCustomizationOption) {
-        if (!feature.choiceType || !feature.choices) {
+    private queueSubchoices(parent: CharacterTreeDecision) {
+        if (!parent.choiceType || !parent.choices) {
             return;
         }
 
-        this.decisionQueue.unshift(new CharacterDecision(feature));
-    }
-
-    levels: CharacterClassOption[] = [];
-
-    addClass(cls: CharacterClassOption): void {
-        if (this.levels.length >= Character.MAX_LEVEL) {
-            throw new Error('Cannot exceed level 12');
-        }
-
-        this.levels.push(cls);
-    }
-
-    race?: ICharacterFeatureCustomizationOption;
-
-    setRace(race: ICharacterFeatureCustomizationOption): void {
-        this.race = race;
-    }
-
-    subrace?: ICharacterFeatureCustomizationOption;
-
-    setSubrace(subrace: ICharacterFeatureCustomizationOption): void {
-        this.subrace = subrace;
-    }
-
-    baseAbilityScores?: AbilityScores;
-    racialAbilityBonuses?: (keyof AbilityScores)[];
-
-    setAbilityScores(values: {
-        abilityScores: AbilityScores;
-        bonusTwo: keyof AbilityScores;
-        bonusOne: keyof AbilityScores;
-    }): void {
-        this.baseAbilityScores = values.abilityScores;
-        this.racialAbilityBonuses = [values.bonusTwo, values.bonusOne];
-    }
-
-    background?: ICharacterFeatureCustomizationOption;
-
-    setBackground(background: ICharacterFeatureCustomizationOption): void {
-        this.background = background;
-    }
-
-    // FIXME: Character can have multiple
-    subclasses: ICharacterFeatureCustomizationOptionWithSource[] = [];
-
-    setSubclass(subclass: ICharacterFeatureCustomizationOptionWithSource) {
-        this.subclasses.push(subclass);
-    }
-
-    canLevel(): boolean {
-        return this.levels.length < Character.MAX_LEVEL;
+        this.pendingDecisions.unshift(
+            new PendingDecision(parent.choiceType, parent, parent.choices),
+        );
     }
 
     levelUp(): Character {
@@ -169,22 +148,24 @@ export class Character implements ICharacter {
             return this;
         }
 
-        const classesWithEffects = this.augmentClassOptions(this.classData);
-        const currentClasses = classesWithEffects.filter(
-            (cls) =>
-                this.levels.findIndex((level) => level.name === cls.name) > -1,
-        );
-        const newClasses = classesWithEffects.filter(
-            (cls) =>
-                this.levels.findIndex((level) => level.name === cls.name) < 0,
+        const currentClassNames = (
+            this.findAllDecisionsByChoiceType(Character.LEVEL_ROOTS)
+                .flatMap((node) => node.children)
+                .filter(Boolean) as ICharacterTreeDecision[]
+        ).map((decision) => decision.name);
+
+        const currentClasses = this.classData.filter((cls) =>
+            currentClassNames.includes(cls.name),
         );
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const a: ICharacterFeatureCustomizationOptionWithSource = newClasses[0];
+        const newClasses = this.classData.filter(
+            (cls) => !currentClasses.includes(cls),
+        );
 
-        const decision: ICharacterDecision = {
-            type: CharacterPlannerStep.LEVEL_UP,
-            choices: [
+        const decision: PendingDecision = new PendingDecision(
+            CharacterPlannerStep.LEVEL_UP,
+            null,
+            [
                 [
                     ...currentClasses,
                     {
@@ -193,39 +174,105 @@ export class Character implements ICharacter {
                     },
                 ],
             ],
-        };
+        );
 
-        this.decisionQueue.unshift(decision);
+        this.pendingDecisions.unshift(decision);
 
         return this.clone();
     }
 
-    // ========================================================================
+    findClassParent(
+        choice: ICharacterFeatureCustomizationOption,
+    ): CharacterTreeDecision | CharacterTreeRoot {
+        return (
+            (this.root.findNode((node) => {
+                if (node.nodeType !== CharacterTreeNodeType.DECISION) {
+                    return false;
+                }
+
+                const decision: CharacterTreeDecision =
+                    node as CharacterTreeDecision;
+
+                return (
+                    decision.name === choice.name &&
+                    (typeof decision.children === 'undefined' ||
+                        decision.children.every(
+                            (child) => child.name !== choice.name,
+                        ))
+                );
+            }) as CharacterTreeDecision | CharacterTreeRoot | null) ?? this.root
+        );
+    }
+
+    static grantEffects(
+        node: CharacterTreeDecision | CharacterTreeEffect,
+    ): void {
+        if (!node.grants) {
+            return;
+        }
+
+        node.grants.forEach((effect) => {
+            const child = new CharacterTreeEffect(effect);
+            node.addChild(child);
+            Character.grantEffects(child);
+        });
+    }
+
+    // "Getters" for front end ================================================
+
+    // eslint-disable-next-line class-methods-use-this
+    canLevel(): boolean {
+        return this.getTotalLevel() < Character.MAX_LEVEL;
+    }
 
     getClasses(): {
         levels: number;
         class: CharacterClassOption;
-        subclass?: ICharacterFeatureCustomizationOptionWithSource;
+        subclass?: CharacterTreeDecision;
     }[] {
         // Create a map to count occurrences of each class
         const classCount = new Map<string, number>();
 
-        this.levels.forEach((cls) => {
+        const classes = this.findAllDecisionsByChoiceType(Character.LEVEL_ROOTS)
+            .flatMap((node) => node.children)
+            .filter(Boolean) as ICharacterTreeDecision[];
+
+        // FIXME: currently classes contains only the first level of ea class
+        classes.forEach((cls) => {
             classCount.set(cls.name, (classCount.get(cls.name) || 0) + 1);
         });
 
         // Convert the map to an array of objects
         const classesArray = Array.from(classCount).map(
             ([className, count]) => {
-                // find the subclass name, if it exists
-                const subclass = this.subclasses.find(
-                    (sc) => sc.source.name === className,
-                );
+                // find the subclass, if it exists
+                // FIXME: doesnt work for the same reason as above
+                const subclass = classes
+                    .filter((cls) => cls.name === className)
+                    .map(
+                        (cls) =>
+                            cls.children?.find((node) => {
+                                if (
+                                    node.nodeType !==
+                                    CharacterTreeNodeType.DECISION
+                                ) {
+                                    return false;
+                                }
+
+                                const decision = node as CharacterTreeDecision;
+
+                                return (
+                                    decision.choiceType ===
+                                    CharacterPlannerStep.CHOOSE_SUBCLASS
+                                );
+                            }),
+                    )
+                    .find(Boolean) as CharacterTreeDecision | undefined; // filter out undefineds
 
                 return {
                     class: this.classData.find(
                         (cls) => cls.name === className,
-                    ) as CharacterClassOption,
+                    )!,
                     subclass,
                     levels: count,
                 };
@@ -235,8 +282,9 @@ export class Character implements ICharacter {
         // Sort the array
         classesArray.sort((a, b) => {
             // If one of the classes is the first class in levels, prioritize it
-            if (this.levels[0].name === a.class.name) return -1;
-            if (this.levels[0].name === b.class.name) return 1;
+            // if (this.levels[0].name === a.class.name) return -1;
+            // if (this.levels[0].name === b.class.name) return 1;
+            // FIXME: No concept of first level yet
 
             // For all other classes, sort by the number of levels in descending order
             return b.levels - a.levels;
@@ -245,115 +293,115 @@ export class Character implements ICharacter {
         return classesArray;
     }
 
-    getTotalAbilityScores(): AbilityScores {
-        if (!this.baseAbilityScores) {
-            throw new Error(
-                'Base ability scores are not set for the character.',
-            );
-        }
-
-        // Start with a clone of the base ability scores
-        const totalAbilityScores = { ...this.baseAbilityScores };
-
-        // Apply racial ability bonuses if they exist
-        if (this.racialAbilityBonuses) {
-            if (this.racialAbilityBonuses[0]) {
-                totalAbilityScores[this.racialAbilityBonuses[0]] += 2;
-            }
-
-            if (this.racialAbilityBonuses[1]) {
-                totalAbilityScores[this.racialAbilityBonuses[1]] += 1;
-            }
-        }
-
-        return totalAbilityScores;
+    getTotalLevel(): number {
+        return this.getClasses().reduce((acc, { levels }) => acc + levels, 0);
     }
 
-    grantedEffects: GrantableEffectWithSource[] = [];
+    getTotalAbilityScores(): AbilityScores | null {
+        const abilityFx = this.getCharacteristics().filter(
+            (effect) =>
+                effect.subtype &&
+                [
+                    GrantableEffectSubtype.ABILITY_BASE,
+                    GrantableEffectSubtype.ABILITY_RACIAL,
+                ].includes(effect.subtype),
+        );
 
-    grantEffects(feature: ICharacterFeatureCustomizationOption): void {
-        if (!feature.grants) {
-            return;
+        if (abilityFx.length === 0) {
+            return null;
         }
 
-        feature.grants.forEach((fx) => {
-            const sourced = { ...fx, source: feature };
-            this.grantedEffects.push(sourced);
-        });
+        return Object.fromEntries(
+            Object.keys(abilityFx[0].values).map((ability) => [
+                ability,
+                abilityFx.reduce(
+                    (acc, effect) => acc + effect.values[ability],
+                    0,
+                ),
+            ]),
+        ) as unknown as AbilityScores;
+    }
+
+    getGrantedEffects(): GrantableEffect[] {
+        const fx: CharacterTreeEffect[] = this.root.findAllNodes((node) => {
+            if (node.nodeType !== CharacterTreeNodeType.EFFECT) {
+                return false;
+            }
+
+            return true;
+        }) as CharacterTreeEffect[];
+
+        return fx;
     }
 
     getProficiencies(): Proficiency[] {
-        const allProficiencies = this.grantedEffects.filter(
-            (fx) => !fx.hidden && fx.type === GrantableEffectType.PROFICIENCY,
-        ) as unknown as Proficiency[];
-
         // TODO: remove duplicates in a graceful way
-        return allProficiencies;
+        return this.getGrantedEffects().filter(
+            (effect) => effect.type === GrantableEffectType.PROFICIENCY,
+        ) as Proficiency[];
     }
 
-    getActions(): GrantableEffectWithSource[] {
-        return this.grantedEffects.filter(
-            (fx) => !fx.hidden && fx.type === GrantableEffectType.ACTION,
+    getActions(): GrantableEffect[] {
+        return this.getGrantedEffects().filter(
+            (effect) => effect.type === GrantableEffectType.ACTION,
         );
     }
 
     getCharacteristics(): Characteristic[] {
-        return this.grantedEffects.filter(
-            (fx) =>
-                !fx.hidden && fx.type === GrantableEffectType.CHARACTERISTIC,
-        ) as unknown as Characteristic[];
+        return this.getGrantedEffects().filter(
+            (effect) => effect.type === GrantableEffectType.CHARACTERISTIC,
+        ) as Characteristic[];
     }
 
-    augmentClassOptions(
-        classes: CharacterClassOption[],
-    ): CharacterClassOptionWithSource[] {
-        return classes.map((cls): CharacterClassOptionWithSource => {
-            // Count the number of levels in this class
-            const levelCount = this.levels.filter(
-                (level) => level.name === cls.name,
-            ).length;
-
-            const clsData = this.classData.find(
-                (data) => data.name === cls.name,
-            );
-
-            if (!clsData) {
-                throw new Error('could not find class');
+    private static findNodeByChoiceType(
+        choiceType: CharacterPlannerStep | CharacterPlannerStep[],
+    ): (node: ICharacterTreeNode) => boolean {
+        return (node: ICharacterTreeNode) => {
+            if (node.nodeType !== CharacterTreeNodeType.DECISION) {
+                return false;
             }
 
-            const { progression } = clsData;
-            const levelFeatures = progression[levelCount].Features;
+            const decision = node as CharacterTreeDecision;
 
-            // find the highest level of this class and add it as the source
-            const source = this.levels.findLast(
-                (level) => level.name === cls.name,
+            return (
+                typeof decision.choiceType !== 'undefined' &&
+                (typeof choiceType === 'string'
+                    ? decision.choiceType === choiceType
+                    : choiceType.includes(decision.choiceType))
             );
-
-            const choices = levelFeatures
-                .flatMap((feature) => feature.choices)
-                .filter(Boolean) as ICharacterFeatureCustomizationOption[][];
-
-            return {
-                ...cls,
-                grants: levelFeatures
-                    .flatMap((feature) => feature.grants)
-                    .filter(Boolean) as GrantableEffect[],
-                choices,
-                choiceType: levelFeatures.find((feature) => feature.choiceType)
-                    ?.choiceType, // FIXME
-                source: source ?? this.decisions[0],
-            };
-        });
+        };
     }
 
-    augmentCustomizationOptionWithRoot(
-        choices: ICharacterFeatureCustomizationOption[][],
-    ): ICharacterFeatureCustomizationOptionWithSource[][] {
-        return choices.map((choiceA) =>
-            choiceA.map((choiceB) => ({
-                ...choiceB,
-                source: this.decisions[0],
-            })),
-        );
+    private findDecisionByChoiceType(
+        choiceType: CharacterPlannerStep | CharacterPlannerStep[],
+    ): CharacterTreeDecision | null {
+        return this.root.findNode(
+            Character.findNodeByChoiceType(choiceType),
+        ) as CharacterTreeDecision | null;
+    }
+
+    private findAllDecisionsByChoiceType(
+        choiceType: CharacterPlannerStep | CharacterPlannerStep[],
+    ): CharacterTreeDecision[] {
+        return this.root.findAllNodes(
+            Character.findNodeByChoiceType(choiceType),
+        ) as CharacterTreeDecision[];
+    }
+
+    getRace(): ICharacterTreeDecision | undefined {
+        return this.findDecisionByChoiceType(CharacterPlannerStep.SET_RACE)
+            ?.children?.[0] as ICharacterTreeDecision | undefined;
+    }
+
+    getSubrace(): ICharacterTreeDecision | undefined {
+        return this.findDecisionByChoiceType(
+            CharacterPlannerStep.CHOOSE_SUBRACE,
+        )?.children?.[0] as ICharacterTreeDecision | undefined;
+    }
+
+    getBackground(): ICharacterTreeDecision | undefined {
+        return this.findDecisionByChoiceType(
+            CharacterPlannerStep.SET_BACKGROUND,
+        )?.children?.[0] as ICharacterTreeDecision | undefined;
     }
 }

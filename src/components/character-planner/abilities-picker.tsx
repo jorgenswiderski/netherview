@@ -9,9 +9,21 @@ import TableCell from '@mui/material/TableCell';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
-import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
-import { CharacterWidgetProps } from './types';
+import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
+import {
+    GrantableEffectSubtype,
+    GrantableEffectType,
+} from 'planner-types/src/types/grantable-effect';
 import { AbilityScores } from '../../models/character/types';
+
+// using 'any' here to resolve cyclic dependency with character-states.tsx
+interface CharacterWidgetProps {
+    onDecision: (
+        decision: any,
+        value: ICharacterFeatureCustomizationOption,
+    ) => void;
+    decision: any;
+}
 
 function Dot({
     filled,
@@ -40,7 +52,10 @@ function Dot({
     );
 }
 
-export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {
+export default function AbilitiesPicker({
+    onDecision: onEvent,
+    decision,
+}: CharacterWidgetProps) {
     const TOTAL_POINTS = 27;
     const [abilities, setAbilities] = useState<AbilityScores>({
         Strength: 15,
@@ -103,13 +118,42 @@ export default function AbilitiesPicker({ onEvent }: CharacterWidgetProps) {
         });
     };
 
+    const getBonusValue = (ability: string): number => {
+        if (bonusOne === ability) {
+            return 1;
+        }
+
+        return bonusTwo === ability ? 2 : 0;
+    };
+
     const handleConfirm = () => {
+        const choice: ICharacterFeatureCustomizationOption = {
+            name: 'Set Ability Scores',
+            grants: [
+                {
+                    name: 'Base Ability Scores',
+                    type: GrantableEffectType.CHARACTERISTIC,
+                    subtype: GrantableEffectSubtype.ABILITY_BASE,
+                    hidden: true,
+                    values: { ...abilities },
+                },
+                {
+                    name: 'Racial Ability Score Bonuses',
+                    type: GrantableEffectType.CHARACTERISTIC,
+                    subtype: GrantableEffectSubtype.ABILITY_RACIAL,
+                    hidden: true,
+                    values: Object.fromEntries(
+                        Object.keys(abilities).map((ability) => [
+                            ability,
+                            getBonusValue(ability),
+                        ]),
+                    ),
+                },
+            ],
+        };
+
         // Call the event with the abilities and the racial bonuses
-        onEvent(CharacterPlannerStep.SET_ABILITY_SCORES, {
-            abilityScores: abilities,
-            bonusTwo,
-            bonusOne,
-        });
+        onEvent(decision, choice);
     };
 
     const getBonusDots = (ability: keyof AbilityScores) => {

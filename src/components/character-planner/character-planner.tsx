@@ -3,21 +3,17 @@ import { BeatLoader } from 'react-spinners';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
-import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
 import Paper from '@mui/material/Paper';
 import { Character } from '../../models/character/character';
 import {
-    ICharacterDecision,
+    IPendingDecision,
     CharacterDecisionInfo,
-    DecisionStateInfo,
 } from '../../models/character/character-states';
 import FeaturePicker from './feature-picker/feature-picker';
-import { Utils } from '../../models/utils';
-import {
-    CharacterClassOption,
-    ICharacterFeatureCustomizationOptionWithSource,
-} from '../../models/character/types';
+import { CharacterClassOption } from '../../models/character/types';
 import CharacterDisplay from '../character-display/character-display';
+import TreeVisualization from '../tree-visualization';
 
 const Container = styled('div')`
     display: flex;
@@ -80,8 +76,8 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
     const [character, setCharacter] = useState(new Character(classData));
     const [loading, setLoading] = useState(false);
     const nextDecision = useMemo(
-        () => character.decisionQueue[0],
-        [character.decisionQueue[0]],
+        () => character.pendingDecisions[0],
+        [character],
     );
     const nextDecisionInfo = useMemo(
         () => (nextDecision ? CharacterDecisionInfo[nextDecision.type] : null),
@@ -89,75 +85,44 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
     );
 
     const loadChoices = useCallback(
-        async (
-            decision: ICharacterDecision,
-            decisionInfo: DecisionStateInfo,
-        ) => {
-            if (
-                decision &&
-                !decision.choices &&
-                decisionInfo &&
-                decisionInfo.getChoices
-            ) {
-                setLoading(true);
+        async (decision: IPendingDecision) => {
+            setLoading(true);
 
-                const gc = decisionInfo.getChoices as (
-                    character: Character,
-                ) => Promise<
-                    ICharacterFeatureCustomizationOptionWithSource[][]
-                >;
+            const newCharacter: Character | null = (await decision.loadChoices(
+                character,
+            )) as Character | null;
 
-                const choices = (await gc(character)) ?? undefined;
-                choices.forEach((choice) => Utils.preloadChoiceImages(choice));
-
-                setCharacter((prevCharacter) => {
-                    const updatedCharacter = prevCharacter.clone();
-                    const updatedDecision = updatedCharacter.decisionQueue.find(
-                        (cd) => cd.type === decision.type,
-                    );
-
-                    if (updatedDecision) {
-                        updatedDecision.choices = choices;
-                    }
-
-                    return updatedCharacter;
-                });
-
-                setLoading(false);
-            } else if (decision.choices) {
-                decision.choices.forEach((choice) =>
-                    Utils.preloadChoiceImages(choice),
-                );
+            if (newCharacter) {
+                setCharacter(newCharacter);
             }
+
+            setLoading(false);
         },
         [character],
     );
 
     useEffect(() => {
-        if (nextDecision && nextDecisionInfo) {
-            loadChoices(nextDecision, nextDecisionInfo);
+        if (nextDecision) {
+            loadChoices(nextDecision);
         }
-    }, [nextDecision, nextDecisionInfo]);
+    }, [nextDecision]);
 
     useEffect(() => {
-        const secondDecision = character.decisionQueue[1];
+        const secondDecision = character.pendingDecisions[1];
 
         if (secondDecision) {
-            loadChoices(
-                secondDecision,
-                CharacterDecisionInfo[secondDecision.type],
-            );
+            loadChoices(secondDecision);
         }
-    }, [character.decisionQueue[1]]);
+    }, [character]);
 
-    const handleEvent = useCallback(
-        (event: CharacterPlannerStep, values: any) => {
-            setCharacter((prevCharacter) =>
-                prevCharacter.onEvent(event, values),
-            );
-        },
-        [],
-    );
+    const handleDecision = (
+        decision: IPendingDecision,
+        choice: ICharacterFeatureCustomizationOption,
+    ) => {
+        setCharacter((prevCharacter) =>
+            prevCharacter.makeDecision(decision, choice),
+        );
+    };
 
     const levelUpCharacter = () => {
         setCharacter((prevCharacter) => prevCharacter.levelUp());
@@ -211,12 +176,15 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
                     </Typography>
                 </PlannerHeader>
                 {nextDecisionInfo.render
-                    ? nextDecisionInfo.render({ onEvent: handleEvent })
+                    ? nextDecisionInfo.render({
+                          onDecision: handleDecision,
+                          decision: nextDecision,
+                      })
                     : nextDecision.choices.map((choice) => (
                           <FeaturePicker
                               choices={choice}
-                              onEvent={handleEvent}
-                              event={nextDecision.type}
+                              onEvent={handleDecision}
+                              decision={nextDecision}
                           />
                       ))}
             </>
@@ -227,14 +195,18 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
         <>
             <ResetButton onClick={handleReset}>Reset</ResetButton>
             <Container>
-                {character.race && character.levels.length > 0 && (
-                    <PaperContainer>
-                        <CharacterDisplay character={character} />
-                    </PaperContainer>
-                )}
+                {character.root.children &&
+                    character.root.children.length > 1 && (
+                        <PaperContainer>
+                            <CharacterDisplay character={character} />
+                        </PaperContainer>
+                    )}
 
                 <PaperContainer>{renderDecisionPanel()}</PaperContainer>
             </Container>
+            <TreeVisualization
+                data={JSON.parse(JSON.stringify(character.root))}
+            />
         </>
     );
 }

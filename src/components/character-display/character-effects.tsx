@@ -33,13 +33,15 @@ export function CharacterEffects({ character }: CharacterEffectsProps) {
                             key={section.title}
                             title={section.title}
                             elevation={2}
-                            content={section.content.map((effect) => (
-                                <GrantedEffect
-                                    key={effect.name}
-                                    effect={effect}
-                                    elevation={4}
-                                />
-                            ))}
+                            content={section.content
+                                .filter((effect) => !effect.hidden)
+                                .map((effect) => (
+                                    <GrantedEffect
+                                        key={effect.name}
+                                        effect={effect}
+                                        elevation={4}
+                                    />
+                                ))}
                         />
                     ),
             )}

@@ -2,10 +2,10 @@ import React from 'react';
 import styled from '@emotion/styled';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { Character } from '../../models/character/character';
+import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
 
 interface CharacterBackgroundProps {
-    character: Character;
+    background: ICharacterTreeDecision;
 }
 
 const BackgroundContainer = styled.div`
@@ -28,18 +28,18 @@ const RotationContainer = styled.div`
 `;
 
 export default function CharacterBackground({
-    character,
+    background,
 }: CharacterBackgroundProps) {
     return (
         <Paper elevation={2} style={{ padding: '1rem', position: 'relative' }}>
             <BackgroundContainer>
-                <RotationContainer bgImage={character.background?.image} />
+                <RotationContainer bgImage={background.image} />
             </BackgroundContainer>
             <Typography
                 variant="h6"
                 style={{ position: 'relative', zIndex: 1 }}
             >
-                Background: {character.background?.name}
+                Background: {background.name}
             </Typography>
         </Paper>
     );

@@ -77,6 +77,7 @@ module.exports = {
         curly: ['error', 'all'],
         'react/require-default-props': 'off',
         'react/jsx-props-no-spreading': 'off',
+        'no-continue': 'off',
 
         // style rules
         'prettier/prettier': 'warn',

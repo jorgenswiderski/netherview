@@ -29,6 +29,9 @@ export function CharacterHeader({ character }: CharacterHeaderProps) {
         return uniqueClasses.size > 1;
     }, [character]);
 
+    const race = useMemo(() => character.getRace(), [character]);
+    const subrace = useMemo(() => character.getSubrace(), [character]);
+
     return (
         <Paper elevation={2} style={{ padding: '1rem' }}>
             <Box display="flex" flexDirection="column">
@@ -69,7 +72,7 @@ export function CharacterHeader({ character }: CharacterHeaderProps) {
                                     `,
                                 }}
                             >
-                                {character.levels.length}
+                                {character.getTotalLevel()}
                             </Box>
                         </Box>
                     )}
@@ -78,8 +81,9 @@ export function CharacterHeader({ character }: CharacterHeaderProps) {
                             {character.name}
                         </Typography>
                         <Typography variant="h5" align="left">
-                            {character.subrace?.name ?? character.race?.name}
-                            {character.levels.length > 0 &&
+                            {subrace?.name ?? race?.name}
+                            {character.root.children &&
+                                character.root.children.length > 1 &&
                                 ` ${character
                                     .getClasses()
                                     .map((data) => {

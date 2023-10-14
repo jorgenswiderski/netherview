@@ -5,15 +5,13 @@ import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import {
-    CharacterPlannerStep,
-    ICharacterFeatureCustomizationOption,
-} from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
 import { Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import GrantedEffect from '../granted-effect';
 import { Utils } from '../../../models/utils';
 import { CharacterPlannerStepDescriptions } from './types';
+import { IPendingDecision } from '../../../models/character/character-states';
 
 const Container = styled.div`
     display: flex;
@@ -112,15 +110,18 @@ const NextButton = styled(Button)<{ visible: boolean }>`
 `;
 
 interface FeaturePickerProps {
+    decision: IPendingDecision;
     choices: ICharacterFeatureCustomizationOption[];
-    onEvent: (event: CharacterPlannerStep, value: any) => void;
-    event: CharacterPlannerStep;
+    onEvent: (
+        decision: IPendingDecision,
+        choice: ICharacterFeatureCustomizationOption,
+    ) => void;
 }
 
 export default function FeaturePicker({
+    decision,
     choices,
     onEvent,
-    event,
 }: FeaturePickerProps) {
     const [selectedOption, setSelectedOption] =
         useState<ICharacterFeatureCustomizationOption | null>(null);
@@ -220,7 +221,9 @@ export default function FeaturePicker({
                 <NextButton
                     variant="contained"
                     color="primary"
-                    onClick={() => onEvent(event, selectedOption)}
+                    onClick={() =>
+                        selectedOption && onEvent(decision, selectedOption)
+                    }
                     visible={!!selectedOption}
                 >
                     Next

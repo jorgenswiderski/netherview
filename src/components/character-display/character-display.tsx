@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Paper from '@mui/material/Paper';
 import { Character } from '../../models/character/character';
 import AbilityScoresTable from './ability-scores';
@@ -12,6 +12,13 @@ interface CharacterDisplayProps {
 }
 
 export default function CharacterDisplay({ character }: CharacterDisplayProps) {
+    const abilityScores = useMemo(
+        () => character.getTotalAbilityScores(),
+        [character],
+    );
+
+    const background = useMemo(() => character.getBackground(), [character]);
+
     return (
         <div
             style={{
@@ -43,15 +50,13 @@ export default function CharacterDisplay({ character }: CharacterDisplayProps) {
                     }}
                 >
                     {/* Ability Scores */}
-                    {character.baseAbilityScores && (
-                        <AbilityScoresTable
-                            abilityScores={character.getTotalAbilityScores()}
-                        />
+                    {abilityScores && (
+                        <AbilityScoresTable abilityScores={abilityScores} />
                     )}
 
                     {/* Background */}
-                    {character.background && (
-                        <CharacterBackground character={character} />
+                    {background && (
+                        <CharacterBackground background={background} />
                     )}
 
                     {/* Equipped Items */}
