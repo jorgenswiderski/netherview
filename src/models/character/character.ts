@@ -127,6 +127,11 @@ export class Character implements ICharacter {
             parent.addChild(decision);
             Character.grantEffects(decision);
 
+            if (type === CharacterPlannerStep.CHOOSE_SUBCLASS) {
+                this.collapseSubclassFeatures(decision.name);
+                this.updateClassDataEffects();
+            }
+
             if (Character.LEVEL_STEPS.includes(type)) {
                 this.updateClassDataEffects();
             }
@@ -151,7 +156,48 @@ export class Character implements ICharacter {
         );
     }
 
-    updateClassDataEffects(): void {
+    private collapseSubclassFeatures(subclassName: string): void {
+        this.classData = this.classData.map((cls) => {
+            return {
+                ...cls,
+                progression: cls.progression.map((level) => ({
+                    ...level,
+                    Features: level.Features.map((feature) => {
+                        if (
+                            feature?.choiceType !==
+                            CharacterPlannerStep.SUBCLASS_FEATURE
+                        ) {
+                            return feature;
+                        }
+
+                        // Make sure the subclass we're collapsing exists in these choices
+                        if (
+                            !feature?.choices?.[0] ||
+                            feature.choices[0].findIndex(
+                                (choice) => choice.name === subclassName,
+                            ) < 0
+                        ) {
+                            return feature;
+                        }
+
+                        return {
+                            ...feature,
+                            choices: undefined,
+                            choiceType: undefined,
+                            grants: (
+                                feature
+                                    ?.choices?.[0] as ICharacterFeatureCustomizationOption[]
+                            ).find(
+                                (subclass) => subclass.name === subclassName,
+                            )!.grants,
+                        };
+                    }),
+                })),
+            };
+        });
+    }
+
+    private updateClassDataEffects(): void {
         const levelInfo = this.getClasses();
 
         this.classData = this.classData.map((cls) => {
