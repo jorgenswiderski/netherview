@@ -385,6 +385,7 @@ export class Character implements ICharacter {
                 [
                     GrantableEffectSubtype.ABILITY_BASE,
                     GrantableEffectSubtype.ABILITY_RACIAL,
+                    GrantableEffectSubtype.ABILITY_FEAT,
                 ].includes(effect.subtype),
         );
 
@@ -396,7 +397,7 @@ export class Character implements ICharacter {
             Object.keys(abilityFx[0].values).map((ability) => [
                 ability,
                 abilityFx.reduce(
-                    (acc, effect) => acc + effect.values[ability],
+                    (acc, effect) => acc + (effect.values?.[ability] ?? 0),
                     0,
                 ),
             ]),

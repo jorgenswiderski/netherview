@@ -24,4 +24,5 @@ export interface CharacterBackgroundOption
 export interface ICharacter {
     clone(): ICharacter;
     classData: CharacterClassOption[];
+    getTotalAbilityScores(): AbilityScores | null;
 }

@@ -182,6 +182,7 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
                     ? nextDecisionInfo.render({
                           onDecision: handleDecision,
                           decision: nextDecision,
+                          character,
                       })
                     : nextDecision.choices.map((choice) => (
                           <FeaturePicker

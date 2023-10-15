@@ -10,7 +10,8 @@ import {
     CharacterTreeDecision,
     CharacterTreeRoot,
 } from './character-tree-node/character-tree';
-import AbilitiesPicker from '../../components/character-planner/abilities-picker';
+import AbilitiesPointBuy from '../../components/character-planner/abilities/abilities-point-buy';
+import AbilitiesIncrease from '../../components/character-planner/abilities/abilities-increase';
 
 export interface CharacterWidgetProps {
     onDecision: (
@@ -18,6 +19,7 @@ export interface CharacterWidgetProps {
         value: ICharacterFeatureCustomizationOption,
     ) => void;
     decision: IPendingDecision;
+    character: ICharacter;
 }
 
 export interface DecisionStateInfo {
@@ -60,7 +62,7 @@ export const CharacterDecisionInfo: {
     },
     [CharacterPlannerStep.SET_ABILITY_SCORES]: {
         title: 'Choose your ability scores',
-        render: (props) => <AbilitiesPicker {...props} />,
+        render: (props) => <AbilitiesPointBuy {...props} />,
         event: CharacterPlannerStep.SET_ABILITY_SCORES,
         getChoices: async () => [],
     },
@@ -75,5 +77,28 @@ export const CharacterDecisionInfo: {
     [CharacterPlannerStep.MULTICLASS]: {
         title: 'Choose a class to add',
         event: CharacterPlannerStep.MULTICLASS,
+    },
+    [CharacterPlannerStep.FEAT_SUBCHOICE]: {
+        title: 'Customize your feat choice',
+        event: CharacterPlannerStep.FEAT_SUBCHOICE,
+    },
+    [CharacterPlannerStep.FEAT_ABILITY_SCORES]: {
+        title: 'Choose an ability score to increase',
+        event: CharacterPlannerStep.FEAT_ABILITY_SCORES,
+        render: ({ character, ...props }) => {
+            const { decision } = props;
+
+            return (
+                <AbilitiesIncrease
+                    name={decision.parent!.name}
+                    abilities={character.getTotalAbilityScores()!}
+                    points={(decision.parent as any).points}
+                    abilityOptions={decision.choices![0].map(
+                        (choice: any) => choice.name,
+                    )}
+                    {...props}
+                />
+            );
+        },
     },
 };

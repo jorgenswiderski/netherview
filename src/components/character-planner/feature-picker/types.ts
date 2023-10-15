@@ -28,4 +28,9 @@ export const CharacterPlannerStepDescriptions: Map<
         CharacterPlannerStep.FEAT,
         'Select a Feat or gain an ability score improvement.',
     ],
+    [
+        CharacterPlannerStep.FEAT_SUBCHOICE,
+        'Additional feat customization options.',
+    ],
+    [CharacterPlannerStep.FEAT_ABILITY_SCORES, 'Increase an ability score.'],
 ]);
