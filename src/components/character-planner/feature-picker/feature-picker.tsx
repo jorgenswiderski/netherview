@@ -14,6 +14,11 @@ import { CharacterPlannerStepDescriptions } from './types';
 import { IPendingDecision } from '../../../models/character/character-states';
 import { log } from '../../../models/logger';
 
+enum LayoutType {
+    SPARSE,
+    DENSE,
+}
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -24,12 +29,13 @@ const Container = styled.div`
     gap: 1rem;
 `;
 
-const StyledGridContainer = styled(Grid)`
+const StyledGridContainer = styled(Grid)<{ layout: LayoutType }>`
     & > .MuiGrid-item {
-        padding: 12px; // This is half of the 24px (spacing={3}). You may adjust as needed
+        padding: ${({ layout }) =>
+            layout === LayoutType.DENSE ? '9px' : '12px'};
 
         @media (max-width: 600px) {
-            padding: 6px; // Reduce to half (or whatever desired value) for mobile
+            padding: 6px; // Reduce to half for mobile
         }
     }
 `;
@@ -45,19 +51,20 @@ const StyledCard = styled(Card)<{ selected: boolean }>`
     flex: 1;
 `;
 
-const ActionArea = styled(CardActionArea)`
+const ActionArea = styled(CardActionArea)<{ layout: LayoutType }>`
     position: relative;
-    min-height: 160px;
+    min-height: ${({ layout }) =>
+        layout === LayoutType.DENSE ? '30px' : '160px'};
 
     @media (max-width: 600px) {
-        min-height: 120px; // Reduced height for mobile
+        min-height: ${({ layout }) =>
+            layout === LayoutType.DENSE
+                ? '30px'
+                : '120px'}; // Reduced height for mobile
     }
 `;
 
-const CardMediaStyle = styled(CardMedia)<CardMediaProps>`
-    height: 160px;
-    object-fit: cover;
-    object-position: center -20px;
+const CardMediaStyle = styled(CardMedia)`
     opacity: 0.33;
 
     @media (max-width: 600px) {
@@ -65,9 +72,27 @@ const CardMediaStyle = styled(CardMedia)<CardMediaProps>`
     }
 `;
 
-const OptionName = styled(Typography)<TypographyProps>`
+const CardMediaSparse = styled(CardMediaStyle)`
+    height: 160px;
+    object-fit: cover;
+    object-position: center -20px;
+`;
+
+const CardMediaDense = styled(CardMediaStyle)`
+    // height: 30px;
+    width: 35%;
     position: absolute;
-    bottom: 8px;
+    right: 8px;
+    top: -70%;
+`;
+
+interface NameLabelProps extends TypographyProps {
+    layout: LayoutType;
+}
+
+const OptionName = styled(Typography)<NameLabelProps>`
+    position: absolute;
+    bottom: ${({ layout }) => (layout === LayoutType.DENSE ? '3px' : '8px')};
     left: 8px;
     text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
 
@@ -119,6 +144,8 @@ interface FeaturePickerProps {
     ) => void;
 }
 
+type CardMediaPropsExtended = CardMediaProps & { layout: LayoutType };
+
 export default function FeaturePicker({
     decision,
     choices,
@@ -139,12 +166,31 @@ export default function FeaturePicker({
         }
     }, [selectedOption]);
 
-    const gridSize = {
-        xs: choices.length < 4 ? 6 : 4,
-        sm: choices.length < 4 ? 12 / choices.length : 6,
-        md: choices.length < 4 ? 12 / choices.length : 4,
-        lg: choices.length < 4 ? 12 / choices.length : 3,
+    const renderCardMedia = (props: CardMediaPropsExtended) => {
+        const { layout, ...restProps } = props;
+
+        switch (layout) {
+            case LayoutType.SPARSE:
+                return <CardMediaSparse {...restProps} />;
+            case LayoutType.DENSE:
+                return <CardMediaDense {...restProps} />;
+            default:
+                return null;
+        }
     };
+
+    const layoutType =
+        choices.length < 17 ? LayoutType.SPARSE : LayoutType.DENSE;
+
+    const gridSize =
+        layoutType === LayoutType.DENSE
+            ? { xs: 12, sm: 12, md: 12, lg: 6 }
+            : {
+                  xs: choices.length < 4 ? 6 : 4,
+                  sm: choices.length < 4 ? 12 / choices.length : 6,
+                  md: choices.length < 4 ? 12 / choices.length : 4,
+                  lg: choices.length < 4 ? 12 / choices.length : 3,
+              };
 
     const showDescription = typeof selectedOption?.description === 'string';
     const showEffects =
@@ -155,7 +201,7 @@ export default function FeaturePicker({
 
     return (
         <Container>
-            <StyledGridContainer container>
+            <StyledGridContainer container layout={layoutType}>
                 {choices.map((option) => (
                     <StyledGrid item {...gridSize} key={option.name}>
                         <StyledCard
@@ -164,14 +210,19 @@ export default function FeaturePicker({
                         >
                             <ActionArea
                                 onClick={() => setSelectedOption(option)}
+                                layout={layoutType}
                             >
-                                {option.image && (
-                                    <CardMediaStyle
-                                        component="img"
-                                        image={option.image}
-                                    />
-                                )}
-                                <OptionName variant="h6" component="div">
+                                {option.image &&
+                                    renderCardMedia({
+                                        component: 'img',
+                                        image: option.image,
+                                        layout: layoutType,
+                                    })}
+                                <OptionName
+                                    variant="h6"
+                                    component="div"
+                                    layout={layoutType}
+                                >
                                     {option.name}
                                 </OptionName>
                             </ActionArea>
