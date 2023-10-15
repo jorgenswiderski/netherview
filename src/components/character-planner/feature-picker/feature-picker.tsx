@@ -12,6 +12,7 @@ import GrantedEffect from '../granted-effect';
 import { Utils } from '../../../models/utils';
 import { CharacterPlannerStepDescriptions } from './types';
 import { IPendingDecision } from '../../../models/character/character-states';
+import { log } from '../../../models/logger';
 
 const Container = styled.div`
     display: flex;
@@ -149,6 +150,8 @@ export default function FeaturePicker({
     const showEffects =
         (selectedOption?.grants && selectedOption.grants.length > 0) ||
         selectedOption?.choiceType;
+
+    useEffect(() => log(selectedOption?.choiceType), [selectedOption]);
 
     return (
         <Container>

@@ -24,4 +24,8 @@ export const CharacterPlannerStepDescriptions: Map<
         CharacterPlannerStep.CHOOSE_SUBCLASS,
         'Select a subclass specialization for your character.',
     ],
+    [
+        CharacterPlannerStep.FEAT,
+        'Select a Feat or gain an ability score improvement.',
+    ],
 ]);
