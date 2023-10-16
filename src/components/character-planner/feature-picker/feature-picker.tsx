@@ -190,8 +190,8 @@ export default function FeaturePicker({
 
     const showDescription = typeof selectedOption?.description === 'string';
     const showEffects =
-        Utils.isNonEmptyArray(selectedOption?.grants) ||
-        selectedOption?.choices?.length;
+        (selectedOption?.grants && selectedOption?.grants?.length > 0) ||
+        (selectedOption?.choices && selectedOption?.choices?.length > 0);
 
     return (
         <Container>

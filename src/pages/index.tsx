@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { BeatLoader } from 'react-spinners';
+import { ISpell } from 'planner-types/src/types/spells';
 import CharacterPlanner from '../components/character-planner/character-planner';
 import { WeaveApi } from '../api/weave/weave';
 import { CharacterClassOption } from '../models/character/types';
@@ -29,21 +30,19 @@ const PageContainer = styled.div`
 
 export default function HomePage() {
     const [classData, setClassData] = useState<CharacterClassOption[] | null>();
+    const [spellData, setSpellData] = useState<ISpell[] | null>();
 
     useEffect(() => {
-        async function fetchClassData() {
-            return WeaveApi.getClassesInfo();
-        }
-
-        fetchClassData().then((data) => setClassData(data));
+        WeaveApi.getClassesInfo().then((data) => setClassData(data));
+        WeaveApi.getClassSpellInfo().then((data) => setSpellData(data));
     }, []);
 
     return (
         <PageContainer>
-            {!classData ? (
+            {!classData || !spellData ? (
                 <BeatLoader />
             ) : (
-                <CharacterPlanner classData={classData} />
+                <CharacterPlanner classData={classData} spellData={spellData} />
             )}
         </PageContainer>
     );

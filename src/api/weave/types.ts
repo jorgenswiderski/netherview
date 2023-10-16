@@ -4,8 +4,10 @@ export interface CharacterClassProgressionLevel {
     Level: number;
     'Proficiency Bonus': number;
     Features: ICharacterOption[];
+    'Spells Known'?: number;
     'Cantrips Known'?: number;
-    'Spell Slots'?: (null | number)[];
+    'Spell Slots'?: (null | number)[] | number;
+    'Slot Level'?: number; // Warlock
 }
 
 export type CharacterClassProgression = CharacterClassProgressionLevel[];

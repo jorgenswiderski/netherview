@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ISpell } from 'planner-types/src/types/spells';
 import { CONFIG } from '../../models/config';
 import {
     CharacterClassOption,
@@ -37,5 +38,9 @@ export class WeaveApi {
         CharacterBackgroundOption[]
     > => {
         return fetchFromApi('/backgrounds/info');
+    };
+
+    static getClassSpellInfo = async (): Promise<ISpell[]> => {
+        return fetchFromApi('/spells/info?filter=class');
     };
 }

@@ -91,4 +91,10 @@ export const CharacterDecisionInfo: {
             );
         },
     },
+    [CharacterPlannerStep.LEARN_CANTRIPS]: {
+        title: 'Choose cantrips to learn',
+    },
+    [CharacterPlannerStep.LEARN_SPELLS]: {
+        title: 'Choose spells to learn',
+    },
 };

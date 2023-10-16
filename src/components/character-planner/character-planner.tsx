@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import Paper from '@mui/material/Paper';
+import { ISpell } from 'planner-types/src/types/spells';
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
@@ -70,10 +71,16 @@ const PlannerHeader = styled(Paper)`
 
 interface CharacterPlannerProps {
     classData: CharacterClassOption[];
+    spellData: ISpell[];
 }
 
-export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
-    const [character, setCharacter] = useState(new Character(classData));
+export default function CharacterPlanner({
+    classData,
+    spellData,
+}: CharacterPlannerProps) {
+    const [character, setCharacter] = useState(
+        new Character(classData, spellData),
+    );
     const [loading] = useState(false);
     const nextDecision = useMemo(
         () => character.pendingDecisions[0],
@@ -111,7 +118,7 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
     }, [character]);
 
     const handleReset = () => {
-        setCharacter(new Character(classData)); // Reset the character to its initial state
+        setCharacter(new Character(classData, spellData)); // Reset the character to its initial state
     };
 
     const renderDecisionPanel = () => {

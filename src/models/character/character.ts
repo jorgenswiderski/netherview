@@ -11,6 +11,7 @@ import {
     GrantableEffectType,
     Proficiency,
 } from 'planner-types/src/types/grantable-effect';
+import { ISpell } from 'planner-types/src/types/spells';
 import { AbilityScores, CharacterClassOption, ICharacter } from './types';
 import { PendingDecision } from './pending-decision/pending-decision';
 import {
@@ -24,6 +25,7 @@ import {
     ICharacterTreeNode,
 } from './character-tree-node/types';
 import { CharacterDecisionInfo, IPendingDecision } from './character-states';
+import { CharacterClassProgressionLevel } from '../../api/weave/types';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
@@ -47,7 +49,10 @@ export class Character implements ICharacter {
     ];
     pendingDecisions: PendingDecision[] = [];
 
-    constructor(public classData: CharacterClassOption[]) {
+    constructor(
+        public classData: CharacterClassOption[],
+        public spellData: ISpell[],
+    ) {
         this.updateClassDataEffects();
     }
 
@@ -140,12 +145,15 @@ export class Character implements ICharacter {
             parent.addChild(decision);
             Character.grantEffects(decision);
 
-            if (type === CharacterPlannerStep.CHOOSE_SUBCLASS) {
-                this.collapseSubclassFeatures(decision.name);
-                this.updateClassDataEffects();
-            }
-
             if (Character.LEVEL_STEPS.includes(type)) {
+                this.updateClassDataEffects();
+            } else if (
+                type === CharacterPlannerStep.LEARN_CANTRIPS ||
+                type === CharacterPlannerStep.LEARN_SPELLS
+            ) {
+                this.updateClassSpellOptions();
+            } else if (type === CharacterPlannerStep.CHOOSE_SUBCLASS) {
+                this.collapseSubclassFeatures(decision.name);
                 this.updateClassDataEffects();
             }
 
@@ -156,7 +164,10 @@ export class Character implements ICharacter {
     }
 
     clone(): Character {
-        return Object.assign(new Character(this.classData), this);
+        return Object.assign(
+            new Character(this.classData, this.spellData),
+            this,
+        );
     }
 
     private queueSubchoices(parent: CharacterTreeDecision) {
@@ -225,7 +236,7 @@ export class Character implements ICharacter {
         });
     }
 
-    private updateClassDataEffects(): void {
+    private updateClassFeatures(): void {
         const levelInfo = this.getClasses();
 
         this.classData = this.classData.map((cls) => {
@@ -249,6 +260,110 @@ export class Character implements ICharacter {
                 ).filter(Boolean) as unknown as GrantableEffect[],
             };
         });
+    }
+
+    private updateClassSpellOptions(): void {
+        const levelInfo = this.getClasses();
+        const keys: (keyof CharacterClassProgressionLevel)[] = [
+            'Spells Known',
+            'Cantrips Known',
+        ];
+
+        this.classData = this.classData.map((cls) => {
+            const level =
+                levelInfo.find((info) => info.class.name === cls.name)
+                    ?.levels ?? 0;
+
+            const currentLevelData = level > 0 && cls.progression[level - 1];
+            const nextLevelData = cls.progression[level];
+
+            const choices: ICharacterChoice[] = keys.flatMap((key) => {
+                if (!nextLevelData[key]) {
+                    return [];
+                }
+
+                const step =
+                    key === 'Spells Known'
+                        ? CharacterPlannerStep.LEARN_SPELLS
+                        : CharacterPlannerStep.LEARN_CANTRIPS;
+
+                const netChoices =
+                    ((nextLevelData[key] as number) ?? 0) -
+                    (currentLevelData ? (currentLevelData[key] as number) : 0);
+
+                if (netChoices === 0) {
+                    return [];
+                }
+
+                if (!nextLevelData['Spell Slots']) {
+                    throw new Error('class does not have spell slots');
+                }
+
+                let spells: ISpell[];
+
+                if (key === 'Spells Known') {
+                    const highestSlot =
+                        typeof nextLevelData['Spell Slots'] === 'number'
+                            ? nextLevelData['Slot Level']!
+                            : nextLevelData['Spell Slots'].findLastIndex(
+                                  (spellCount) => spellCount && spellCount > 0,
+                              );
+                    const spellsKnown = this.getKnownSpells(
+                        CharacterPlannerStep.LEARN_SPELLS,
+                    ).map((effect) => effect.name);
+
+                    spells = this.spellData.filter(
+                        (spell) =>
+                            spell.classes.includes(cls.name) &&
+                            spell.level > 0 &&
+                            spell.level <= highestSlot &&
+                            !spellsKnown.includes(spell.name),
+                    );
+                } else {
+                    const cantripsKnown = this.getKnownSpells(
+                        CharacterPlannerStep.LEARN_CANTRIPS,
+                    ).map((effect) => effect.name);
+
+                    spells = this.spellData.filter(
+                        (spell) =>
+                            spell.classes.includes(cls.name) &&
+                            spell.level === 0 &&
+                            !cantripsKnown.includes(spell.name),
+                    );
+                }
+
+                return [
+                    {
+                        type: step,
+                        count: netChoices,
+                        options: spells.map(({ name, description, image }) => ({
+                            name,
+                            description,
+                            image,
+                            type: step,
+                            grants: [
+                                {
+                                    name,
+                                    description,
+                                    type: GrantableEffectType.ACTION,
+                                    image,
+                                },
+                            ],
+                        })),
+                    },
+                ];
+            });
+
+            return {
+                ...cls,
+                choices,
+            };
+        });
+    }
+
+    private updateClassDataEffects(): void {
+        this.updateClassFeatures();
+        this.updateClassSpellOptions();
     }
 
     levelUp(): Character {
@@ -553,5 +668,15 @@ export class Character implements ICharacter {
         return this.findDecisionByChoiceType(
             CharacterPlannerStep.SET_BACKGROUND,
         )?.children?.[0] as ICharacterTreeDecision | undefined;
+    }
+
+    getKnownSpells(
+        type:
+            | CharacterPlannerStep.LEARN_CANTRIPS
+            | CharacterPlannerStep.LEARN_SPELLS,
+    ): GrantableEffect[] {
+        return this.findAllDecisionsByOptionType(type).flatMap(
+            (decision) => decision.grants!,
+        );
     }
 }
