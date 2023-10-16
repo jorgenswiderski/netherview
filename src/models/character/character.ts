@@ -1,7 +1,8 @@
 // character.ts
 import {
-    ICharacterFeatureCustomizationOption,
+    ICharacterOption,
     CharacterPlannerStep,
+    ICharacterChoice,
 } from 'planner-types/src/types/character-feature-customization-option';
 import {
     Characteristic,
@@ -22,7 +23,7 @@ import {
     ICharacterTreeDecision,
     ICharacterTreeNode,
 } from './character-tree-node/types';
-import { IPendingDecision } from './character-states';
+import { CharacterDecisionInfo, IPendingDecision } from './character-states';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
@@ -38,39 +39,51 @@ export class Character implements ICharacter {
 
     root: CharacterTreeRoot = new CharacterTreeRoot();
 
+    pendingSteps: CharacterPlannerStep[] = [
+        CharacterPlannerStep.SET_RACE,
+        CharacterPlannerStep.SET_CLASS,
+        CharacterPlannerStep.SET_BACKGROUND,
+        CharacterPlannerStep.SET_ABILITY_SCORES,
+    ];
     pendingDecisions: PendingDecision[] = [];
 
     constructor(public classData: CharacterClassOption[]) {
         this.updateClassDataEffects();
-
-        const initialDecisions: PendingDecision[] = [
-            CharacterPlannerStep.SET_RACE,
-            CharacterPlannerStep.SET_CLASS,
-            CharacterPlannerStep.SET_BACKGROUND,
-            CharacterPlannerStep.SET_ABILITY_SCORES,
-        ].map((type) => {
-            const parent = new CharacterTreeDecision({
-                name: type,
-                choiceType: type,
-            });
-
-            this.root.addChild(parent);
-
-            return new PendingDecision(type, parent);
-        });
-
-        this.pendingDecisions.push(...initialDecisions);
     }
 
-    multiclassOption: ICharacterFeatureCustomizationOption = {
+    multiclassRoot: ICharacterOption = {
         name: 'Add a class',
-        description: 'Add a level in a new class.',
-        choiceType: CharacterPlannerStep.MULTICLASS,
+        // description: 'Add a level in a new class.',
+        type: CharacterPlannerStep.MULTICLASS_ROOT,
     };
 
     name: string = 'Tav';
 
     // State management =======================================================
+
+    async queueNextStep(): Promise<Character | null> {
+        if (!this.pendingSteps.length) {
+            return null;
+        }
+
+        const step = this.pendingSteps.shift()!;
+        const info = CharacterDecisionInfo[step];
+        const choices = info?.getChoices
+            ? await info.getChoices(this)
+            : [{ type: step, options: await info.getOptions!(this) }];
+
+        const parent = new CharacterTreeDecision({
+            name: step,
+        });
+
+        this.root.addChild(parent);
+
+        choices.forEach((choice) =>
+            this.pendingDecisions.push(new PendingDecision(parent, choice)),
+        );
+
+        return this.clone();
+    }
 
     getNextDecision(): PendingDecision | null {
         return this.pendingDecisions[0] || null;
@@ -92,14 +105,14 @@ export class Character implements ICharacter {
 
     makeDecision(
         pending: IPendingDecision,
-        choice: ICharacterFeatureCustomizationOption,
+        option: ICharacterOption,
     ): Character {
         const { type } = pending;
         let { parent } = pending;
         this.unqueueDecision(pending as PendingDecision);
 
         if (!parent && Character.LEVEL_STEPS.includes(type)) {
-            parent = this.findClassParent(choice);
+            parent = this.findClassParent(option);
         }
 
         if (!parent) {
@@ -111,19 +124,19 @@ export class Character implements ICharacter {
         }
 
         const isProxyChoice =
-            choice.choiceType === CharacterPlannerStep.MULTICLASS &&
+            option.type === CharacterPlannerStep.MULTICLASS &&
             parent !== this.root;
 
         if (isProxyChoice) {
             // impose the choices onto the proxied parent
             const targetParent = this.findDecisionByChoiceType(
-                choice.choiceType as CharacterPlannerStep,
+                option.type as CharacterPlannerStep,
             )!;
             // FIXME: mutation here MIGHT be dangerous, but we have to keep the same object pointer or the parent won't be found
-            targetParent.choices = choice.choices;
+            targetParent.choices = option.choices;
             this.queueSubchoices(targetParent);
         } else {
-            const decision = new CharacterTreeDecision({ type, ...choice });
+            const decision = new CharacterTreeDecision({ type, ...option });
             parent.addChild(decision);
             Character.grantEffects(decision);
 
@@ -147,12 +160,12 @@ export class Character implements ICharacter {
     }
 
     private queueSubchoices(parent: CharacterTreeDecision) {
-        if (!parent.choiceType || !parent.choices) {
+        if (!parent.choices) {
             return;
         }
 
-        this.pendingDecisions.unshift(
-            new PendingDecision(parent.choiceType, parent, parent.choices),
+        parent.choices.forEach((choice) =>
+            this.pendingDecisions.unshift(new PendingDecision(parent, choice)),
         );
     }
 
@@ -164,7 +177,7 @@ export class Character implements ICharacter {
                     ...level,
                     Features: level.Features.map((feature) => {
                         if (
-                            feature?.choiceType !==
+                            feature.type !==
                             CharacterPlannerStep.SUBCLASS_FEATURE
                         ) {
                             return feature;
@@ -173,7 +186,7 @@ export class Character implements ICharacter {
                         // Make sure the subclass we're collapsing exists in these choices
                         if (
                             !feature?.choices?.[0] ||
-                            feature.choices[0].findIndex(
+                            feature.choices[0].options.findIndex(
                                 (choice) => choice.name === subclassName,
                             ) < 0
                         ) {
@@ -185,8 +198,8 @@ export class Character implements ICharacter {
                             choices: undefined,
                             choiceType: undefined,
                             grants: (
-                                feature
-                                    ?.choices?.[0] as ICharacterFeatureCustomizationOption[]
+                                feature?.choices?.[0]
+                                    .options as ICharacterOption[]
                             ).find(
                                 (subclass) => subclass.name === subclassName,
                             )!.grants,
@@ -207,7 +220,7 @@ export class Character implements ICharacter {
 
             const choices = cls.progression[level].Features.flatMap(
                 (feature) => feature.choices,
-            ).filter(Boolean) as ICharacterFeatureCustomizationOption[][];
+            ).filter(Boolean) as ICharacterChoice[];
 
             return {
                 ...cls,
@@ -229,9 +242,11 @@ export class Character implements ICharacter {
         }
 
         const currentClassNames = (
-            this.findAllDecisionsByChoiceType(Character.LEVEL_ROOTS)
-                .flatMap((node) => node.children)
-                .filter(Boolean) as ICharacterTreeDecision[]
+            this.findAllDecisionsByOptionType([
+                CharacterPlannerStep.SET_CLASS,
+                CharacterPlannerStep.LEVEL_UP,
+                CharacterPlannerStep.MULTICLASS,
+            ]).filter(Boolean) as ICharacterTreeDecision[]
         ).map((decision) => decision.name);
 
         const currentClasses = this.classData.filter((cls) =>
@@ -242,19 +257,21 @@ export class Character implements ICharacter {
             (cls) => !currentClasses.includes(cls),
         );
 
-        const decision: PendingDecision = new PendingDecision(
-            CharacterPlannerStep.LEVEL_UP,
-            null,
-            [
-                [
-                    ...currentClasses,
-                    {
-                        ...this.multiclassOption,
-                        choices: [newClasses],
-                    },
-                ],
+        const decision: PendingDecision = new PendingDecision(null, {
+            options: [
+                ...currentClasses,
+                {
+                    ...this.multiclassRoot,
+                    choices: [
+                        {
+                            type: CharacterPlannerStep.MULTICLASS,
+                            options: newClasses,
+                        },
+                    ],
+                },
             ],
-        );
+            type: CharacterPlannerStep.LEVEL_UP,
+        });
 
         this.pendingDecisions.unshift(decision);
 
@@ -262,7 +279,7 @@ export class Character implements ICharacter {
     }
 
     findClassParent(
-        choice: ICharacterFeatureCustomizationOption,
+        choice: ICharacterOption,
     ): CharacterTreeDecision | CharacterTreeRoot {
         return (
             (this.root.findNode((node) => {
@@ -313,11 +330,11 @@ export class Character implements ICharacter {
         // Create a map to count occurrences of each class
         const classCount = new Map<string, number>();
 
-        const classes = this.findAllDecisionsByOptionType(
-            Character.LEVEL_STEPS,
-        ).filter(
-            (node) => node?.choiceType !== CharacterPlannerStep.MULTICLASS,
-        ) as ICharacterTreeDecision[];
+        const classes = this.findAllDecisionsByOptionType([
+            CharacterPlannerStep.SET_CLASS,
+            CharacterPlannerStep.MULTICLASS,
+            CharacterPlannerStep.LEVEL_UP,
+        ]).filter(Boolean) as ICharacterTreeDecision[];
 
         classes.forEach((cls) => {
             classCount.set(cls.name, (classCount.get(cls.name) || 0) + 1);
@@ -343,7 +360,7 @@ export class Character implements ICharacter {
                                 const decision = node as CharacterTreeDecision;
 
                                 return (
-                                    decision.choiceType ===
+                                    decision.type ===
                                     CharacterPlannerStep.CHOOSE_SUBCLASS
                                 );
                             }),
@@ -445,11 +462,12 @@ export class Character implements ICharacter {
 
             const decision = node as CharacterTreeDecision;
 
+            // FIXME: Only looks at the first choice which may not work in all situations
             return (
-                typeof decision.choiceType !== 'undefined' &&
+                typeof decision.choices?.[0]?.type !== 'undefined' &&
                 (typeof choiceType === 'string'
-                    ? decision.choiceType === choiceType
-                    : choiceType.includes(decision.choiceType))
+                    ? decision.choices?.[0].type === choiceType
+                    : choiceType.includes(decision.choices?.[0].type))
             );
         };
     }

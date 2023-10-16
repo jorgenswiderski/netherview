@@ -1,5 +1,5 @@
 // types.ts
-import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
 
 export enum CharacterTreeNodeType {
@@ -29,7 +29,7 @@ export interface ICharacterTreeEffect
 }
 
 export interface ICharacterTreeDecision
-    extends ICharacterFeatureCustomizationOption,
+    extends ICharacterOption,
         ICharacterTreeNode {
     // parent: ICharacterTreeNode;
     nodeType: CharacterTreeNodeType.DECISION;

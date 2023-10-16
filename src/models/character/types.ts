@@ -1,4 +1,4 @@
-import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import { CharacterClassProgression } from '../../api/weave/types';
 
 export interface AbilityScores {
@@ -10,16 +10,13 @@ export interface AbilityScores {
     Charisma: number;
 }
 
-export interface CharacterRaceOption
-    extends ICharacterFeatureCustomizationOption {}
+export interface CharacterRaceOption extends ICharacterOption {}
 
-export interface CharacterClassOption
-    extends ICharacterFeatureCustomizationOption {
+export interface CharacterClassOption extends ICharacterOption {
     progression: CharacterClassProgression;
 }
 
-export interface CharacterBackgroundOption
-    extends ICharacterFeatureCustomizationOption {}
+export interface CharacterBackgroundOption extends ICharacterOption {}
 
 export interface ICharacter {
     clone(): ICharacter;

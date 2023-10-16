@@ -1,4 +1,4 @@
-import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 
 export class Utils {
     /**
@@ -37,20 +37,22 @@ export class Utils {
         }
     }
 
-    static preloadChoiceImages(
-        choices: ICharacterFeatureCustomizationOption[],
-    ): void {
-        if (!choices) {
+    static preloadOptionImages(options?: ICharacterOption[]): void {
+        if (!options) {
             return;
         }
 
-        const imagesToPreload = choices
-            .flatMap((choice) => [
-                choice.image,
-                ...(choice.grants ? choice.grants.map((fx) => fx.image) : []),
+        const imagesToPreload = options
+            .flatMap((option) => [
+                option.image,
+                ...(option.grants ? option.grants.map((fx) => fx.image) : []),
             ])
             .filter(Boolean) as string[]; // Filters out null or undefined values
 
         Utils.preloadImages(imagesToPreload);
+    }
+
+    static isNonEmptyArray(a?: any[] | null): boolean {
+        return Array.isArray(a) && a.length > 0;
     }
 }

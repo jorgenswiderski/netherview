@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Box, Typography, Select, MenuItem } from '@mui/material';
-import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import {
     GrantableEffectType,
     GrantableEffectSubtype,
@@ -13,10 +13,7 @@ import { AbilitiesBonusType, AbilitiesCostMode } from './types';
 
 // using 'any' here to resolve cyclic dependency with character-states.tsx
 interface CharacterWidgetProps {
-    onDecision: (
-        decision: any,
-        value: ICharacterFeatureCustomizationOption,
-    ) => void;
+    onDecision: (decision: any, value: ICharacterOption) => void;
     decision: any;
 }
 
@@ -58,7 +55,7 @@ export default function AbilitiesPointBuy({
     }, [bonusOne, bonusTwo]);
 
     const handleConfirm = (pointBuyScores: AbilityScores) => {
-        const choice: ICharacterFeatureCustomizationOption = {
+        const choice: ICharacterOption = {
             name: 'Set Ability Scores',
             grants: [
                 {

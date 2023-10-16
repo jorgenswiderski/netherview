@@ -12,7 +12,8 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "type-check": "tsc --noEmit --skipLibCheck --jsx react"
+        "type-check": "tsc --noEmit --skipLibCheck --jsx react",
+        "check": "npm run lint-fix && npm run type-check"
     },
     "author": "Jorgen Swiderski",
     "license": "MIT",

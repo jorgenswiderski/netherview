@@ -5,14 +5,13 @@ import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import { Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import GrantedEffect from '../granted-effect';
 import { Utils } from '../../../models/utils';
 import { CharacterPlannerStepDescriptions } from './types';
 import { IPendingDecision } from '../../../models/character/character-states';
-import { log } from '../../../models/logger';
 
 enum LayoutType {
     SPARSE,
@@ -137,32 +136,29 @@ const NextButton = styled(Button)<{ visible: boolean }>`
 
 interface FeaturePickerProps {
     decision: IPendingDecision;
-    choices: ICharacterFeatureCustomizationOption[];
-    onEvent: (
-        decision: IPendingDecision,
-        choice: ICharacterFeatureCustomizationOption,
-    ) => void;
+    onEvent: (decision: IPendingDecision, choice: ICharacterOption) => void;
 }
 
 type CardMediaPropsExtended = CardMediaProps & { layout: LayoutType };
 
 export default function FeaturePicker({
     decision,
-    choices,
     onEvent,
 }: FeaturePickerProps) {
+    const { options } = decision;
+
     const [selectedOption, setSelectedOption] =
-        useState<ICharacterFeatureCustomizationOption | null>(null);
+        useState<ICharacterOption | null>(null);
 
     useEffect(() => {
         setSelectedOption(null);
-    }, [choices]);
+    }, [options]);
 
     // Preload subchoice assets for the selected options
     useEffect(() => {
         if (selectedOption?.choices) {
             // Only need to preload first choice, others handled by decision queue preloader
-            Utils.preloadChoiceImages(selectedOption.choices[0]);
+            Utils.preloadOptionImages(selectedOption?.choices[0]?.options);
         }
     }, [selectedOption]);
 
@@ -180,29 +176,27 @@ export default function FeaturePicker({
     };
 
     const layoutType =
-        choices.length < 17 ? LayoutType.SPARSE : LayoutType.DENSE;
+        options.length < 17 ? LayoutType.SPARSE : LayoutType.DENSE;
 
     const gridSize =
         layoutType === LayoutType.DENSE
             ? { xs: 12, sm: 12, md: 12, lg: 6 }
             : {
-                  xs: choices.length < 4 ? 6 : 4,
-                  sm: choices.length < 4 ? 12 / choices.length : 6,
-                  md: choices.length < 4 ? 12 / choices.length : 4,
-                  lg: choices.length < 4 ? 12 / choices.length : 3,
+                  xs: options.length < 4 ? 6 : 4,
+                  sm: options.length < 4 ? 12 / options.length : 6,
+                  md: options.length < 4 ? 12 / options.length : 4,
+                  lg: options.length < 4 ? 12 / options.length : 3,
               };
 
     const showDescription = typeof selectedOption?.description === 'string';
     const showEffects =
-        (selectedOption?.grants && selectedOption.grants.length > 0) ||
-        selectedOption?.choiceType;
-
-    useEffect(() => log(selectedOption?.choiceType), [selectedOption]);
+        Utils.isNonEmptyArray(selectedOption?.grants) ||
+        selectedOption?.choices?.length;
 
     return (
         <Container>
             <StyledGridContainer container layout={layoutType}>
-                {choices.map((option) => (
+                {options.map((option) => (
                     <StyledGrid item {...gridSize} key={option.name}>
                         <StyledCard
                             elevation={2}
@@ -256,16 +250,17 @@ export default function FeaturePicker({
                                             elevation={4}
                                         />
                                     ))}
-                            {selectedOption.choiceType && (
-                                <Typography
-                                    variant="body2"
-                                    style={{ fontWeight: 600 }}
-                                >
-                                    {CharacterPlannerStepDescriptions.get(
-                                        selectedOption.choiceType,
-                                    )}
-                                </Typography>
-                            )}
+                            {selectedOption?.choices &&
+                                selectedOption.choices.length > 0 && (
+                                    <Typography
+                                        variant="body2"
+                                        style={{ fontWeight: 600 }}
+                                    >
+                                        {CharacterPlannerStepDescriptions.get(
+                                            selectedOption.choices[0].type,
+                                        )}
+                                    </Typography>
+                                )}
                         </EffectsContainer>
                     )}
                 </DescriptionPaper>

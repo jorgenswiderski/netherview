@@ -9,7 +9,7 @@ import TableCell from '@mui/material/TableCell';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
-import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import {
     GrantableEffectSubtype,
     GrantableEffectType,
@@ -18,10 +18,7 @@ import { AbilityScores } from '../../models/character/types';
 
 // using 'any' here to resolve cyclic dependency with character-states.tsx
 interface CharacterWidgetProps {
-    onDecision: (
-        decision: any,
-        value: ICharacterFeatureCustomizationOption,
-    ) => void;
+    onDecision: (decision: any, value: ICharacterOption) => void;
     decision: any;
 }
 
@@ -127,7 +124,7 @@ export default function AbilitiesPicker({
     };
 
     const handleConfirm = () => {
-        const choice: ICharacterFeatureCustomizationOption = {
+        const choice: ICharacterOption = {
             name: 'Set Ability Scores',
             grants: [
                 {

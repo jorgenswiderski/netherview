@@ -3,7 +3,7 @@ import { BeatLoader } from 'react-spinners';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
-import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import Paper from '@mui/material/Paper';
 import { Character } from '../../models/character/character';
 import {
@@ -74,7 +74,7 @@ interface CharacterPlannerProps {
 
 export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
     const [character, setCharacter] = useState(new Character(classData));
-    const [loading, setLoading] = useState(false);
+    const [loading] = useState(false);
     const nextDecision = useMemo(
         () => character.pendingDecisions[0],
         [character],
@@ -84,42 +84,21 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
         [nextDecision],
     );
 
-    const loadChoices = useCallback(
-        async (decision: IPendingDecision) => {
-            setLoading(true);
-
-            const newCharacter: Character | null = (await decision.loadChoices(
-                character,
-            )) as Character | null;
-
-            if (newCharacter) {
-                setCharacter(newCharacter);
-            }
-
-            setLoading(false);
-        },
-        [character],
-    );
-
     useEffect(() => {
-        if (nextDecision) {
-            loadChoices(nextDecision);
-        }
-    }, [nextDecision]);
-
-    useEffect(() => {
-        const secondDecision = character.pendingDecisions[1];
-
-        if (secondDecision) {
-            loadChoices(secondDecision);
+        if (
+            character.pendingDecisions.length < 2 &&
+            character.pendingSteps.length
+        ) {
+            character.queueNextStep().then((char) => {
+                if (char) {
+                    setCharacter(char);
+                }
+            });
         }
     }, [character]);
 
     const handleDecision = useCallback(
-        (
-            decision: IPendingDecision,
-            choice: ICharacterFeatureCustomizationOption,
-        ) => {
+        (decision: IPendingDecision, choice: ICharacterOption) => {
             const newCharacter = character.makeDecision(decision, choice);
             setCharacter(newCharacter);
         },
@@ -167,7 +146,11 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
             );
         }
 
-        if (loading || typeof nextDecision.choices === 'undefined') {
+        if (
+            loading ||
+            (character.pendingDecisions.length === 0 &&
+                character.pendingSteps.length)
+        ) {
             return <BeatLoader />;
         }
 
@@ -178,19 +161,18 @@ export default function CharacterPlanner({ classData }: CharacterPlannerProps) {
                         {nextDecisionInfo.title}
                     </Typography>
                 </PlannerHeader>
-                {nextDecisionInfo.render
-                    ? nextDecisionInfo.render({
-                          onDecision: handleDecision,
-                          decision: nextDecision,
-                          character,
-                      })
-                    : nextDecision.choices.map((choice) => (
-                          <FeaturePicker
-                              choices={choice}
-                              onEvent={handleDecision}
-                              decision={nextDecision}
-                          />
-                      ))}
+                {nextDecisionInfo.render ? (
+                    nextDecisionInfo.render({
+                        onDecision: handleDecision,
+                        decision: nextDecision,
+                        character,
+                    })
+                ) : (
+                    <FeaturePicker
+                        onEvent={handleDecision}
+                        decision={nextDecision}
+                    />
+                )}
             </>
         );
     };

@@ -1,7 +1,7 @@
 // abilities-point-buy.tsx
 
 import React from 'react';
-import { ICharacterFeatureCustomizationOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import {
     GrantableEffectType,
     GrantableEffectSubtype,
@@ -12,10 +12,7 @@ import { AbilitiesCostMode } from './types';
 
 // using 'any' here to resolve cyclic dependency with character-states.tsx
 interface CharacterWidgetProps {
-    onDecision: (
-        decision: any,
-        value: ICharacterFeatureCustomizationOption,
-    ) => void;
+    onDecision: (decision: any, value: ICharacterOption) => void;
     decision: any;
     points: number;
     name: string;
@@ -32,7 +29,7 @@ export default function AbilitiesPointBuy({
     abilityOptions,
 }: CharacterWidgetProps) {
     const handleConfirm = (pointBuyScores: AbilityScores) => {
-        const choice: ICharacterFeatureCustomizationOption = {
+        const choice: ICharacterOption = {
             name,
             grants: [
                 {
