@@ -176,33 +176,48 @@ export class Character implements ICharacter {
                 progression: cls.progression.map((level) => ({
                     ...level,
                     Features: level.Features.map((feature) => {
-                        if (
-                            feature.type !==
-                            CharacterPlannerStep.SUBCLASS_FEATURE
-                        ) {
+                        const choice = feature.choices?.find(
+                            (c) =>
+                                c.type ===
+                                CharacterPlannerStep.SUBCLASS_FEATURE,
+                        );
+
+                        if (!choice) {
                             return feature;
                         }
 
+                        const option = choice.options.find(
+                            (c) => c.name === subclassName,
+                        );
+
                         // Make sure the subclass we're collapsing exists in these choices
-                        if (
-                            !feature?.choices?.[0] ||
-                            feature.choices[0].options.findIndex(
-                                (choice) => choice.name === subclassName,
-                            ) < 0
-                        ) {
+                        if (!option) {
                             return feature;
+                        }
+
+                        const choices: ICharacterChoice[] = [];
+                        const grants: GrantableEffect[] = [];
+
+                        if (feature.choices) {
+                            choices.push(...feature.choices);
+                        }
+
+                        if (option.choices) {
+                            choices.push(...option.choices);
+                        }
+
+                        if (feature.grants) {
+                            grants.push(...feature.grants);
+                        }
+
+                        if (option.grants) {
+                            grants.push(...option.grants);
                         }
 
                         return {
                             ...feature,
-                            choices: undefined,
-                            choiceType: undefined,
-                            grants: (
-                                feature?.choices?.[0]
-                                    .options as ICharacterOption[]
-                            ).find(
-                                (subclass) => subclass.name === subclassName,
-                            )!.grants,
+                            choices,
+                            grants,
                         };
                     }),
                 })),
