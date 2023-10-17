@@ -151,7 +151,7 @@ export default function CharacterPlanner({
         if (!nextDecisionInfo) {
             return (
                 <Typography variant="h4" color="error">
-                    {`Warning: Invalid decision type '${nextDecision.type}'.`}
+                    {`Warning: No decision info for '${nextDecision.type}'.`}
                 </Typography>
             );
         }

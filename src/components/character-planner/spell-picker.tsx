@@ -29,8 +29,6 @@ const StyledCard = styled(Card)<{ selected: boolean }>`
     width: 36px;
 `;
 
-const SelectedSpellCard = styled(StyledCard)<{ selected?: boolean }>``;
-
 const ActionArea = styled(CardActionArea)`
     position: relative;
     height: 100%;
@@ -61,6 +59,7 @@ const RowInnerBox = styled(Box)`
     flex-direction: row;
     gap: 0.5rem;
     flex-wrap: wrap;
+    flex: 1;
 `;
 
 // const DescriptionPaper = styled(Paper)`
@@ -80,6 +79,24 @@ const SelectedBoxPaper = styled(Paper)`
 const RowLabel = styled(Typography)`
     ${Utils.textShadow}
 `;
+
+interface SpellCardProps {
+    selected: boolean;
+    spell?: ISpell;
+    onClick: React.MouseEventHandler<HTMLButtonElement>;
+}
+
+function SpellCard({ selected, spell, onClick }: SpellCardProps) {
+    return (
+        <StyledCard elevation={3} selected={selected}>
+            <ActionArea onClick={spell && onClick}>
+                {spell?.image && (
+                    <CardMedia component="img" image={spell.image} />
+                )}
+            </ActionArea>
+        </StyledCard>
+    );
+}
 
 // using 'any' here to resolve cyclic dependency with character-states.tsx
 interface SpellPickerProps {
@@ -160,9 +177,7 @@ export default function SpellPicker({
             <Container>
                 <SelectedBoxPaper elevation={2}>
                     <Typography>
-                        {`Select ${
-                            numSpells > 1 ? numSpells : 'an'
-                        } additional spell${
+                        {`Select ${numSpells > 1 ? numSpells : 'an'} spell${
                             numSpells > 1 ? 's' : ''
                         } to learn.`}
                     </Typography>
@@ -171,23 +186,11 @@ export default function SpellPicker({
                             const spell = selectedSpells[idx];
 
                             return (
-                                <SelectedSpellCard
-                                    elevation={3}
-                                    selected={!!spell}
-                                >
-                                    <ActionArea
-                                        onClick={() =>
-                                            spell && handleSpellClick(spell)
-                                        }
-                                    >
-                                        {spell?.image && (
-                                            <CardMedia
-                                                component="img"
-                                                image={spell.image}
-                                            />
-                                        )}
-                                    </ActionArea>
-                                </SelectedSpellCard>
+                                <SpellCard
+                                    spell={spell}
+                                    selected={selectedSpells.includes(spell)}
+                                    onClick={() => handleSpellClick(spell)}
+                                />
                             );
                         })}
                     </RowInnerBox>
@@ -206,21 +209,11 @@ export default function SpellPicker({
                         </RowLabel>
                         <RowInnerBox>
                             {levelSpells.map((spell) => (
-                                <StyledCard
-                                    elevation={3}
+                                <SpellCard
+                                    spell={spell}
                                     selected={selectedSpells.includes(spell)}
-                                >
-                                    <ActionArea
-                                        onClick={() => handleSpellClick(spell)}
-                                    >
-                                        {spell.image && (
-                                            <CardMedia
-                                                component="img"
-                                                image={spell.image}
-                                            />
-                                        )}
-                                    </ActionArea>
-                                </StyledCard>
+                                    onClick={() => handleSpellClick(spell)}
+                                />
                             ))}
                         </RowInnerBox>
                     </RowOuterBox>

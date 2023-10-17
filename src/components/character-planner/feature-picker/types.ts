@@ -33,4 +33,9 @@ export const CharacterPlannerStepDescriptions: Map<
         'Additional feat customization options.',
     ],
     [CharacterPlannerStep.FEAT_ABILITY_SCORES, 'Increase an ability score.'],
+    [
+        CharacterPlannerStep.LEARN_CANTRIPS,
+        'Choose additional cantrips to learn.',
+    ],
+    [CharacterPlannerStep.LEARN_SPELLS, 'Choose additional spells to learn.'],
 ]);
