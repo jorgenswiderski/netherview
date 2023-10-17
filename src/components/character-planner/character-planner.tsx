@@ -34,15 +34,25 @@ const Container = styled(Box)`
     }
 `;
 
-const ResetButton = styled(Button)`
+const ButtonBox = styled(Box)`
     position: absolute;
     top: 10px;
     right: 10px;
     cursor: pointer;
 
+    display: flex;
+    gap: 0.5rem;
+
     @media (max-width: 768px) {
         position: static;
         margin-bottom: 1rem;
+        width: 100%;
+    }
+`;
+
+const DevButton = styled(Button)`
+    @media (max-width: 768px) {
+        flex: 1;
     }
 `;
 
@@ -71,6 +81,14 @@ const PlannerHeader = styled(Paper)`
     box-sizing: border-box;
 `;
 
+const TreeVisualizationOverlay = styled(TreeVisualization)`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; // Ensures it's above other content
+`;
+
 interface CharacterPlannerProps {
     classData: CharacterClassOption[];
     spellData: ISpell[];
@@ -80,14 +98,18 @@ export default function CharacterPlanner({
     classData,
     spellData,
 }: CharacterPlannerProps) {
+    const [isTreeVisible, setIsTreeVisible] = useState(false);
+    const [loading] = useState(false);
+
     const [character, setCharacter] = useState(
         new Character(classData, spellData),
     );
-    const [loading] = useState(false);
+
     const nextDecision = useMemo(
         () => character.pendingDecisions[0],
         [character],
     );
+
     const nextDecisionInfo = useMemo(
         () => (nextDecision ? CharacterDecisionInfo[nextDecision.type] : null),
         [nextDecision],
@@ -190,33 +212,38 @@ export default function CharacterPlanner({
     };
 
     return (
-        <Box
-            style={{
-                display: 'flex',
-                gap: '4rem',
-                flexDirection: 'column',
-                height: '100%',
-                width: '100%',
-            }}
-        >
-            <ResetButton
-                variant="contained"
-                color="primary"
-                onClick={handleReset}
-            >
-                Reset
-            </ResetButton>
-            <Container>
-                {character.root.children && // FIXME
-                    character.root.children.length > 1 && (
-                        <CharacterDisplay character={character} />
-                    )}
+        <>
+            <ButtonBox>
+                <DevButton
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setIsTreeVisible(!isTreeVisible)}
+                >
+                    Toggle Tree
+                </DevButton>
 
-                <PlannerContainer>{renderDecisionPanel()}</PlannerContainer>
-            </Container>
-            <TreeVisualization
-                data={JSON.parse(JSON.stringify(character.root))}
-            />
-        </Box>
+                <DevButton
+                    variant="contained"
+                    color="primary"
+                    onClick={handleReset}
+                >
+                    Reset
+                </DevButton>
+            </ButtonBox>
+            {isTreeVisible ? (
+                <TreeVisualizationOverlay
+                    data={JSON.parse(JSON.stringify(character.root))}
+                />
+            ) : (
+                <Container>
+                    {character.root.children && // FIXME
+                        character.root.children.length > 1 && (
+                            <CharacterDisplay character={character} />
+                        )}
+
+                    <PlannerContainer>{renderDecisionPanel()}</PlannerContainer>
+                </Container>
+            )}
+        </>
     );
 }
