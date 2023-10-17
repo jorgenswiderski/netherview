@@ -1,16 +1,9 @@
 import React from 'react';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
 import styled from '@emotion/styled';
 import Paper from '@mui/material/Paper';
-import ImageWithFallback from './image-with-fallback';
-
-interface GrantedEffectProps {
-    effect: GrantableEffect;
-    elevation: number;
-    style?: React.CSSProperties;
-}
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import ImageWithFallback from '../../image-with-fallback';
 
 const StyledPaper = styled(Paper)`
     display: flex;
@@ -21,25 +14,37 @@ const StyledPaper = styled(Paper)`
     margin: 4px 0;
 `;
 
-export default function GrantedEffect({
-    effect,
+interface EffectBaseProps {
+    tooltip?: string;
+    image: string | React.ReactNode;
+    label: string;
+    elevation: number;
+    style?: React.CSSProperties;
+}
+
+export default function EffectBase({
+    image,
+    label,
+    tooltip = '',
     elevation,
     style,
-}: GrantedEffectProps) {
+}: EffectBaseProps) {
     return (
-        <Tooltip title={effect.description || ''} key={effect.name}>
+        <Tooltip title={tooltip}>
             <StyledPaper elevation={elevation} style={style}>
-                {effect.image && (
+                {typeof image === 'string' ? (
                     <ImageWithFallback
-                        src={effect.image}
+                        src={image}
                         placeholder={<div>•</div>}
                         fallback={<div>•</div>}
                         alt=""
                         style={{ width: '24px' }}
                     />
+                ) : (
+                    image
                 )}
                 <Typography variant="body2" style={{ fontWeight: 600 }}>
-                    {effect.name}
+                    {label}
                 </Typography>
             </StyledPaper>
         </Tooltip>

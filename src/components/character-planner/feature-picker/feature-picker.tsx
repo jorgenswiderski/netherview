@@ -6,11 +6,11 @@ import Typography, { TypographyProps } from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
-import { Paper } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
-import ProspectiveEffects from './prospective-effects';
+import ProspectiveEffects from './prospective-effects/prospective-effects';
 
 enum LayoutType {
     SPARSE,
@@ -22,15 +22,16 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
+    height: 100%;
     width: 100%;
     align-items: center;
     gap: 1rem;
+    overflow: hidden;
 `;
 
-const StyledGridContainer = styled(Grid)<{ layout: LayoutType }>`
+const StyledGridContainer = styled(Grid)`
     & > .MuiGrid-item {
-        padding: ${({ layout }) =>
-            layout === LayoutType.DENSE ? '9px' : '12px'};
+        padding: 9px;
 
         @media (max-width: 600px) {
             padding: 6px; // Reduce to half for mobile
@@ -100,14 +101,7 @@ const OptionName = styled(Typography)<NameLabelProps>`
 `;
 
 const DescriptionText = styled(Typography)`
-    min-height: 60px;
-    margin: 10px 0;
     text-align: center;
-
-    @media (min-width: 600px) {
-        font-size: 1rem;
-        margin: 20px 0 10px;
-    }
 `;
 
 const DescriptionPaper = styled(Paper)`
@@ -187,35 +181,37 @@ export default function FeaturePicker({
 
     return (
         <Container>
-            <StyledGridContainer container layout={layoutType}>
-                {options.map((option) => (
-                    <StyledGrid item {...gridSize} key={option.name}>
-                        <StyledCard
-                            elevation={2}
-                            selected={selectedOption === option}
-                        >
-                            <ActionArea
-                                onClick={() => setSelectedOption(option)}
-                                layout={layoutType}
+            <Box style={{ flex: 1, overflowY: 'auto', width: '100%' }}>
+                <StyledGridContainer container>
+                    {options.map((option) => (
+                        <StyledGrid item {...gridSize} key={option.name}>
+                            <StyledCard
+                                elevation={2}
+                                selected={selectedOption === option}
                             >
-                                {option.image &&
-                                    renderCardMedia({
-                                        component: 'img',
-                                        image: option.image,
-                                        layout: layoutType,
-                                    })}
-                                <OptionName
-                                    variant="h6"
-                                    component="div"
+                                <ActionArea
+                                    onClick={() => setSelectedOption(option)}
                                     layout={layoutType}
                                 >
-                                    {option.name}
-                                </OptionName>
-                            </ActionArea>
-                        </StyledCard>
-                    </StyledGrid>
-                ))}
-            </StyledGridContainer>
+                                    {option.image &&
+                                        renderCardMedia({
+                                            component: 'img',
+                                            image: option.image,
+                                            layout: layoutType,
+                                        })}
+                                    <OptionName
+                                        variant="h6"
+                                        component="div"
+                                        layout={layoutType}
+                                    >
+                                        {option.name}
+                                    </OptionName>
+                                </ActionArea>
+                            </StyledCard>
+                        </StyledGrid>
+                    ))}
+                </StyledGridContainer>
+            </Box>
 
             {(showDescription || showEffects) && (
                 <DescriptionPaper elevation={2}>

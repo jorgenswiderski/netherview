@@ -6,6 +6,7 @@ import styled from '@emotion/styled';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import Paper from '@mui/material/Paper';
 import { ISpell } from 'planner-types/src/types/spells';
+import Box from '@mui/material/Box';
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
@@ -16,13 +17,14 @@ import { CharacterClassOption } from '../../models/character/types';
 import CharacterDisplay from '../character-display/character-display';
 import TreeVisualization from '../tree-visualization';
 
-const Container = styled('div')`
+const Container = styled(Box)`
     display: flex;
     flex-direction: row;
     align-items: stretch;
     justify-content: center;
     width: 100%;
     height: 100%;
+    min-height: 100%;
     gap: 40px;
     margin: auto 0;
 
@@ -48,8 +50,6 @@ const PaperContainer = styled(Paper)`
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 50%;
-    max-width: 600px;
     padding: 1rem;
     gap: 1rem;
 
@@ -57,6 +57,11 @@ const PaperContainer = styled(Paper)`
         width: 100%;
         box-sizing: border-box;
     }
+`;
+
+const PlannerContainer = styled(PaperContainer)`
+    flex: 1;
+    max-width: 600px;
 `;
 
 const PlannerHeader = styled(Paper)`
@@ -185,7 +190,15 @@ export default function CharacterPlanner({
     };
 
     return (
-        <>
+        <Box
+            style={{
+                display: 'flex',
+                gap: '4rem',
+                flexDirection: 'column',
+                height: '100%',
+                width: '100%',
+            }}
+        >
             <ResetButton
                 variant="contained"
                 color="primary"
@@ -194,18 +207,16 @@ export default function CharacterPlanner({
                 Reset
             </ResetButton>
             <Container>
-                {character.root.children &&
+                {character.root.children && // FIXME
                     character.root.children.length > 1 && (
-                        <PaperContainer>
-                            <CharacterDisplay character={character} />
-                        </PaperContainer>
+                        <CharacterDisplay character={character} />
                     )}
 
-                <PaperContainer>{renderDecisionPanel()}</PaperContainer>
+                <PlannerContainer>{renderDecisionPanel()}</PlannerContainer>
             </Container>
             <TreeVisualization
                 data={JSON.parse(JSON.stringify(character.root))}
             />
-        </>
+        </Box>
     );
 }

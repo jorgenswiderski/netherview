@@ -9,15 +9,22 @@ interface CollapsibleSectionProps {
     title: string;
     content: ReactNode[];
     elevation: number;
+    style?: React.CSSProperties;
 }
 
 export function CollapsibleSection({
     title,
     content,
     elevation,
+    style,
 }: CollapsibleSectionProps) {
     return (
-        <Accordion defaultExpanded elevation={elevation}>
+        <Accordion
+            defaultExpanded
+            elevation={elevation}
+            disableGutters
+            style={style}
+        >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="subtitle1">{title}</Typography>
             </AccordionSummary>

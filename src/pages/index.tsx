@@ -8,12 +8,11 @@ import { WeaveApi } from '../api/weave/weave';
 import { CharacterClassOption } from '../models/character/types';
 
 const PageContainer = styled.div`
-    color: #e0e0e0;
-    background-color: #1a1a1a;
-    min-height: 100vh; // ensure at least full viewport height
+    height: 100vh;
     width: 100%;
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     justify-content: center;
     padding: 50px;
     box-sizing: border-box;

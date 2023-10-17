@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Character } from '../../models/character/character';
-import GrantedEffect from '../character-planner/granted-effect';
+import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { CollapsibleSection } from './collapsible-section';
 
 interface CharacterEffectsProps {
@@ -25,7 +25,7 @@ export function CharacterEffects({ character }: CharacterEffectsProps) {
     ];
 
     return (
-        <div>
+        <>
             {sections.map(
                 (section) =>
                     section.content.length > 0 && (
@@ -33,6 +33,10 @@ export function CharacterEffects({ character }: CharacterEffectsProps) {
                             key={section.title}
                             title={section.title}
                             elevation={2}
+                            style={{
+                                minWidth: '250px',
+                                flex: 1,
+                            }}
                             content={section.content
                                 .filter((effect) => !effect.hidden)
                                 .map((effect) => (
@@ -45,6 +49,6 @@ export function CharacterEffects({ character }: CharacterEffectsProps) {
                         />
                     ),
             )}
-        </div>
+        </>
     );
 }
