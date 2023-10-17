@@ -13,9 +13,13 @@ import {
 } from './character-tree-node/character-tree';
 import AbilitiesPointBuy from '../../components/character-planner/abilities/abilities-point-buy';
 import AbilitiesIncrease from '../../components/character-planner/abilities/abilities-increase';
+import SpellPicker from '../../components/character-planner/spell-picker';
 
 export interface CharacterWidgetProps {
-    onDecision: (decision: IPendingDecision, value: ICharacterOption) => void;
+    onDecision: (
+        decision: IPendingDecision,
+        value: ICharacterOption | ICharacterOption[],
+    ) => void;
     decision: IPendingDecision;
     character: ICharacter;
 }
@@ -30,6 +34,7 @@ export interface DecisionStateInfo {
 export interface IPendingDecision {
     type: CharacterPlannerStep;
     options: ICharacterOption[];
+    count: number;
     parent: CharacterTreeDecision | CharacterTreeRoot | null;
 }
 
@@ -93,8 +98,10 @@ export const CharacterDecisionInfo: {
     },
     [CharacterPlannerStep.LEARN_CANTRIPS]: {
         title: 'Choose cantrips to learn',
+        render: (props) => <SpellPicker {...props} />,
     },
     [CharacterPlannerStep.LEARN_SPELLS]: {
         title: 'Choose spells to learn',
+        render: (props) => <SpellPicker {...props} />,
     },
 };

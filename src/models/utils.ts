@@ -1,6 +1,16 @@
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 
 export class Utils {
+    static textShadow = `text-shadow:
+    -1px -1px 0px black,
+    1px -1px 0px black,
+    -1px 1px 0px black,
+    1px 1px 0px black,
+    -2px 0px 0px black,
+    2px 0px 0px black,
+    0px -2px 0px black,
+    0px 2px 0px black;`;
+
     /**
      * Asynchronously fetches and returns the contents of a JSON file.
      *

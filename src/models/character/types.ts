@@ -1,4 +1,5 @@
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ISpell } from 'planner-types/src/types/spells';
 import { CharacterClassProgression } from '../../api/weave/types';
 
 export interface AbilityScores {
@@ -21,5 +22,6 @@ export interface CharacterBackgroundOption extends ICharacterOption {}
 export interface ICharacter {
     clone(): ICharacter;
     classData: CharacterClassOption[];
+    spellData: ISpell[];
     getTotalAbilityScores(): AbilityScores | null;
 }

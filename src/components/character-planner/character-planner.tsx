@@ -105,8 +105,11 @@ export default function CharacterPlanner({
     }, [character]);
 
     const handleDecision = useCallback(
-        (decision: IPendingDecision, choice: ICharacterOption) => {
-            const newCharacter = character.makeDecision(decision, choice);
+        (
+            decision: IPendingDecision,
+            choices: ICharacterOption | ICharacterOption[],
+        ) => {
+            const newCharacter = character.makeDecision(decision, choices);
             setCharacter(newCharacter);
         },
         [character],

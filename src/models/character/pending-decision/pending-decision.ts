@@ -18,13 +18,15 @@ export class PendingDecision implements IPendingDecision {
     public info?: DecisionStateInfo;
     public type: CharacterPlannerStep;
     public options: ICharacterOption[];
+    public count: number;
 
     constructor(
         public parent: CharacterTreeDecision | CharacterTreeRoot | null,
-        { type, options }: ICharacterChoice,
+        { type, options, count }: ICharacterChoice,
     ) {
         this.type = type;
         this.options = options;
+        this.count = count ?? 1;
         this.info = CharacterDecisionInfo[type];
 
         if (options.length === 0) {

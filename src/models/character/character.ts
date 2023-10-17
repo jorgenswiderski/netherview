@@ -110,55 +110,61 @@ export class Character implements ICharacter {
 
     makeDecision(
         pending: IPendingDecision,
-        option: ICharacterOption,
+        optionOrOptions: ICharacterOption | ICharacterOption[],
     ): Character {
         const { type } = pending;
         let { parent } = pending;
         this.unqueueDecision(pending as PendingDecision);
 
-        if (!parent && Character.LEVEL_STEPS.includes(type)) {
-            parent = this.findClassParent(option);
-        }
+        const options: ICharacterOption[] = Array.isArray(optionOrOptions)
+            ? optionOrOptions
+            : [optionOrOptions];
 
-        if (!parent) {
-            throw new Error('Could not find parent when making decision');
-        }
-
-        if (this.root.findNode((node) => node === parent) === null) {
-            throw new Error('Parent exists, but is not found in tree');
-        }
-
-        const isProxyChoice =
-            option.type === CharacterPlannerStep.MULTICLASS &&
-            parent !== this.root;
-
-        if (isProxyChoice) {
-            // impose the choices onto the proxied parent
-            const targetParent = this.findDecisionByChoiceType(
-                option.type as CharacterPlannerStep,
-            )!;
-            // FIXME: mutation here MIGHT be dangerous, but we have to keep the same object pointer or the parent won't be found
-            targetParent.choices = option.choices;
-            this.queueSubchoices(targetParent);
-        } else {
-            const decision = new CharacterTreeDecision({ type, ...option });
-            parent.addChild(decision);
-            Character.grantEffects(decision);
-
-            if (Character.LEVEL_STEPS.includes(type)) {
-                this.updateClassDataEffects();
-            } else if (
-                type === CharacterPlannerStep.LEARN_CANTRIPS ||
-                type === CharacterPlannerStep.LEARN_SPELLS
-            ) {
-                this.updateClassSpellOptions();
-            } else if (type === CharacterPlannerStep.CHOOSE_SUBCLASS) {
-                this.collapseSubclassFeatures(decision.name);
-                this.updateClassDataEffects();
+        options.forEach((option) => {
+            if (!parent && Character.LEVEL_STEPS.includes(type)) {
+                parent = this.findClassParent(option);
             }
 
-            this.queueSubchoices(decision);
-        }
+            if (!parent) {
+                throw new Error('Could not find parent when making decision');
+            }
+
+            if (this.root.findNode((node) => node === parent) === null) {
+                throw new Error('Parent exists, but is not found in tree');
+            }
+
+            const isProxyChoice =
+                option.type === CharacterPlannerStep.MULTICLASS &&
+                parent !== this.root;
+
+            if (isProxyChoice) {
+                // impose the choices onto the proxied parent
+                const targetParent = this.findDecisionByChoiceType(
+                    option.type as CharacterPlannerStep,
+                )!;
+                // FIXME: mutation here MIGHT be dangerous, but we have to keep the same object pointer or the parent won't be found
+                targetParent.choices = option.choices;
+                this.queueSubchoices(targetParent);
+            } else {
+                const decision = new CharacterTreeDecision({ type, ...option });
+                parent.addChild(decision);
+                Character.grantEffects(decision);
+
+                if (Character.LEVEL_STEPS.includes(type)) {
+                    this.updateClassDataEffects();
+                } else if (
+                    type === CharacterPlannerStep.LEARN_CANTRIPS ||
+                    type === CharacterPlannerStep.LEARN_SPELLS
+                ) {
+                    this.updateClassSpellOptions();
+                } else if (type === CharacterPlannerStep.CHOOSE_SUBCLASS) {
+                    this.collapseSubclassFeatures(decision.name);
+                    this.updateClassDataEffects();
+                }
+
+                this.queueSubchoices(decision);
+            }
+        });
 
         return this.clone();
     }

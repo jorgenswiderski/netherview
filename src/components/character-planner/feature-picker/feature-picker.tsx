@@ -8,10 +8,9 @@ import Button from '@mui/material/Button';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import { Paper } from '@mui/material';
 import styled from '@emotion/styled';
-import GrantedEffect from '../granted-effect';
 import { Utils } from '../../../models/utils';
-import { CharacterPlannerStepDescriptions } from './types';
 import { IPendingDecision } from '../../../models/character/character-states';
+import ProspectiveEffects from './prospective-effects';
 
 enum LayoutType {
     SPARSE,
@@ -115,20 +114,13 @@ const DescriptionPaper = styled(Paper)`
     padding: 0.5rem;
 `;
 
-const EffectsContainer = styled.div`
-    margin: 10px 0;
-    text-align: center;
-`;
-
 const ButtonContainer = styled.div`
     text-align: center;
     margin: 10px 0 0;
     width: 100%;
 `;
 
-const NextButton = styled(Button)<{ visible: boolean }>`
-    visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
-
+const NextButton = styled(Button)`
     @media (max-width: 600px) {
         width: 100%;
     }
@@ -234,34 +226,10 @@ export default function FeaturePicker({
                     )}
 
                     {showEffects && (
-                        <EffectsContainer>
-                            <Typography
-                                variant="body2"
-                                style={{ margin: '0 0 5px' }}
-                            >
-                                You will gain:
-                            </Typography>
-                            {selectedOption?.grants &&
-                                selectedOption.grants
-                                    .filter((fx) => !fx.hidden)
-                                    .map((fx) => (
-                                        <GrantedEffect
-                                            effect={fx}
-                                            elevation={4}
-                                        />
-                                    ))}
-                            {selectedOption?.choices &&
-                                selectedOption.choices.length > 0 && (
-                                    <Typography
-                                        variant="body2"
-                                        style={{ fontWeight: 600 }}
-                                    >
-                                        {CharacterPlannerStepDescriptions.get(
-                                            selectedOption.choices[0].type,
-                                        )}
-                                    </Typography>
-                                )}
-                        </EffectsContainer>
+                        <ProspectiveEffects
+                            options={selectedOption}
+                            text="You will gain:"
+                        />
                     )}
                 </DescriptionPaper>
             )}
@@ -273,7 +241,7 @@ export default function FeaturePicker({
                     onClick={() =>
                         selectedOption && onEvent(decision, selectedOption)
                     }
-                    visible={!!selectedOption}
+                    disabled={!selectedOption}
                 >
                     Next
                 </NextButton>
