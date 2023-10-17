@@ -250,6 +250,10 @@ export class Character implements ICharacter {
                 levelInfo.find((info) => info.class.name === cls.name)
                     ?.levels ?? 0;
 
+            if (level >= Character.MAX_LEVEL) {
+                return { ...cls };
+            }
+
             const choices = cls.progression[level].Features.flatMap(
                 (feature) => feature.choices,
             ).filter(Boolean) as ICharacterChoice[];

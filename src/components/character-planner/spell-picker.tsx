@@ -9,6 +9,7 @@ import { ISpell } from 'planner-types/src/types/spells';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
+import Tooltip from '@mui/material/Tooltip';
 import { ICharacter } from '../../models/character/types';
 import { Utils } from '../../models/utils';
 
@@ -51,7 +52,9 @@ const RowOuterBox = styled(Paper)`
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    width: 100%;
     padding: 0.5rem;
+    box-sizing: border-box;
 `;
 
 const RowInnerBox = styled(Box)`
@@ -88,13 +91,23 @@ interface SpellCardProps {
 
 function SpellCard({ selected, spell, onClick }: SpellCardProps) {
     return (
-        <StyledCard elevation={3} selected={selected}>
-            <ActionArea onClick={spell && onClick}>
-                {spell?.image && (
-                    <CardMedia component="img" image={spell.image} />
-                )}
-            </ActionArea>
-        </StyledCard>
+        <Tooltip
+            title={
+                spell
+                    ? `${spell.name}: ${
+                          spell.description ?? spell.summary ?? ''
+                      }`
+                    : ''
+            }
+        >
+            <StyledCard elevation={3} selected={selected}>
+                <ActionArea onClick={spell && onClick}>
+                    {spell?.image && (
+                        <CardMedia component="img" image={spell.image} />
+                    )}
+                </ActionArea>
+            </StyledCard>
+        </Tooltip>
     );
 }
 
@@ -177,7 +190,7 @@ export default function SpellPicker({
             <Container>
                 <SelectedBoxPaper elevation={2}>
                     <Typography>
-                        {`Select ${numSpells > 1 ? numSpells : 'an'} spell${
+                        {`Select ${numSpells > 1 ? numSpells : 'a'} spell${
                             numSpells > 1 ? 's' : ''
                         } to learn.`}
                     </Typography>
