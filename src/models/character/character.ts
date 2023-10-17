@@ -258,16 +258,14 @@ export class Character implements ICharacter {
                 (feature) => feature.choices,
             ).filter(Boolean) as ICharacterChoice[];
 
+            const grants = cls.progression[level].Features.flatMap(
+                (feature) => feature.grants,
+            ).filter(Boolean) as unknown as GrantableEffect[];
+
             return {
                 ...cls,
                 choices,
-                choiceType:
-                    choices.length > 0
-                        ? CharacterPlannerStep.CHOOSE_SUBCLASS
-                        : undefined,
-                grants: cls.progression[level].Features.flatMap(
-                    (feature) => feature.grants,
-                ).filter(Boolean) as unknown as GrantableEffect[],
+                grants,
             };
         });
     }
@@ -291,82 +289,93 @@ export class Character implements ICharacter {
                 return { ...cls };
             }
 
-            const choices: ICharacterChoice[] = keys.flatMap((key) => {
-                if (!nextLevelData[key]) {
-                    return [];
-                }
+            const choices: ICharacterChoice[] = cls.choices
+                ? [...cls.choices]
+                : [];
 
-                const step =
-                    key === 'Spells Known'
-                        ? CharacterPlannerStep.LEARN_SPELLS
-                        : CharacterPlannerStep.LEARN_CANTRIPS;
+            choices.push(
+                ...keys.flatMap((key) => {
+                    if (!nextLevelData[key]) {
+                        return [];
+                    }
 
-                const netChoices =
-                    ((nextLevelData[key] as number) ?? 0) -
-                    (currentLevelData ? (currentLevelData[key] as number) : 0);
+                    const step =
+                        key === 'Spells Known'
+                            ? CharacterPlannerStep.LEARN_SPELLS
+                            : CharacterPlannerStep.LEARN_CANTRIPS;
 
-                if (netChoices === 0) {
-                    return [];
-                }
+                    const netChoices =
+                        ((nextLevelData[key] as number) ?? 0) -
+                        (currentLevelData
+                            ? (currentLevelData[key] as number)
+                            : 0);
 
-                if (!nextLevelData['Spell Slots']) {
-                    throw new Error('class does not have spell slots');
-                }
+                    if (netChoices === 0) {
+                        return [];
+                    }
 
-                let spells: ISpell[];
+                    if (!nextLevelData['Spell Slots']) {
+                        throw new Error('class does not have spell slots');
+                    }
 
-                if (key === 'Spells Known') {
-                    const highestSlot =
-                        typeof nextLevelData['Spell Slots'] === 'number'
-                            ? nextLevelData['Slot Level']!
-                            : nextLevelData['Spell Slots'].findLastIndex(
-                                  (spellCount) => spellCount && spellCount > 0,
-                              );
-                    const spellsKnown = this.getKnownSpells(
-                        CharacterPlannerStep.LEARN_SPELLS,
-                    ).map((effect) => effect.name);
+                    let spells: ISpell[];
 
-                    spells = this.spellData.filter(
-                        (spell) =>
-                            spell.classes.includes(cls.name) &&
-                            spell.level > 0 &&
-                            spell.level <= highestSlot &&
-                            !spellsKnown.includes(spell.name),
-                    );
-                } else {
-                    const cantripsKnown = this.getKnownSpells(
-                        CharacterPlannerStep.LEARN_CANTRIPS,
-                    ).map((effect) => effect.name);
+                    if (key === 'Spells Known') {
+                        const highestSlot =
+                            typeof nextLevelData['Spell Slots'] === 'number'
+                                ? nextLevelData['Slot Level']!
+                                : nextLevelData['Spell Slots'].findLastIndex(
+                                      (spellCount) =>
+                                          spellCount && spellCount > 0,
+                                  );
+                        const spellsKnown = this.getKnownSpells(
+                            CharacterPlannerStep.LEARN_SPELLS,
+                        ).map((effect) => effect.name);
 
-                    spells = this.spellData.filter(
-                        (spell) =>
-                            spell.classes.includes(cls.name) &&
-                            spell.level === 0 &&
-                            !cantripsKnown.includes(spell.name),
-                    );
-                }
+                        spells = this.spellData.filter(
+                            (spell) =>
+                                spell.classes.includes(cls.name) &&
+                                spell.level > 0 &&
+                                spell.level <= highestSlot &&
+                                !spellsKnown.includes(spell.name),
+                        );
+                    } else {
+                        const cantripsKnown = this.getKnownSpells(
+                            CharacterPlannerStep.LEARN_CANTRIPS,
+                        ).map((effect) => effect.name);
 
-                return [
-                    {
-                        type: step,
-                        count: netChoices,
-                        options: spells.map(({ name, description, image }) => ({
-                            name,
-                            description,
-                            image,
+                        spells = this.spellData.filter(
+                            (spell) =>
+                                spell.classes.includes(cls.name) &&
+                                spell.level === 0 &&
+                                !cantripsKnown.includes(spell.name),
+                        );
+                    }
+
+                    return [
+                        {
                             type: step,
-                            grants: [
-                                {
+                            count: netChoices,
+                            options: spells.map(
+                                ({ name, description, image }) => ({
                                     name,
                                     description,
-                                    type: GrantableEffectType.ACTION,
                                     image,
-                                },
-                            ],
-                        })),
-                    },
-                ];
-            });
+                                    type: step,
+                                    grants: [
+                                        {
+                                            name,
+                                            description,
+                                            type: GrantableEffectType.ACTION,
+                                            image,
+                                        },
+                                    ],
+                                }),
+                            ),
+                        },
+                    ];
+                }),
+            );
 
             return {
                 ...cls,
