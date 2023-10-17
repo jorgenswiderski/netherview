@@ -5,7 +5,7 @@ import { Box, Typography, Select, MenuItem } from '@mui/material';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import {
     GrantableEffectType,
-    GrantableEffectSubtype,
+    CharacteristicType,
 } from 'planner-types/src/types/grantable-effect';
 import AbilitiesUI from './abilities-ui';
 import { AbilityScores } from '../../../models/character/types';
@@ -61,14 +61,14 @@ export default function AbilitiesPointBuy({
                 {
                     name: 'Base Ability Scores',
                     type: GrantableEffectType.CHARACTERISTIC,
-                    subtype: GrantableEffectSubtype.ABILITY_BASE,
+                    subtype: CharacteristicType.ABILITY_BASE,
                     hidden: true,
                     values: { ...pointBuyScores },
                 },
                 {
                     name: 'Racial Ability Score Bonuses',
                     type: GrantableEffectType.CHARACTERISTIC,
-                    subtype: GrantableEffectSubtype.ABILITY_RACIAL,
+                    subtype: CharacteristicType.ABILITY_RACIAL,
                     hidden: true,
                     values: { ...bonuses[AbilitiesBonusType.RACIAL] },
                 },

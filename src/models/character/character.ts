@@ -7,9 +7,11 @@ import {
 import {
     Characteristic,
     GrantableEffect,
-    GrantableEffectSubtype,
+    CharacteristicType,
     GrantableEffectType,
     Proficiency,
+    ActionEffectType,
+    ActionEffect,
 } from 'planner-types/src/types/grantable-effect';
 import { ISpell } from 'planner-types/src/types/spells';
 import { AbilityScores, CharacterClassOption, ICharacter } from './types';
@@ -367,6 +369,8 @@ export class Character implements ICharacter {
                                             name,
                                             description,
                                             type: GrantableEffectType.ACTION,
+                                            subtype:
+                                                ActionEffectType.SPELL_ACTION,
                                             image,
                                         },
                                     ],
@@ -553,9 +557,9 @@ export class Character implements ICharacter {
             (effect) =>
                 effect.subtype &&
                 [
-                    GrantableEffectSubtype.ABILITY_BASE,
-                    GrantableEffectSubtype.ABILITY_RACIAL,
-                    GrantableEffectSubtype.ABILITY_FEAT,
+                    CharacteristicType.ABILITY_BASE,
+                    CharacteristicType.ABILITY_RACIAL,
+                    CharacteristicType.ABILITY_FEAT,
                 ].includes(effect.subtype),
         );
 
@@ -593,10 +597,10 @@ export class Character implements ICharacter {
         ) as Proficiency[];
     }
 
-    getActions(): GrantableEffect[] {
+    getActions(): ActionEffect[] {
         return this.getGrantedEffects().filter(
             (effect) => effect.type === GrantableEffectType.ACTION,
-        );
+        ) as ActionEffect[];
     }
 
     getCharacteristics(): Characteristic[] {

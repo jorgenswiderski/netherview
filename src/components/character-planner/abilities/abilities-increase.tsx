@@ -4,7 +4,7 @@ import React from 'react';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import {
     GrantableEffectType,
-    GrantableEffectSubtype,
+    CharacteristicType,
 } from 'planner-types/src/types/grantable-effect';
 import AbilitiesUI from './abilities-ui';
 import { AbilityScores } from '../../../models/character/types';
@@ -38,7 +38,7 @@ export default function AbilitiesPointBuy({
                         .map(([key]) => key)
                         .join(', ')}`,
                     type: GrantableEffectType.CHARACTERISTIC,
-                    subtype: GrantableEffectSubtype.ABILITY_FEAT,
+                    subtype: CharacteristicType.ABILITY_FEAT,
                     values: { ...pointBuyScores },
                     hidden: true,
                 },

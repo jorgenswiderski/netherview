@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
 import { Character } from '../../models/character/character';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { CollapsibleSection } from './collapsible-section';
@@ -8,7 +9,18 @@ interface CharacterEffectsProps {
 }
 
 export function CharacterEffects({ character }: CharacterEffectsProps) {
-    const actions = useMemo(() => character.getActions(), [character]);
+    const [spells, actions] = useMemo(() => {
+        const allActions = character.getActions();
+
+        return [
+            allActions.filter(
+                (action) => action.subtype === ActionEffectType.SPELL_ACTION,
+            ),
+            allActions.filter(
+                (action) => action.subtype !== ActionEffectType.SPELL_ACTION,
+            ),
+        ];
+    }, [character]);
     const characteristics = useMemo(
         () => character.getCharacteristics(),
         [character],
@@ -19,6 +31,7 @@ export function CharacterEffects({ character }: CharacterEffectsProps) {
     );
 
     const sections = [
+        { title: 'Spells Known', content: spells },
         { title: 'Actions', content: actions },
         { title: 'Characteristics', content: characteristics },
         { title: 'Proficiencies', content: proficiencies },
@@ -35,7 +48,7 @@ export function CharacterEffects({ character }: CharacterEffectsProps) {
                             elevation={2}
                             style={{
                                 minWidth: '250px',
-                                flex: 1,
+                                // flex: 1,
                             }}
                             content={section.content
                                 .filter((effect) => !effect.hidden)

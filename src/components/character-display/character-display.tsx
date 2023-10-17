@@ -54,7 +54,7 @@ const StyledPaper = styled(Paper)`
 
 const RightSection = styled.div`
     flex: 1;
-    overflow-y: scroll;
+    overflow-y: auto;
 
     display: flex;
     flex-direction: column;
