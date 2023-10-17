@@ -32,13 +32,10 @@ const Container = styled('div')`
     }
 `;
 
-const ResetButton = styled('button')`
+const ResetButton = styled(Button)`
     position: absolute;
     top: 10px;
     right: 10px;
-    padding: 8px 20px; // slightly larger for mobile touch
-    border: none;
-    border-radius: 5px;
     cursor: pointer;
 
     @media (max-width: 768px) {
@@ -189,7 +186,13 @@ export default function CharacterPlanner({
 
     return (
         <>
-            <ResetButton onClick={handleReset}>Reset</ResetButton>
+            <ResetButton
+                variant="contained"
+                color="primary"
+                onClick={handleReset}
+            >
+                Reset
+            </ResetButton>
             <Container>
                 {character.root.children &&
                     character.root.children.length > 1 && (

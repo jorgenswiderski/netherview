@@ -85,6 +85,14 @@ export default function AbilitiesPointBuy({
                 costMode={AbilitiesCostMode.INCREMENTAL}
                 onDecision={handleConfirm}
                 bonuses={bonuses}
+                abilities={{
+                    Strength: 15,
+                    Dexterity: 14,
+                    Constitution: 14,
+                    Intelligence: 8,
+                    Wisdom: 12,
+                    Charisma: 8,
+                }}
             >
                 <Box mt={2}>
                     <Typography>+2 Racial Bonus:</Typography>

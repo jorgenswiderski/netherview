@@ -287,6 +287,10 @@ export class Character implements ICharacter {
             const currentLevelData = level > 0 && cls.progression[level - 1];
             const nextLevelData = cls.progression[level];
 
+            if (level >= Character.MAX_LEVEL) {
+                return { ...cls };
+            }
+
             const choices: ICharacterChoice[] = keys.flatMap((key) => {
                 if (!nextLevelData[key]) {
                     return [];

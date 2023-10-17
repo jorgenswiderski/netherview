@@ -18,6 +18,7 @@ const EffectsContainer = styled.div`
 const ChoiceDescriptionPaper = styled(Paper)`
     text-align: left;
     padding: 0.25rem;
+    margin: 4px 0;
 `;
 
 interface ProspectiveEffectsProps {
@@ -60,8 +61,8 @@ export default function ProspectiveEffects({
                     <GrantedEffect effect={fx} elevation={4} />
                 ))}
             {choices.map((choice) => (
-                <Typography variant="body2" style={{ fontWeight: 600 }}>
-                    <ChoiceDescriptionPaper elevation={4}>
+                <ChoiceDescriptionPaper elevation={4}>
+                    <Typography variant="body2" style={{ fontWeight: 600 }}>
                         {CharacterPlannerStepDescriptions.has(choice.type) ? (
                             CharacterPlannerStepDescriptions.get(choice.type)
                         ) : (
@@ -69,8 +70,8 @@ export default function ProspectiveEffects({
                                 {`Warning: No description for step type '${choice.type}'.`}
                             </Typography>
                         )}
-                    </ChoiceDescriptionPaper>
-                </Typography>
+                    </Typography>
+                </ChoiceDescriptionPaper>
             ))}
         </EffectsContainer>
     );

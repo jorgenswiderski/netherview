@@ -43,8 +43,8 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
         d3.select(svgRef.current).selectAll('*').remove();
 
         const margin = { top: 20, right: 40, bottom: 240, left: 40 };
-        const svgWidth = 800;
-        const svgHeight = 600;
+        const svgWidth = 1400;
+        const svgHeight = 900;
         const width = svgWidth - margin.top - margin.bottom;
         const height = svgHeight - margin.left - margin.right;
 
@@ -111,5 +111,5 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
             .attr('y2', (d) => d.target.x); // Use target's x for y2 due to 90° rotation
     }, [data]);
 
-    return <StyledSVG ref={svgRef} width="800" height="600" />;
+    return <StyledSVG ref={svgRef} width="1400" height="900" />;
 }

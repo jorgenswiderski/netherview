@@ -38,6 +38,7 @@ function Dot({
 
 interface AbilitiesUIProps {
     baseAbilities?: AbilityScores;
+    abilities?: AbilityScores;
     pointsAvailable?: number;
     costMode: AbilitiesCostMode;
     onDecision: (decision: AbilityScores) => void;
@@ -57,6 +58,7 @@ export default function AbilitiesUI({
         Wisdom: 8,
         Charisma: 8,
     },
+    abilities,
     pointsAvailable = 27,
     costMode,
     onDecision,
@@ -66,16 +68,9 @@ export default function AbilitiesUI({
     children,
     abilityOptions,
 }: AbilitiesUIProps) {
-    const [currentAbilities, setCurrentAbilities] =
-        useState<AbilityScores>(baseAbilities);
-    // const [currentAbilities, setCurrentAbilities] = useState<AbilityScores>({
-    //     Strength: 15,
-    //     Dexterity: 14,
-    //     Constitution: 14,
-    //     Intelligence: 8,
-    //     Wisdom: 12,
-    //     Charisma: 8,
-    // });
+    const [currentAbilities, setCurrentAbilities] = useState<AbilityScores>(
+        abilities ?? baseAbilities,
+    );
 
     const pointsSpent = useMemo(() => {
         let totalSpent = 0;
