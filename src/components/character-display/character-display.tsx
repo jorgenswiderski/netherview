@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Paper from '@mui/material/Paper';
 import styled from '@emotion/styled';
 import { Character } from '../../models/character/character';
@@ -7,6 +7,7 @@ import { CharacterEffects } from './character-effects';
 import { CharacterHeader } from './character-header';
 import CharacterItems from './character-items';
 import CharacterBackground from './character-background';
+import { log } from '../../models/logger';
 
 const PaperContainer = styled(Paper)`
     display: flex;
@@ -74,6 +75,8 @@ export default function CharacterDisplay({ character }: CharacterDisplayProps) {
     );
 
     const background = useMemo(() => character.getBackground(), [character]);
+
+    useEffect(() => log(background), [background]);
 
     return (
         <PaperContainer>

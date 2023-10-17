@@ -195,43 +195,54 @@ export class Character implements ICharacter {
                 progression: cls.progression.map((level) => ({
                     ...level,
                     Features: level.Features.map((feature) => {
-                        const choice = feature.choices?.find(
-                            (c) =>
-                                c.type ===
+                        if (!feature.choices) {
+                            return feature;
+                        }
+
+                        const subclassChoices = feature.choices.filter(
+                            (choice) =>
+                                choice.type ===
                                 CharacterPlannerStep.SUBCLASS_FEATURE,
                         );
 
-                        if (!choice) {
+                        if (subclassChoices.length === 0) {
                             return feature;
                         }
 
-                        const option = choice.options.find(
-                            (c) => c.name === subclassName,
+                        const options = subclassChoices.map((choice) =>
+                            choice.options.find(
+                                (option) => option.name === subclassName,
+                            ),
                         );
 
                         // Make sure the subclass we're collapsing exists in these choices
-                        if (!option) {
+                        if (options.length === 0) {
                             return feature;
                         }
 
-                        const choices: ICharacterChoice[] = [];
-                        const grants: GrantableEffect[] = [];
+                        const otherChoices = feature.choices.filter(
+                            (choice) =>
+                                choice.type !==
+                                CharacterPlannerStep.SUBCLASS_FEATURE,
+                        );
 
-                        if (feature.choices) {
-                            choices.push(...feature.choices);
-                        }
+                        const choices: ICharacterChoice[] = [...otherChoices];
 
-                        if (option.choices) {
-                            choices.push(...option.choices);
-                        }
+                        choices.push(
+                            ...options.flatMap(
+                                (option) => option?.choices ?? [],
+                            ),
+                        );
 
-                        if (feature.grants) {
-                            grants.push(...feature.grants);
-                        }
+                        const grants: GrantableEffect[] = feature.grants
+                            ? [...feature.grants]
+                            : [];
 
-                        if (option.grants) {
-                            grants.push(...option.grants);
-                        }
+                        grants.push(
+                            ...options.flatMap(
+                                (option) => option?.grants ?? [],
+                            ),
+                        );
 
                         return {
                             ...feature,
@@ -692,9 +703,9 @@ export class Character implements ICharacter {
     }
 
     getBackground(): ICharacterTreeDecision | undefined {
-        return this.findDecisionByChoiceType(
+        return this.findDecisionByOptionType(
             CharacterPlannerStep.SET_BACKGROUND,
-        )?.children?.[0] as ICharacterTreeDecision | undefined;
+        ) as ICharacterTreeDecision | undefined;
     }
 
     getKnownSpells(
