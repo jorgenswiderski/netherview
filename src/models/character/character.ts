@@ -209,8 +209,8 @@ export class Character implements ICharacter {
                             return feature;
                         }
 
-                        const options = subclassChoices.map((choice) =>
-                            choice.options.find(
+                        const options = subclassChoices.flatMap((choice) =>
+                            choice.options.filter(
                                 (option) => option.name === subclassName,
                             ),
                         );
