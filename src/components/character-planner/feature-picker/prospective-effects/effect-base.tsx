@@ -11,7 +11,6 @@ const StyledPaper = styled(Paper)`
     align-items: center;
     gap: 8px;
     padding: 2px 4px;
-    margin: 4px 0;
 `;
 
 interface EffectBaseProps {

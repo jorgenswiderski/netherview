@@ -6,12 +6,26 @@ import {
 } from 'planner-types/src/types/character-feature-customization-option';
 import styled from '@emotion/styled';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
+import Box from '@mui/material/Box';
 import GrantedEffect from './granted-effect';
 import ChoiceDescription from './choice-description';
 
-const EffectsContainer = styled.div`
+const EffectsContainer = styled(Box)`
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    width: 100%;
     margin: 10px 0;
     text-align: center;
+`;
+
+const ItemBox = styled(Box)`
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    padding: 0 0.5rem;
 `;
 
 interface ProspectiveEffectsProps {
@@ -45,17 +59,17 @@ export default function ProspectiveEffects({
 
     return (
         <EffectsContainer>
-            <Typography variant="body2" style={{ margin: '0 0 5px' }}>
-                {text}
-            </Typography>
-            {effects
-                .filter((fx) => !fx.hidden)
-                .map((fx) => (
-                    <GrantedEffect effect={fx} elevation={4} />
+            <Typography variant="body2">{text}</Typography>
+            <ItemBox>
+                {effects
+                    .filter((fx) => !fx.hidden)
+                    .map((fx) => (
+                        <GrantedEffect effect={fx} elevation={4} />
+                    ))}
+                {choices.map((choice) => (
+                    <ChoiceDescription step={choice.type} elevation={4} />
                 ))}
-            {choices.map((choice) => (
-                <ChoiceDescription step={choice.type} elevation={4} />
-            ))}
+            </ItemBox>
         </EffectsContainer>
     );
 }

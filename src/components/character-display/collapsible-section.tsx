@@ -7,14 +7,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 interface CollapsibleSectionProps {
     title: string;
-    content: ReactNode[];
+    children: ReactNode;
     elevation: number;
     style?: React.CSSProperties;
 }
 
 export function CollapsibleSection({
     title,
-    content,
+    children,
     elevation,
     style,
 }: CollapsibleSectionProps) {
@@ -28,7 +28,7 @@ export function CollapsibleSection({
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="subtitle1">{title}</Typography>
             </AccordionSummary>
-            <AccordionDetails>{content}</AccordionDetails>
+            <AccordionDetails>{children}</AccordionDetails>
         </Accordion>
     );
 }

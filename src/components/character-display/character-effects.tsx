@@ -1,8 +1,16 @@
 import React, { useMemo } from 'react';
 import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
+import styled from '@emotion/styled';
+import Box from '@mui/material/Box';
 import { Character } from '../../models/character/character';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { CollapsibleSection } from './collapsible-section';
+
+const ItemBox = styled(Box)`
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+`;
 
 interface CharacterEffectsProps {
     character: Character;
@@ -50,16 +58,19 @@ export function CharacterEffects({ character }: CharacterEffectsProps) {
                                 minWidth: '250px',
                                 // flex: 1,
                             }}
-                            content={section.content
-                                .filter((effect) => !effect.hidden)
-                                .map((effect) => (
-                                    <GrantedEffect
-                                        key={effect.name}
-                                        effect={effect}
-                                        elevation={4}
-                                    />
-                                ))}
-                        />
+                        >
+                            <ItemBox>
+                                {section.content
+                                    .filter((effect) => !effect.hidden)
+                                    .map((effect) => (
+                                        <GrantedEffect
+                                            key={effect.name}
+                                            effect={effect}
+                                            elevation={4}
+                                        />
+                                    ))}
+                            </ItemBox>
+                        </CollapsibleSection>
                     ),
             )}
         </>

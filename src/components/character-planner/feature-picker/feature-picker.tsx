@@ -103,6 +103,7 @@ const OptionName = styled(Typography)<NameLabelProps>`
 
 const DescriptionText = styled(Typography)`
     text-align: center;
+    padding: 0.5rem;
 `;
 
 const DescriptionPaper = styled(Paper)`
