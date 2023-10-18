@@ -123,6 +123,14 @@ export class Character implements ICharacter {
             : [optionOrOptions];
 
         options.forEach((option) => {
+            if (option.type === CharacterPlannerStep.REMOVE_LEVEL) {
+                this.removeLevel(option);
+                this.updateClassDataEffects();
+                // FIXME: Need to uncollapse subclass features somehow
+
+                return;
+            }
+
             if (!parent && Character.LEVEL_STEPS.includes(type)) {
                 parent = this.findClassParent(option);
             }
@@ -483,6 +491,83 @@ export class Character implements ICharacter {
             node.addChild(child);
             Character.grantEffects(child);
         });
+    }
+
+    getRemovedLevelRoot(className: string): {
+        target: CharacterTreeDecision;
+        parent: CharacterTreeDecision | CharacterTreeRoot;
+    } {
+        const allClassLevelNodes = this.findAllDecisionsByOptionType([
+            CharacterPlannerStep.SET_CLASS,
+            CharacterPlannerStep.MULTICLASS,
+            CharacterPlannerStep.LEVEL_UP,
+        ]);
+
+        const classLevelNodes = allClassLevelNodes.filter(
+            (node) => node.name === className,
+        );
+
+        // find the highest level of the class
+        const targetNode = classLevelNodes.find(
+            (node) =>
+                typeof node.children === 'undefined' ||
+                node.children.every(
+                    (child) => !classLevelNodes.includes(child as any),
+                ),
+        );
+
+        if (!targetNode) {
+            throw new Error('could not find level to remove');
+        }
+
+        const parentNode =
+            classLevelNodes.length > 1
+                ? classLevelNodes.find(
+                      (node) => node.children?.includes(targetNode),
+                  )!
+                : (this.root.findNode(
+                      (node) => node.children?.includes(targetNode) ?? false,
+                  )! as CharacterTreeDecision);
+
+        if (parentNode.type === CharacterPlannerStep.MULTICLASS_ROOT) {
+            // Prune the root instead so we don't duplicate it
+            return { target: parentNode, parent: this.root };
+        }
+
+        return { target: targetNode, parent: parentNode };
+    }
+
+    getLostEffectsForRemovedLevel(className: string): GrantableEffect[] {
+        const root = this.getRemovedLevelRoot(className);
+
+        return root.target.findAllNodes(
+            (node) => node.nodeType === CharacterTreeNodeType.EFFECT,
+        ) as unknown as GrantableEffect[];
+    }
+
+    startRemoveLevel(): Character {
+        this.pendingDecisions.push(
+            new PendingDecision(null, {
+                type: CharacterPlannerStep.REMOVE_LEVEL,
+                options: this.getClasses().map(({ class: cls }) => ({
+                    name: cls.name,
+                    type: CharacterPlannerStep.REMOVE_LEVEL,
+                    grants: this.getLostEffectsForRemovedLevel(cls.name),
+                    image: cls.image,
+                })),
+            }),
+        );
+
+        return this.clone();
+    }
+
+    removeLevel(option: ICharacterOption): void {
+        const { name: className } = option;
+        const root = this.getRemovedLevelRoot(className);
+
+        root.parent.children!.splice(
+            root.parent.children!.findIndex((node) => node === root.target),
+        );
     }
 
     // "Getters" for front end ================================================

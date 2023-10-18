@@ -16,17 +16,20 @@ import FeaturePicker from './feature-picker/feature-picker';
 import { CharacterClassOption } from '../../models/character/types';
 import CharacterDisplay from '../character-display/character-display';
 import TreeVisualization from '../tree-visualization';
+import SettingsMenu from '../character-display/settings-menu/settings-menu';
 
 const Container = styled(Box)`
     display: flex;
     flex-direction: row;
     align-items: stretch;
     justify-content: center;
+    gap: 40px;
+
+    position: relative;
+    margin: auto 0;
     width: 100%;
     height: 100%;
     min-height: 100%;
-    gap: 40px;
-    margin: auto 0;
 
     @media (max-width: 768px) {
         flex-direction: column-reverse;
@@ -87,6 +90,12 @@ const TreeVisualizationOverlay = styled(TreeVisualization)`
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10; // Ensures it's above other content
+`;
+
+const StyledSettingsMenu = styled(SettingsMenu)`
+    position: absolute;
+    top: 10px;
+    right: 10px;
 `;
 
 interface CharacterPlannerProps {
@@ -203,8 +212,9 @@ export default function CharacterPlanner({
                     })
                 ) : (
                     <FeaturePicker
-                        onEvent={handleDecision}
+                        onDecision={handleDecision}
                         decision={nextDecision}
+                        {...nextDecisionInfo.extraFeaturePickerArgs}
                     />
                 )}
             </>
@@ -214,6 +224,10 @@ export default function CharacterPlanner({
     return (
         <>
             <ButtonBox>
+                <StyledSettingsMenu
+                    character={character}
+                    updateCharacter={setCharacter}
+                />
                 <DevButton
                     variant="contained"
                     color="primary"

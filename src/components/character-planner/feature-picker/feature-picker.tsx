@@ -125,14 +125,16 @@ const NextButton = styled(Button)`
 
 interface FeaturePickerProps {
     decision: IPendingDecision;
-    onEvent: (decision: IPendingDecision, choice: ICharacterOption) => void;
+    onDecision: (decision: IPendingDecision, choice: ICharacterOption) => void;
+    negate?: boolean;
 }
 
 type CardMediaPropsExtended = CardMediaProps & { layout: LayoutType };
 
 export default function FeaturePicker({
     decision,
-    onEvent,
+    onDecision,
+    negate,
 }: FeaturePickerProps) {
     const { options } = decision;
 
@@ -229,7 +231,7 @@ export default function FeaturePicker({
                     {showEffects && (
                         <ProspectiveEffects
                             options={selectedOption}
-                            text="You will gain:"
+                            text={negate ? 'You will lose:' : 'You will gain:'}
                         />
                     )}
                 </DescriptionPaper>
@@ -240,7 +242,7 @@ export default function FeaturePicker({
                     variant="contained"
                     color="primary"
                     onClick={() =>
-                        selectedOption && onEvent(decision, selectedOption)
+                        selectedOption && onDecision(decision, selectedOption)
                     }
                     disabled={!selectedOption}
                 >

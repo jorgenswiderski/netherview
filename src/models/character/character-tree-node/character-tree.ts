@@ -44,20 +44,6 @@ export class CharacterTreeNode implements ICharacterTreeNode {
             }
         }
     }
-}
-
-export class CharacterTreeRoot
-    extends CharacterTreeNode
-    implements ICharacterTreeRoot
-{
-    nodeType: CharacterTreeNodeType.ROOT;
-    // parent?: undefined;
-
-    constructor() {
-        super('ROOT', CharacterTreeNodeType.ROOT);
-
-        this.nodeType = CharacterTreeNodeType.ROOT;
-    }
 
     findNode(
         discriminator: (node: ICharacterTreeNode) => boolean,
@@ -106,7 +92,7 @@ export class CharacterTreeRoot
         while (queue.length > 0) {
             const nextQueue: [ICharacterTreeNode, number][] = [];
 
-            const foundNode = CharacterTreeRoot.processNodesBFS(
+            const foundNode = CharacterTreeNode.processNodesBFS(
                 queue,
                 callback,
                 nextQueue,
@@ -167,7 +153,7 @@ export class CharacterTreeRoot
             const nextStack: [ICharacterTreeNode, number][] = [];
 
             // Capture the returned value to update foundNode
-            foundNode = CharacterTreeRoot.processNodesDFS(
+            foundNode = CharacterTreeNode.processNodesDFS(
                 stack,
                 callback,
                 nextStack,
@@ -215,6 +201,20 @@ export class CharacterTreeRoot
         });
 
         return foundNode;
+    }
+}
+
+export class CharacterTreeRoot
+    extends CharacterTreeNode
+    implements ICharacterTreeRoot
+{
+    nodeType: CharacterTreeNodeType.ROOT;
+    // parent?: undefined;
+
+    constructor() {
+        super('ROOT', CharacterTreeNodeType.ROOT);
+
+        this.nodeType = CharacterTreeNodeType.ROOT;
     }
 }
 

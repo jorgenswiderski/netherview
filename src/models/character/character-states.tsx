@@ -29,6 +29,7 @@ export interface DecisionStateInfo {
     render?: (props: CharacterWidgetProps) => JSX.Element;
     getChoices?: (character: ICharacter) => Promise<ICharacterChoice[]>;
     getOptions?: (character: ICharacter) => Promise<ICharacterOption[]>;
+    extraFeaturePickerArgs?: Record<string, any>;
 }
 
 export interface IPendingDecision {
@@ -103,5 +104,9 @@ export const CharacterDecisionInfo: {
     [CharacterPlannerStep.LEARN_SPELLS]: {
         title: 'Choose spells to learn',
         render: (props) => <SpellPicker {...props} />,
+    },
+    [CharacterPlannerStep.REMOVE_LEVEL]: {
+        title: 'Choose a class to remove a level from',
+        extraFeaturePickerArgs: { negate: true },
     },
 };
