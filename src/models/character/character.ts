@@ -302,9 +302,9 @@ export class Character implements ICharacter {
                 return { ...cls };
             }
 
-            const choices: ICharacterChoice[] = cls.choices
-                ? [...cls.choices]
-                : [];
+            const choices: ICharacterChoice[] = nextLevelData.Features.flatMap(
+                (feature) => feature.choices ?? [],
+            );
 
             choices.push(
                 ...keys.flatMap((key) => {
