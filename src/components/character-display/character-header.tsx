@@ -3,6 +3,8 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { Character } from '../../models/character/character';
+import { CharacterClassOption } from '../../models/character/types';
+import { CharacterTreeDecision } from '../../models/character/character-tree-node/character-tree';
 
 interface CharacterHeaderProps {
     character: Character;
@@ -28,6 +30,25 @@ export function CharacterHeader({ character }: CharacterHeaderProps) {
 
         return uniqueClasses.size > 1;
     }, [character]);
+
+    function formatClassLevel(data: {
+        levels: number;
+        class: CharacterClassOption;
+        subclass?: CharacterTreeDecision;
+    }) {
+        if (shouldDisplayLevels) {
+            return (
+                <span>
+                    {data?.subclass ? data.subclass.name : data.class.name}{' '}
+                    <span style={{ color: 'gray' }}>{data.levels}</span>
+                </span>
+            );
+        }
+
+        return `${data?.subclass ? `${data.subclass.name} ` : ''} ${
+            data.class.name
+        }`;
+    }
 
     const race = useMemo(() => character.getRace(), [character]);
     const subrace = useMemo(() => character.getSubrace(), [character]);
@@ -81,27 +102,25 @@ export function CharacterHeader({ character }: CharacterHeaderProps) {
                             {character.name}
                         </Typography>
                         <Typography variant="h5" align="left">
-                            {subrace?.name ?? race?.name}
+                            {subrace?.name ?? race?.name}{' '}
                             {character.root.children &&
-                                character.root.children.length > 1 &&
-                                ` ${character
-                                    .getClasses()
-                                    .map((data) => {
-                                        if (shouldDisplayLevels) {
-                                            return `${
-                                                data?.subclass
-                                                    ? data.subclass.name
-                                                    : data.class.name
-                                            } (${data.levels})`;
-                                        }
-
-                                        return `${
-                                            data?.subclass
-                                                ? data.subclass.name
-                                                : data.class.name
-                                        }`;
-                                    })
-                                    .join(' / ')}`}
+                                character.root.children.length > 1 && (
+                                    <span>
+                                        {character
+                                            .getClasses()
+                                            .map((data, index) => (
+                                                <React.Fragment
+                                                    key={data.class.name}
+                                                >
+                                                    {formatClassLevel(data)}
+                                                    {index !==
+                                                        character.getClasses()
+                                                            .length -
+                                                            1 && ' / '}
+                                                </React.Fragment>
+                                            ))}
+                                    </span>
+                                )}
                         </Typography>
                     </Box>
                 </Box>

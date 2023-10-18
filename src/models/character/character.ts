@@ -694,14 +694,18 @@ export class Character implements ICharacter {
     }
 
     getRace(): ICharacterTreeDecision | undefined {
-        return this.findDecisionByChoiceType(CharacterPlannerStep.SET_RACE)
-            ?.children?.[0] as ICharacterTreeDecision | undefined;
+        return (
+            this.findDecisionByOptionType(CharacterPlannerStep.SET_RACE) ??
+            undefined
+        );
     }
 
     getSubrace(): ICharacterTreeDecision | undefined {
-        return this.findDecisionByChoiceType(
-            CharacterPlannerStep.CHOOSE_SUBRACE,
-        )?.children?.[0] as ICharacterTreeDecision | undefined;
+        return (
+            this.findDecisionByOptionType(
+                CharacterPlannerStep.CHOOSE_SUBRACE,
+            ) ?? undefined
+        );
     }
 
     getBackground(): ICharacterTreeDecision | undefined {
