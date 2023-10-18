@@ -183,8 +183,10 @@ export class Character implements ICharacter {
             return;
         }
 
-        parent.choices.forEach((choice) =>
-            this.pendingDecisions.unshift(new PendingDecision(parent, choice)),
+        this.pendingDecisions.unshift(
+            ...parent.choices.map(
+                (choice) => new PendingDecision(parent, choice),
+            ),
         );
     }
 
