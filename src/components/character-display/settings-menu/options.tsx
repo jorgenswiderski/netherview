@@ -8,8 +8,12 @@ export type SettingsMenuOption = {
 };
 
 export const settingsMenuOptions: SettingsMenuOption[] = [
+    // {
+    //     label: 'Remove a level in a class',
+    //     onClick: (char) => char.startRemoveLevel(),
+    // },
     {
-        label: 'Remove a level in a class',
-        onClick: (char) => char.startRemoveLevel(),
+        label: 'Manage levels...',
+        onClick: (char) => char.manageLevels(),
     },
 ];

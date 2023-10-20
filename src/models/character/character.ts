@@ -14,11 +14,17 @@ import {
     ActionEffect,
 } from 'planner-types/src/types/grantable-effect';
 import { ISpell } from 'planner-types/src/types/spells';
-import { AbilityScores, CharacterClassOption, ICharacter } from './types';
+import {
+    AbilityScores,
+    CharacterClassInfo,
+    CharacterClassOption,
+    ICharacter,
+} from './types';
 import { PendingDecision } from './pending-decision/pending-decision';
 import {
     CharacterTreeDecision,
     CharacterTreeEffect,
+    CharacterTreeNode,
     CharacterTreeRoot,
 } from './character-tree-node/character-tree';
 import {
@@ -55,7 +61,7 @@ export class Character implements ICharacter {
         public classData: CharacterClassOption[],
         public spellData: ISpell[],
     ) {
-        this.updateClassDataEffects();
+        this.updateClassData();
     }
 
     multiclassRoot: ICharacterOption = {
@@ -125,7 +131,7 @@ export class Character implements ICharacter {
         options.forEach((option) => {
             if (option.type === CharacterPlannerStep.REMOVE_LEVEL) {
                 this.removeLevel(option);
-                this.updateClassDataEffects();
+                this.updateClassData();
                 // FIXME: Need to uncollapse subclass features somehow
 
                 return;
@@ -161,7 +167,7 @@ export class Character implements ICharacter {
                 Character.grantEffects(decision);
 
                 if (Character.LEVEL_STEPS.includes(type)) {
-                    this.updateClassDataEffects();
+                    this.updateClassData();
                 } else if (
                     type === CharacterPlannerStep.LEARN_CANTRIPS ||
                     type === CharacterPlannerStep.LEARN_SPELLS
@@ -169,7 +175,7 @@ export class Character implements ICharacter {
                     this.updateClassSpellOptions();
                 } else if (type === CharacterPlannerStep.CHOOSE_SUBCLASS) {
                     this.collapseSubclassFeatures(decision.name);
-                    this.updateClassDataEffects();
+                    this.updateClassData();
                 }
 
                 this.queueSubchoices(decision);
@@ -266,12 +272,12 @@ export class Character implements ICharacter {
     }
 
     private updateClassFeatures(): void {
-        const levelInfo = this.getClasses();
+        const levelInfo = this.getClassInfo();
 
         this.classData = this.classData.map((cls) => {
             const level =
-                levelInfo.find((info) => info.class.name === cls.name)
-                    ?.levels ?? 0;
+                levelInfo.find((info) => info.class.name === cls.name)?.levels
+                    .length ?? 0;
 
             if (level >= Character.MAX_LEVEL) {
                 return { ...cls };
@@ -289,12 +295,13 @@ export class Character implements ICharacter {
                 ...cls,
                 choices,
                 grants,
+                level,
             };
         });
     }
 
     private updateClassSpellOptions(): void {
-        const levelInfo = this.getClasses();
+        const levelInfo = this.getClassInfo();
         const keys: (keyof CharacterClassProgressionLevel)[] = [
             'Spells Known',
             'Cantrips Known',
@@ -302,8 +309,8 @@ export class Character implements ICharacter {
 
         this.classData = this.classData.map((cls) => {
             const level =
-                levelInfo.find((info) => info.class.name === cls.name)
-                    ?.levels ?? 0;
+                levelInfo.find((info) => info.class.name === cls.name)?.levels
+                    .length ?? 0;
 
             const currentLevelData = level > 0 && cls.progression[level - 1];
             const nextLevelData = cls.progression[level];
@@ -409,7 +416,7 @@ export class Character implements ICharacter {
         });
     }
 
-    private updateClassDataEffects(): void {
+    private updateClassData(): void {
         this.updateClassFeatures();
         this.updateClassSpellOptions();
     }
@@ -493,81 +500,44 @@ export class Character implements ICharacter {
         });
     }
 
-    getRemovedLevelRoot(className: string): {
-        target: CharacterTreeDecision;
-        parent: CharacterTreeDecision | CharacterTreeRoot;
-    } {
-        const allClassLevelNodes = this.findAllDecisionsByOptionType([
-            CharacterPlannerStep.SET_CLASS,
-            CharacterPlannerStep.MULTICLASS,
-            CharacterPlannerStep.LEVEL_UP,
-        ]);
+    removeLevel(option: ICharacterOption): void {
+        const { node: target } = option as ICharacterOption & {
+            node: CharacterTreeDecision;
+        };
 
-        const classLevelNodes = allClassLevelNodes.filter(
-            (node) => node.name === className,
-        );
+        const parent = this.findNodeParent(target) as ICharacterTreeDecision;
 
-        // find the highest level of the class
-        const targetNode = classLevelNodes.find(
-            (node) =>
-                typeof node.children === 'undefined' ||
-                node.children.every(
-                    (child) => !classLevelNodes.includes(child as any),
-                ),
-        );
-
-        if (!targetNode) {
-            throw new Error('could not find level to remove');
+        if (!target || !parent) {
+            throw new Error('failed to remove level');
         }
 
-        const parentNode =
-            classLevelNodes.length > 1
-                ? classLevelNodes.find(
-                      (node) => node.children?.includes(targetNode),
-                  )!
-                : (this.root.findNode(
-                      (node) => node.children?.includes(targetNode) ?? false,
-                  )! as CharacterTreeDecision);
+        if (parent.type === CharacterPlannerStep.MULTICLASS_ROOT) {
+            // Prune the multiclass root instead so we don't duplicate it
+            this.root.children!.splice(
+                this.root.children!.findIndex((node) => node === parent),
+            );
 
-        if (parentNode.type === CharacterPlannerStep.MULTICLASS_ROOT) {
-            // Prune the root instead so we don't duplicate it
-            return { target: parentNode, parent: this.root };
+            return;
         }
 
-        return { target: targetNode, parent: parentNode };
+        parent.children!.splice(
+            parent.children!.findIndex((node) => node === target),
+        );
     }
 
-    getLostEffectsForRemovedLevel(className: string): GrantableEffect[] {
-        const root = this.getRemovedLevelRoot(className);
-
-        return root.target.findAllNodes(
-            (node) => node.nodeType === CharacterTreeNodeType.EFFECT,
-        ) as unknown as GrantableEffect[];
-    }
-
-    startRemoveLevel(): Character {
+    manageLevels(): Character {
         this.pendingDecisions.push(
-            new PendingDecision(null, {
-                type: CharacterPlannerStep.REMOVE_LEVEL,
-                options: this.getClasses().map(({ class: cls }) => ({
-                    name: cls.name,
-                    type: CharacterPlannerStep.REMOVE_LEVEL,
-                    grants: this.getLostEffectsForRemovedLevel(cls.name),
-                    image: cls.image,
-                })),
-            }),
+            new PendingDecision(
+                null,
+                {
+                    type: CharacterPlannerStep.MANAGE_LEVELS,
+                    options: [],
+                },
+                true,
+            ),
         );
 
         return this.clone();
-    }
-
-    removeLevel(option: ICharacterOption): void {
-        const { name: className } = option;
-        const root = this.getRemovedLevelRoot(className);
-
-        root.parent.children!.splice(
-            root.parent.children!.findIndex((node) => node === root.target),
-        );
     }
 
     // "Getters" for front end ================================================
@@ -577,77 +547,105 @@ export class Character implements ICharacter {
         return this.getTotalLevel() < Character.MAX_LEVEL;
     }
 
-    getClasses(): {
-        levels: number;
-        class: CharacterClassOption;
-        subclass?: CharacterTreeDecision;
-    }[] {
-        // Create a map to count occurrences of each class
-        const classCount = new Map<string, number>();
+    private static findSubclassNode(
+        classLevels: ICharacterTreeDecision[],
+    ): CharacterTreeDecision | undefined {
+        const children = classLevels.flatMap((cls) => cls.children ?? []);
 
-        const classes = this.findAllDecisionsByOptionType([
+        const subclass = children.find((node) => {
+            if (node.nodeType !== CharacterTreeNodeType.DECISION) {
+                return false;
+            }
+
+            const decision = node as CharacterTreeDecision;
+
+            return decision.type === CharacterPlannerStep.CHOOSE_SUBCLASS;
+        });
+
+        return subclass as CharacterTreeDecision | undefined;
+    }
+
+    private static getClassLevelEffects(
+        root: ICharacterTreeDecision,
+    ): GrantableEffect[] {
+        if (!root.children) {
+            return [];
+        }
+
+        const childrenExcludingLevelUps: CharacterTreeNode[] =
+            root.children.filter((child) => {
+                if (child.nodeType !== CharacterTreeNodeType.DECISION) {
+                    return true;
+                }
+
+                const decision = child as CharacterTreeDecision;
+
+                return decision.type !== CharacterPlannerStep.LEVEL_UP;
+            }) as CharacterTreeNode[];
+
+        const effects: GrantableEffect[] = childrenExcludingLevelUps.flatMap(
+            (child) =>
+                child.findAllNodes(
+                    (node) => node.nodeType === CharacterTreeNodeType.EFFECT,
+                ),
+        ) as unknown as GrantableEffect[];
+
+        return effects;
+    }
+
+    getClassInfo(): CharacterClassInfo[] {
+        const allNodes = this.findAllDecisionsByOptionType([
             CharacterPlannerStep.SET_CLASS,
             CharacterPlannerStep.MULTICLASS,
             CharacterPlannerStep.LEVEL_UP,
         ]).filter(Boolean) as ICharacterTreeDecision[];
 
-        classes.forEach((cls) => {
-            classCount.set(cls.name, (classCount.get(cls.name) || 0) + 1);
+        const levelNodes: Record<string, ICharacterTreeDecision[]> = {};
+
+        allNodes.forEach((node) => {
+            if (!levelNodes[node.name]) {
+                levelNodes[node.name] = [];
+            }
+
+            levelNodes[node.name].push(node);
         });
 
-        // Convert the map to an array of objects
-        const classesArray = Array.from(classCount).map(
-            ([className, count]) => {
-                // find the subclass, if it exists
-                // FIXME: doesnt work for the same reason as above
-                const subclass = classes
-                    .filter((cls) => cls.name === className)
-                    .map(
-                        (cls) =>
-                            cls.children?.find((node) => {
-                                if (
-                                    node.nodeType !==
-                                    CharacterTreeNodeType.DECISION
-                                ) {
-                                    return false;
-                                }
-
-                                const decision = node as CharacterTreeDecision;
-
-                                return (
-                                    decision.type ===
-                                    CharacterPlannerStep.CHOOSE_SUBCLASS
-                                );
-                            }),
-                    )
-                    .find(Boolean) as CharacterTreeDecision | undefined; // filter out undefineds
-
-                return {
-                    class: this.classData.find(
-                        (cls) => cls.name === className,
-                    )!,
-                    subclass,
-                    levels: count,
-                };
-            },
+        // sort by levels
+        Object.values(levelNodes).forEach((nodes) =>
+            nodes.sort((a: any, b: any) => a.level - b.level),
         );
 
-        // Sort the array
-        classesArray.sort((a, b) => {
-            // If one of the classes is the first class in levels, prioritize it
-            // if (this.levels[0].name === a.class.name) return -1;
-            // if (this.levels[0].name === b.class.name) return 1;
-            // FIXME: No concept of first level yet
+        const info = Object.entries(levelNodes).map(([name, nodes]) => ({
+            class: this.classData.find((cls) => cls.name === name)!,
+            subclass: Character.findSubclassNode(nodes),
+            levels: nodes.map((node) => ({
+                node: node as CharacterTreeDecision,
+                totalEffects: Character.getClassLevelEffects(node),
+            })),
+        }));
+
+        info.sort((a, b) => {
+            // If one of the classes is the main class, prioritize it
+            if (a.levels[0]!.node.type === CharacterPlannerStep.SET_CLASS) {
+                return -1;
+            }
+
+            if (b.levels[0]!.node.type === CharacterPlannerStep.SET_CLASS) {
+                return 1;
+            }
 
             // For all other classes, sort by the number of levels in descending order
-            return b.levels - a.levels;
+            return b.levels.length - a.levels.length;
         });
 
-        return classesArray;
+        return info;
     }
 
     getTotalLevel(): number {
-        return this.getClasses().reduce((acc, { levels }) => acc + levels, 0);
+        return this.getClassInfo().reduce(
+            (acc, { levels }) => acc + levels.length,
+            0,
+        );
     }
 
     getTotalAbilityScores(): AbilityScores | null {
@@ -776,6 +774,12 @@ export class Character implements ICharacter {
         return this.root.findAllNodes(
             Character.findNodeByOptionType(type),
         ) as CharacterTreeDecision[];
+    }
+
+    private findNodeParent(child: CharacterTreeDecision | CharacterTreeEffect) {
+        return this.root.findNode(
+            (node) => node.children?.includes(child) ?? false,
+        );
     }
 
     getRace(): ICharacterTreeDecision | undefined {

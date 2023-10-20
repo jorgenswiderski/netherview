@@ -13,7 +13,8 @@
                     "url": "webpack://_n_e",
                     "path": "${workspaceFolder}"
                 }
-            ]
+            ],
+            "profile": "VSCode Debugger"
         },
         {
             "type": "firefox",

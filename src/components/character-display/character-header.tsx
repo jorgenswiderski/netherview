@@ -3,8 +3,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { Character } from '../../models/character/character';
-import { CharacterClassOption } from '../../models/character/types';
-import { CharacterTreeDecision } from '../../models/character/character-tree-node/character-tree';
+import { CharacterClassInfo } from '../../models/character/types';
 
 interface CharacterHeaderProps {
     character: Character;
@@ -12,9 +11,9 @@ interface CharacterHeaderProps {
 
 export function CharacterHeader({ character }: CharacterHeaderProps) {
     const imagePath = useMemo(() => {
-        const classes = character.getClasses();
+        const classes = character.getClassInfo();
         const highestLevelClass = classes.sort(
-            (a, b) => b.levels - a.levels,
+            (a, b) => b.levels.length - a.levels.length,
         )[0];
 
         // If there's a subclass with an image, use it, otherwise fall back to the class image
@@ -25,22 +24,18 @@ export function CharacterHeader({ character }: CharacterHeaderProps) {
 
     const shouldDisplayLevels = useMemo(() => {
         const uniqueClasses = new Set(
-            character.getClasses().map((cls) => cls.class.name),
+            character.getClassInfo().map((cls) => cls.class.name),
         );
 
         return uniqueClasses.size > 1;
     }, [character]);
 
-    function formatClassLevel(data: {
-        levels: number;
-        class: CharacterClassOption;
-        subclass?: CharacterTreeDecision;
-    }) {
+    function formatClassLevel(data: CharacterClassInfo) {
         if (shouldDisplayLevels) {
             return (
                 <span>
                     {data?.subclass ? data.subclass.name : data.class.name}{' '}
-                    <span style={{ color: 'gray' }}>{data.levels}</span>
+                    <span style={{ color: 'gray' }}>{data.levels.length}</span>
                 </span>
             );
         }
@@ -107,14 +102,14 @@ export function CharacterHeader({ character }: CharacterHeaderProps) {
                                 character.root.children.length > 1 && (
                                     <span>
                                         {character
-                                            .getClasses()
+                                            .getClassInfo()
                                             .map((data, index) => (
                                                 <React.Fragment
                                                     key={data.class.name}
                                                 >
                                                     {formatClassLevel(data)}
                                                     {index !==
-                                                        character.getClasses()
+                                                        character.getClassInfo()
                                                             .length -
                                                             1 && ' / '}
                                                 </React.Fragment>

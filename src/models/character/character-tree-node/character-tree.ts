@@ -67,10 +67,6 @@ export class CharacterTreeNode implements ICharacterTreeNode {
     ): ICharacterTreeNode[] {
         const results: ICharacterTreeNode[] = [];
 
-        if (discriminator(this)) {
-            results.push(this);
-        }
-
         this.breadthFirstSearch(
             (node) => {
                 if (discriminator(node)) results.push(node);

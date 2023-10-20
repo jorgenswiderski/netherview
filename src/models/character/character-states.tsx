@@ -14,6 +14,7 @@ import {
 import AbilitiesPointBuy from '../../components/character-planner/abilities/abilities-point-buy';
 import AbilitiesIncrease from '../../components/character-planner/abilities/abilities-increase';
 import SpellPicker from '../../components/character-planner/spell-picker';
+import LevelManager from '../../components/character-planner/level-manager/level-manager';
 
 export interface CharacterWidgetProps {
     onDecision: (
@@ -105,8 +106,12 @@ export const CharacterDecisionInfo: {
         title: 'Choose spells to learn',
         render: (props) => <SpellPicker {...props} />,
     },
-    [CharacterPlannerStep.REMOVE_LEVEL]: {
-        title: 'Choose a class to remove a level from',
-        extraFeaturePickerArgs: { negate: true },
+    // [CharacterPlannerStep.REMOVE_LEVEL]: {
+    //     title: 'Choose a class to remove a level from',
+    //     extraFeaturePickerArgs: { negate: true },
+    // },
+    [CharacterPlannerStep.MANAGE_LEVELS]: {
+        title: "Manage your character's levels",
+        render: (props) => <LevelManager {...props} />,
     },
 };

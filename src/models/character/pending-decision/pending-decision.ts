@@ -23,13 +23,14 @@ export class PendingDecision implements IPendingDecision {
     constructor(
         public parent: CharacterTreeDecision | CharacterTreeRoot | null,
         { type, options, count }: ICharacterChoice,
+        allowOptionless: boolean = false,
     ) {
         this.type = type;
         this.options = options;
         this.count = count ?? 1;
         this.info = CharacterDecisionInfo[type];
 
-        if (options.length === 0) {
+        if (!allowOptionless && options.length === 0) {
             throw new Error(`Pending decision has no options`);
         }
 
