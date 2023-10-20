@@ -39,19 +39,19 @@ export class Character implements ICharacter {
     static MAX_LEVEL = 12;
     static LEVEL_STEPS = [
         CharacterPlannerStep.LEVEL_UP,
-        CharacterPlannerStep.MULTICLASS,
-        CharacterPlannerStep.SET_CLASS,
+        CharacterPlannerStep.SECONDARY_CLASS,
+        CharacterPlannerStep.PRIMARY_CLASS,
     ];
     static LEVEL_ROOTS = [
-        CharacterPlannerStep.MULTICLASS,
-        CharacterPlannerStep.SET_CLASS,
+        CharacterPlannerStep.SECONDARY_CLASS,
+        CharacterPlannerStep.PRIMARY_CLASS,
     ];
 
     root: CharacterTreeRoot = new CharacterTreeRoot();
 
     pendingSteps: CharacterPlannerStep[] = [
         CharacterPlannerStep.SET_RACE,
-        CharacterPlannerStep.SET_CLASS,
+        CharacterPlannerStep.PRIMARY_CLASS,
         CharacterPlannerStep.SET_BACKGROUND,
         CharacterPlannerStep.SET_ABILITY_SCORES,
     ];
@@ -67,7 +67,7 @@ export class Character implements ICharacter {
     multiclassRoot: ICharacterOption = {
         name: 'Add a class',
         // description: 'Add a level in a new class.',
-        type: CharacterPlannerStep.MULTICLASS_ROOT,
+        type: CharacterPlannerStep.MULTICLASS_PROXY,
     };
 
     name: string = 'Tav';
@@ -148,7 +148,7 @@ export class Character implements ICharacter {
             }
 
             const isProxyChoice =
-                option.type === CharacterPlannerStep.MULTICLASS_ROOT;
+                option.type === CharacterPlannerStep.MULTICLASS_PROXY;
 
             if (isProxyChoice) {
                 this.pendingDecisions.unshift(
@@ -421,35 +421,47 @@ export class Character implements ICharacter {
             return this;
         }
 
-        const currentClassNames = (
-            this.findAllDecisionsByOptionType([
-                CharacterPlannerStep.SET_CLASS,
-                CharacterPlannerStep.LEVEL_UP,
-                CharacterPlannerStep.MULTICLASS,
-            ]).filter(Boolean) as ICharacterTreeDecision[]
-        ).map((decision) => decision.name);
+        const currentClassNodes = this.findAllDecisionsByOptionType([
+            CharacterPlannerStep.PRIMARY_CLASS,
+            CharacterPlannerStep.LEVEL_UP,
+            CharacterPlannerStep.SECONDARY_CLASS,
+        ]) as ICharacterTreeDecision[];
+
+        const isChoosingPrimaryClass = currentClassNodes.every(
+            (cls) => cls.type !== CharacterPlannerStep.PRIMARY_CLASS,
+        );
+
+        const currentClassNames = currentClassNodes.map(
+            (decision) => decision.name,
+        );
 
         const currentClasses = this.classData.filter((cls) =>
-            currentClassNames.includes(cls.name),
+            isChoosingPrimaryClass
+                ? !currentClassNames.includes(cls.name)
+                : currentClassNames.includes(cls.name),
         );
 
-        const newClasses = this.classData.filter(
-            (cls) => !currentClasses.includes(cls),
-        );
+        const newClasses = isChoosingPrimaryClass
+            ? []
+            : this.classData.filter((cls) => !currentClasses.includes(cls));
+
+        const multiclassOption =
+            newClasses.length > 0
+                ? [
+                      {
+                          ...this.multiclassRoot,
+                          choices: [
+                              {
+                                  type: CharacterPlannerStep.SECONDARY_CLASS,
+                                  options: newClasses,
+                              },
+                          ],
+                      },
+                  ]
+                : [];
 
         const decision: PendingDecision = new PendingDecision(null, {
-            options: [
-                ...currentClasses,
-                {
-                    ...this.multiclassRoot,
-                    choices: [
-                        {
-                            type: CharacterPlannerStep.MULTICLASS,
-                            options: newClasses,
-                        },
-                    ],
-                },
-            ],
+            options: [...currentClasses, ...multiclassOption],
             type: CharacterPlannerStep.LEVEL_UP,
         });
 
@@ -555,10 +567,10 @@ export class Character implements ICharacter {
         this.levelUp();
         let levelDecision = this.pendingDecisions[0];
 
-        if (target.type === CharacterPlannerStep.MULTICLASS) {
+        if (target.type === CharacterPlannerStep.SECONDARY_CLASS) {
             // make the multiclass sub-decision
             const multiclassOption = levelDecision.options.find(
-                (opt) => opt.type === CharacterPlannerStep.MULTICLASS_ROOT,
+                (opt) => opt.type === CharacterPlannerStep.MULTICLASS_PROXY,
             );
 
             if (!multiclassOption) {
@@ -588,7 +600,7 @@ export class Character implements ICharacter {
 
         // Find the replacement node
         const replacementNode: CharacterTreeDecision = parent.children?.find(
-            (node) => node.name === parent.name,
+            (node) => node.name === target.name,
         )! as CharacterTreeDecision;
 
         // Graft the children back on to the new node
@@ -659,8 +671,8 @@ export class Character implements ICharacter {
 
     getClassInfo(): CharacterClassInfo[] {
         const allNodes = this.findAllDecisionsByOptionType([
-            CharacterPlannerStep.SET_CLASS,
-            CharacterPlannerStep.MULTICLASS,
+            CharacterPlannerStep.PRIMARY_CLASS,
+            CharacterPlannerStep.SECONDARY_CLASS,
             CharacterPlannerStep.LEVEL_UP,
         ]).filter(Boolean) as ICharacterTreeDecision[];
 
@@ -690,11 +702,11 @@ export class Character implements ICharacter {
 
         info.sort((a, b) => {
             // If one of the classes is the main class, prioritize it
-            if (a.levels[0]!.node.type === CharacterPlannerStep.SET_CLASS) {
+            if (a.levels[0]!.node.type === CharacterPlannerStep.PRIMARY_CLASS) {
                 return -1;
             }
 
-            if (b.levels[0]!.node.type === CharacterPlannerStep.SET_CLASS) {
+            if (b.levels[0]!.node.type === CharacterPlannerStep.PRIMARY_CLASS) {
                 return 1;
             }
 

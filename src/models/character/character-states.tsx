@@ -50,7 +50,7 @@ export const CharacterDecisionInfo: {
     [CharacterPlannerStep.CHOOSE_SUBRACE]: {
         title: 'Select your subrace',
     },
-    [CharacterPlannerStep.SET_CLASS]: {
+    [CharacterPlannerStep.PRIMARY_CLASS]: {
         title: 'Select your starting class',
         getOptions: async (character: ICharacter) => character.classData,
     },
@@ -69,7 +69,7 @@ export const CharacterDecisionInfo: {
     [CharacterPlannerStep.LEVEL_UP]: {
         title: 'Select your class',
     },
-    [CharacterPlannerStep.MULTICLASS]: {
+    [CharacterPlannerStep.SECONDARY_CLASS]: {
         title: 'Choose a class to add',
     },
     [CharacterPlannerStep.FEAT]: {
