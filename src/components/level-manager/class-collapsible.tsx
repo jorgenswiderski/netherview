@@ -7,9 +7,9 @@ import IconButton from '@mui/material/IconButton';
 import styled from '@emotion/styled';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import { CollapsibleSection } from '../../character-display/collapsible-section';
+import { CollapsibleSection } from '../character-display/collapsible-section';
 import LevelCollapsible from './level-collapsible';
-import { ICharacterTreeDecision } from '../../../models/character/character-tree-node/types';
+import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
 import { CharacterClassInfoToggled } from './types';
 
 const LevelBox = styled(Box)`
@@ -96,7 +96,11 @@ export default function ClassCollapsible({
                         name={info.class.name}
                         effects={totalEffects}
                         level={index + 1}
-                        onEdit={() => onEdit(info, node)}
+                        onEdit={
+                            node.choices && node.choices.length > 0
+                                ? () => onEdit(info, node)
+                                : undefined
+                        }
                         onDelete={() => onDelete(info, node)}
                         onHoverDelete={(hover: boolean) =>
                             onHoverDelete(info, node, hover)

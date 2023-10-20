@@ -14,7 +14,7 @@ import {
 import AbilitiesPointBuy from '../../components/character-planner/abilities/abilities-point-buy';
 import AbilitiesIncrease from '../../components/character-planner/abilities/abilities-increase';
 import SpellPicker from '../../components/character-planner/spell-picker';
-import LevelManager from '../../components/character-planner/level-manager/level-manager';
+import LevelManager from '../../components/level-manager/level-manager';
 
 export interface CharacterWidgetProps {
     onDecision: (

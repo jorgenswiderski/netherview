@@ -11,11 +11,11 @@ import {
     CharacterClassLevelInfo,
     CharacterClassOption,
     ICharacter,
-} from '../../../models/character/types';
-import { ICharacterTreeDecision } from '../../../models/character/character-tree-node/types';
+} from '../../models/character/types';
+import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
 import { CharacterClassInfoToggled } from './types';
 import ConfirmDialog from './confirm-dialog';
-import GrantedEffect from '../feature-picker/prospective-effects/granted-effect';
+import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
 
 const ItemBox = styled(Box)`
     display: flex;

@@ -8,9 +8,9 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import IconButton from '@mui/material/IconButton';
 import BuildIcon from '@mui/icons-material/Build';
 import Tooltip from '@mui/material/Tooltip';
-import { CollapsibleSection } from '../../character-display/collapsible-section';
-import GrantedEffect from '../feature-picker/prospective-effects/granted-effect';
-import { log } from '../../../models/logger';
+import { CollapsibleSection } from '../character-display/collapsible-section';
+import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
+import { log } from '../../models/logger';
 
 const EffectBox = styled(Box)`
     display: flex;
@@ -31,7 +31,7 @@ interface LevelCollapsibleProps {
     name: string;
     effects: GrantableEffect[];
     level: number;
-    onEdit: () => void;
+    onEdit?: () => void;
     onDelete: () => void;
     onHoverDelete: (hover: boolean) => void;
     disabled?: boolean;
@@ -54,16 +54,18 @@ export default function LevelCollapsible({
             title={`Level ${level}`}
             headerButtons={
                 <>
-                    <Tooltip title="Edit the choices made at this level">
-                        <IconButton
-                            onClick={(event) => {
-                                event.stopPropagation();
-                                onEdit();
-                            }}
-                        >
-                            <BuildIcon color="disabled" />
-                        </IconButton>
-                    </Tooltip>
+                    {onEdit && (
+                        <Tooltip title="Edit the choices made at this level">
+                            <IconButton
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    onEdit();
+                                }}
+                            >
+                                <BuildIcon color="disabled" />
+                            </IconButton>
+                        </Tooltip>
+                    )}
                     <Tooltip
                         title={`Remove this level and all subsequent levels of ${name}`}
                     >
