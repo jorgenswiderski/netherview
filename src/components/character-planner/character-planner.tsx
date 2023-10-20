@@ -74,7 +74,9 @@ const PaperContainer = styled(Paper)`
 
 const PlannerContainer = styled(PaperContainer)`
     flex: 1;
+
     max-width: 600px;
+    position: relative;
 `;
 
 const PlannerHeader = styled(Paper)`

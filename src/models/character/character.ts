@@ -123,6 +123,10 @@ export class Character implements ICharacter {
             : [optionOrOptions];
 
         options.forEach((option) => {
+            if (option.type === CharacterPlannerStep.STOP_LEVEL_MANAGEMENT) {
+                return;
+            }
+
             if (option.type === CharacterPlannerStep.REMOVE_LEVEL) {
                 this.removeLevel(option);
 
@@ -131,6 +135,12 @@ export class Character implements ICharacter {
 
             if (option.type === CharacterPlannerStep.REVISE_LEVEL) {
                 this.reviseLevel(option);
+
+                return;
+            }
+
+            if (option.type === CharacterPlannerStep.CHANGE_PRIMARY_CLASS) {
+                this.changePrimaryClass(option.name);
 
                 return;
             }
@@ -541,8 +551,6 @@ export class Character implements ICharacter {
         return this.clone();
     }
 
-    pendingGraftedNodes?: CharacterTreeDecision;
-
     reviseLevel(option: ICharacterOption): void {
         const { node: target } = option as ICharacterOption & {
             node: CharacterTreeDecision;
@@ -607,13 +615,25 @@ export class Character implements ICharacter {
         replacementNode.addChild(subsequentLevels);
     }
 
-    finishGraft(parent: CharacterTreeDecision): void {
-        if (!this.pendingGraftedNodes) {
-            throw new Error('graft called in invalid state');
+    changePrimaryClass(className: string): void {
+        const target: CharacterTreeDecision | null = this.root.findNode(
+            (node) =>
+                node.name === className &&
+                node.nodeType === CharacterTreeNodeType.DECISION &&
+                (node as CharacterTreeDecision).type ===
+                    CharacterPlannerStep.SECONDARY_CLASS,
+        ) as CharacterTreeDecision | null;
+
+        const original = this.findDecisionByOptionType(
+            CharacterPlannerStep.PRIMARY_CLASS,
+        );
+
+        if (!target || !original) {
+            throw new Error('could not find classes to swap');
         }
 
-        parent.addChild(this.pendingGraftedNodes);
-        this.pendingGraftedNodes = undefined;
+        target.type = CharacterPlannerStep.PRIMARY_CLASS;
+        original.type = CharacterPlannerStep.SECONDARY_CLASS;
     }
 
     // "Getters" for front end ================================================

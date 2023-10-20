@@ -8,15 +8,16 @@ import { WeaveApi } from '../api/weave/weave';
 import { CharacterClassOption } from '../models/character/types';
 
 const PageContainer = styled.div`
-    height: 100vh;
-    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
+
+    height: 100vh;
+    width: 100%;
     padding: 50px;
     box-sizing: border-box;
-    overflow-y: auto; // Enable vertical scrolling if content overflows
+    overflow-y: auto;
 
     @media (max-width: 768px) {
         padding: 20px; // Reduced padding for mobile devices

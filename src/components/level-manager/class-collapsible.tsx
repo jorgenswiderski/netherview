@@ -21,10 +21,7 @@ const LevelBox = styled(Box)`
 interface ClassCollapsibleProps {
     info: CharacterClassInfoToggled;
     isMainClass: boolean;
-    onEdit: (
-        info: CharacterClassInfoToggled,
-        level: ICharacterTreeDecision,
-    ) => void;
+    onEdit: (level: ICharacterTreeDecision) => void;
     onDelete: (
         info: CharacterClassInfoToggled,
         level: ICharacterTreeDecision,
@@ -98,7 +95,7 @@ export default function ClassCollapsible({
                         level={index + 1}
                         onEdit={
                             node.choices && node.choices.length > 0
-                                ? () => onEdit(info, node)
+                                ? () => onEdit(node)
                                 : undefined
                         }
                         onDelete={() => onDelete(info, node)}

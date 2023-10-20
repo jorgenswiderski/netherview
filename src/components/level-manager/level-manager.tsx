@@ -6,6 +6,8 @@ import {
     CharacterPlannerStep,
     ICharacterOption,
 } from 'planner-types/src/types/character-feature-customization-option';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import IconButton from '@mui/material/IconButton';
 import ClassCollapsible from './class-collapsible';
 import {
     CharacterClassLevelInfo,
@@ -16,6 +18,12 @@ import { ICharacterTreeDecision } from '../../models/character/character-tree-no
 import { CharacterClassInfoToggled } from './types';
 import ConfirmDialog from './confirm-dialog';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
+
+const BackIconButton = styled(IconButton)`
+    position: absolute;
+    left: 1.5rem;
+    top: 2rem;
+`;
 
 const ItemBox = styled(Box)`
     display: flex;
@@ -84,10 +92,15 @@ export default function LevelManager({
     // "Favorite" ie primary class logic ======================================
 
     const onFavorite = (info: CharacterClassInfoToggled) => {
-        setClassInfo((clsInfo) => [
-            info,
-            ...clsInfo.filter((item) => item !== info),
-        ]);
+        // setClassInfo((clsInfo) => [
+        //     info,
+        //     ...clsInfo.filter((item) => item !== info),
+        // ]);
+
+        onDecision(decision, {
+            name: info.class.name,
+            type: CharacterPlannerStep.CHANGE_PRIMARY_CLASS,
+        });
     };
 
     // Level removal logic ====================================================
@@ -164,38 +177,52 @@ export default function LevelManager({
 
     // Level revision logic ===================================================
 
-    const onEdit = (
-        info: CharacterClassInfoToggled,
-        level: ICharacterTreeDecision,
-    ) => {
+    const onEdit = useCallback(
+        (level: ICharacterTreeDecision) => {
+            onDecision(decision, {
+                name: 'Revise Level',
+                type: CharacterPlannerStep.REVISE_LEVEL,
+                node: level,
+            } as ICharacterOption);
+        },
+        [decision],
+    );
+
+    // Back button ============================================================
+
+    const onBack = useCallback(() => {
         onDecision(decision, {
-            name: 'Revise Level',
-            type: CharacterPlannerStep.REVISE_LEVEL,
-            node: level,
-        } as ICharacterOption);
-    };
+            name: 'Canceled Level Management',
+            type: CharacterPlannerStep.STOP_LEVEL_MANAGEMENT,
+        });
+    }, [decision]);
 
     return (
-        <StyledBox>
-            {classInfo.map((info, index) => (
-                <ClassCollapsible
-                    key={info.class.name}
-                    info={info}
-                    isMainClass={index === 0}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                    onHoverDelete={onHoverDelete}
-                    onFavorite={onFavorite}
-                />
-            ))}
-            <ConfirmDialog
-                title={prompt.title}
-                open={prompt.isOpen}
-                onCancel={resetPrompt}
-                onConfirm={onConfirmDelete}
-            >
-                {prompt?.getContent?.()}
-            </ConfirmDialog>
-        </StyledBox>
+        <>
+            <BackIconButton onClick={onBack}>
+                <KeyboardBackspaceIcon />
+            </BackIconButton>
+            <StyledBox>
+                {classInfo.map((info, index) => (
+                    <ClassCollapsible
+                        key={info.class.name}
+                        info={info}
+                        isMainClass={index === 0}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        onHoverDelete={onHoverDelete}
+                        onFavorite={onFavorite}
+                    />
+                ))}
+                <ConfirmDialog
+                    title={prompt.title}
+                    open={prompt.isOpen}
+                    onCancel={resetPrompt}
+                    onConfirm={onConfirmDelete}
+                >
+                    {prompt?.getContent?.()}
+                </ConfirmDialog>
+            </StyledBox>
+        </>
     );
 }
