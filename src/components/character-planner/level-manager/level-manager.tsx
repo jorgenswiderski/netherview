@@ -62,12 +62,7 @@ export default function LevelManager({
     // Reset the state if the character changes
     useEffect(() => setClassInfo(initInfo()), [character]);
 
-    const onFavorite = (info: CharacterClassInfoToggled) => {
-        setClassInfo((clsInfo) => [
-            info,
-            ...clsInfo.filter((item) => item !== info),
-        ]);
-    };
+    // Prompt logic ===========================================================
 
     const [prompt, setPrompt] = useState({
         title: '',
@@ -85,6 +80,17 @@ export default function LevelManager({
             levels: [],
             getContent: null,
         });
+
+    // "Favorite" ie primary class logic ======================================
+
+    const onFavorite = (info: CharacterClassInfoToggled) => {
+        setClassInfo((clsInfo) => [
+            info,
+            ...clsInfo.filter((item) => item !== info),
+        ]);
+    };
+
+    // Level removal logic ====================================================
 
     const onHoverDelete = (
         info: CharacterClassInfoToggled,
@@ -156,6 +162,19 @@ export default function LevelManager({
         resetPrompt();
     }, [prompt]);
 
+    // Level revision logic ===================================================
+
+    const onEdit = (
+        info: CharacterClassInfoToggled,
+        level: ICharacterTreeDecision,
+    ) => {
+        onDecision(decision, {
+            name: 'Revise Level',
+            type: CharacterPlannerStep.REVISE_LEVEL,
+            node: level,
+        } as ICharacterOption);
+    };
+
     return (
         <StyledBox>
             {classInfo.map((info, index) => (
@@ -163,6 +182,7 @@ export default function LevelManager({
                     key={info.class.name}
                     info={info}
                     isMainClass={index === 0}
+                    onEdit={onEdit}
                     onDelete={onDelete}
                     onHoverDelete={onHoverDelete}
                     onFavorite={onFavorite}

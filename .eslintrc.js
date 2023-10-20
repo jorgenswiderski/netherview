@@ -78,6 +78,22 @@ module.exports = {
         'react/require-default-props': 'off',
         'react/jsx-props-no-spreading': 'off',
         'no-continue': 'off',
+        'prefer-destructuring': [
+            'error',
+            {
+                VariableDeclarator: {
+                    array: false,
+                    object: true,
+                },
+                AssignmentExpression: {
+                    array: false,
+                    object: false,
+                },
+            },
+            {
+                enforceForRenamedProperties: false,
+            },
+        ],
 
         // style rules
         'prettier/prettier': 'warn',

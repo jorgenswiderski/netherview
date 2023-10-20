@@ -85,14 +85,8 @@ export class Character implements ICharacter {
             ? await info.getChoices(this)
             : [{ type: step, options: await info.getOptions!(this) }];
 
-        const parent = new CharacterTreeDecision({
-            name: step,
-        });
-
-        this.root.addChild(parent);
-
         choices.forEach((choice) =>
-            this.pendingDecisions.push(new PendingDecision(parent, choice)),
+            this.pendingDecisions.push(new PendingDecision(this.root, choice)),
         );
 
         return this.clone();
@@ -131,8 +125,12 @@ export class Character implements ICharacter {
         options.forEach((option) => {
             if (option.type === CharacterPlannerStep.REMOVE_LEVEL) {
                 this.removeLevel(option);
-                this.updateClassData();
-                // FIXME: Need to uncollapse subclass features somehow
+
+                return;
+            }
+
+            if (option.type === CharacterPlannerStep.REVISE_LEVEL) {
+                this.reviseLevel(option);
 
                 return;
             }
@@ -150,17 +148,14 @@ export class Character implements ICharacter {
             }
 
             const isProxyChoice =
-                option.type === CharacterPlannerStep.MULTICLASS &&
-                parent !== this.root;
+                option.type === CharacterPlannerStep.MULTICLASS_ROOT;
 
             if (isProxyChoice) {
-                // impose the choices onto the proxied parent
-                const targetParent = this.findDecisionByChoiceType(
-                    option.type as CharacterPlannerStep,
-                )!;
-                // FIXME: mutation here MIGHT be dangerous, but we have to keep the same object pointer or the parent won't be found
-                targetParent.choices = option.choices;
-                this.queueSubchoices(targetParent);
+                this.pendingDecisions.unshift(
+                    ...option.choices!.map(
+                        (choice) => new PendingDecision(this.root, choice),
+                    ),
+                );
             } else {
                 const decision = new CharacterTreeDecision({ type, ...option });
                 parent.addChild(decision);
@@ -511,18 +506,12 @@ export class Character implements ICharacter {
             throw new Error('failed to remove level');
         }
 
-        if (parent.type === CharacterPlannerStep.MULTICLASS_ROOT) {
-            // Prune the multiclass root instead so we don't duplicate it
-            this.root.children!.splice(
-                this.root.children!.findIndex((node) => node === parent),
-            );
-
-            return;
-        }
-
         parent.children!.splice(
             parent.children!.findIndex((node) => node === target),
         );
+
+        this.updateClassData();
+        // FIXME: Need to uncollapse subclass features somehow
     }
 
     manageLevels(): Character {
@@ -538,6 +527,81 @@ export class Character implements ICharacter {
         );
 
         return this.clone();
+    }
+
+    pendingGraftedNodes?: CharacterTreeDecision;
+
+    reviseLevel(option: ICharacterOption): void {
+        const { node: target } = option as ICharacterOption & {
+            node: CharacterTreeDecision;
+        };
+
+        const parent = this.findNodeParent(target) as ICharacterTreeDecision;
+
+        if (!target || !parent) {
+            throw new Error('failed to remove level');
+        }
+
+        // Splice the children from the parent node
+        const targetIndex = parent.children!.findIndex(
+            (node) => node === target,
+        );
+        parent.children!.splice(targetIndex, 1);
+
+        // Update the effects of the level we're about to grant
+        this.updateClassData();
+
+        // Trigger a level up in the removed class
+        this.levelUp();
+        let levelDecision = this.pendingDecisions[0];
+
+        if (target.type === CharacterPlannerStep.MULTICLASS) {
+            // make the multiclass sub-decision
+            const multiclassOption = levelDecision.options.find(
+                (opt) => opt.type === CharacterPlannerStep.MULTICLASS_ROOT,
+            );
+
+            if (!multiclassOption) {
+                throw new Error(
+                    'could not find proper option when revising level',
+                );
+            }
+
+            this.makeDecision(levelDecision, multiclassOption);
+            levelDecision = this.pendingDecisions[0];
+        }
+
+        const classOption = levelDecision.options.find(
+            (opt) => opt.name === target.name,
+        )!;
+
+        this.makeDecision(levelDecision, classOption);
+
+        // Get the tree of the subsequent levels of the old node
+        const subsequentLevels = target.children?.find(
+            (node) => node.type === CharacterPlannerStep.LEVEL_UP,
+        ) as CharacterTreeDecision;
+
+        if (!subsequentLevels) {
+            return;
+        }
+
+        // Find the replacement node
+        const replacementNode: CharacterTreeDecision = parent.children?.find(
+            (node) => node.name === parent.name,
+        )! as CharacterTreeDecision;
+
+        // Graft the children back on to the new node
+        replacementNode.addChild(subsequentLevels);
+    }
+
+    finishGraft(parent: CharacterTreeDecision): void {
+        if (!this.pendingGraftedNodes) {
+            throw new Error('graft called in invalid state');
+        }
+
+        parent.addChild(this.pendingGraftedNodes);
+        this.pendingGraftedNodes = undefined;
     }
 
     // "Getters" for front end ================================================

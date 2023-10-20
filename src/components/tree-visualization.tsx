@@ -64,7 +64,7 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
             .enter()
             .append('circle')
             .attr('class', 'node')
-            .attr('r', 5)
+            .attr('r', 7)
             .attr('cx', (d) => d.y) // Use y for x due to 90° rotation
             .attr('cy', (d) => d.x) // Use x for y due to 90° rotation
             .attr('fill', (d) => {
@@ -85,7 +85,24 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
             .attr('stroke', '#2980b9')
             .attr('stroke-width', '1.5px')
             .append('title')
-            .text((d) => JSON.stringify(d.data, null, 2));
+            .text((d) =>
+                JSON.stringify(
+                    Object.fromEntries(
+                        Object.entries(d.data)
+                            .filter(
+                                ([key, value]) =>
+                                    key !== 'children' && key !== 'grants',
+                            )
+                            .map(([key, value]) =>
+                                key === 'description' || key === 'progression'
+                                    ? [key, '...']
+                                    : [key, value],
+                            ),
+                    ),
+                    null,
+                    2,
+                ),
+            );
 
         const nodeLabels = g
             .selectAll('.node-label')
