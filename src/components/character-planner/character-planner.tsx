@@ -113,7 +113,7 @@ export default function CharacterPlanner({
     const [loading] = useState(false);
 
     const [character, setCharacter] = useState(
-        new Character(classData, spellData),
+        () => new Character(classData, spellData),
     );
 
     const nextDecision = useMemo(
@@ -254,7 +254,12 @@ export default function CharacterPlanner({
                 <Container>
                     {character.root.children && // FIXME
                         character.root.children.length > 1 && (
-                            <CharacterDisplay character={character} />
+                            <CharacterDisplay
+                                character={character}
+                                onCharacterChanged={(char) =>
+                                    setCharacter(char as Character)
+                                }
+                            />
                         )}
 
                     <PlannerContainer>{renderDecisionPanel()}</PlannerContainer>

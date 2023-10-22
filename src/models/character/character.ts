@@ -10,10 +10,13 @@ import {
     CharacteristicType,
     GrantableEffectType,
     Proficiency,
-    ActionEffectType,
-    ActionEffect,
+    IActionEffect,
 } from 'planner-types/src/types/grantable-effect';
 import { ISpell } from 'planner-types/src/types/spells';
+import {
+    EquipmentSlot,
+    IEquipmentItem,
+} from 'planner-types/src/types/equipment-item';
 import {
     AbilityScores,
     CharacterClassInfo,
@@ -34,6 +37,13 @@ import {
 } from './character-tree-node/types';
 import { CharacterDecisionInfo, IPendingDecision } from './character-states';
 import { CharacterClassProgressionLevel } from '../../api/weave/types';
+import {
+    CharacterEquipment,
+    ICharacterTreeEquipmentItem,
+} from '../items/types';
+import { CharacterTreeEquipmentItem } from '../items/character-tree-equipment-item';
+import { EquipmentItem } from '../items/equipment-item';
+import { CharacterTreeSpell } from './character-tree-node/character-tree-spell';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
@@ -58,10 +68,11 @@ export class Character implements ICharacter {
     pendingDecisions: PendingDecision[] = [];
 
     constructor(
-        public classData: CharacterClassOption[],
+        public baseClassData: CharacterClassOption[],
         public spellData: ISpell[],
+        classData?: ICharacterOption[],
     ) {
-        this.updateClassData();
+        this.classData = classData ?? this.updateClassData();
     }
 
     multiclassRoot: ICharacterOption = {
@@ -167,23 +178,26 @@ export class Character implements ICharacter {
                     ),
                 );
             } else {
-                const decision = new CharacterTreeDecision({ type, ...option });
+                const decision =
+                    option instanceof CharacterTreeDecision
+                        ? option
+                        : new CharacterTreeDecision({ type, ...option });
+
                 parent.addChild(decision);
                 Character.grantEffects(decision);
 
-                if (Character.LEVEL_STEPS.includes(type)) {
-                    this.updateClassData();
-                } else if (
-                    type === CharacterPlannerStep.LEARN_CANTRIPS ||
-                    type === CharacterPlannerStep.LEARN_SPELLS
+                if (
+                    [
+                        ...Character.LEVEL_STEPS,
+                        CharacterPlannerStep.LEARN_CANTRIPS,
+                        CharacterPlannerStep.LEARN_SPELLS,
+                        CharacterPlannerStep.CHOOSE_SUBCLASS,
+                    ].includes(type)
                 ) {
-                    this.updateClassSpellOptions();
-                } else if (type === CharacterPlannerStep.CHOOSE_SUBCLASS) {
-                    this.collapseSubclassFeatures(decision.name);
-                    this.updateClassData();
+                    this.classData = this.updateClassData();
                 }
 
-                this.queueSubchoices(decision);
+                this.queueSubchoices(decision, option.choices);
             }
         });
 
@@ -192,25 +206,29 @@ export class Character implements ICharacter {
 
     clone(): Character {
         return Object.assign(
-            new Character(this.classData, this.spellData),
+            new Character(this.baseClassData, this.spellData, this.classData),
             this,
         );
     }
 
-    private queueSubchoices(parent: CharacterTreeDecision) {
-        if (!parent.choices) {
+    private queueSubchoices(
+        parent: CharacterTreeDecision,
+        choices?: ICharacterChoice[],
+    ) {
+        if (!choices) {
             return;
         }
 
         this.pendingDecisions.unshift(
-            ...parent.choices.map(
-                (choice) => new PendingDecision(parent, choice),
-            ),
+            ...choices.map((choice) => new PendingDecision(parent, choice)),
         );
     }
 
-    private collapseSubclassFeatures(subclassName: string): void {
-        this.classData = this.classData.map((cls) => {
+    private static collapseSubclassFeatures(
+        subclassName: string,
+        data: CharacterClassOption[],
+    ): CharacterClassOption[] {
+        return data.map((cls) => {
             return {
                 ...cls,
                 progression: cls.progression.map((level) => ({
@@ -276,10 +294,14 @@ export class Character implements ICharacter {
         });
     }
 
-    private updateClassFeatures(): void {
+    classData: ICharacterOption[];
+
+    private updateClassFeatures(
+        data: CharacterClassOption[],
+    ): ICharacterOption[] {
         const levelInfo = this.getClassInfo();
 
-        this.classData = this.classData.map((cls) => {
+        return data.map((cls) => {
             const level =
                 levelInfo.find((info) => info.class.name === cls.name)?.levels
                     .length ?? 0;
@@ -296,8 +318,10 @@ export class Character implements ICharacter {
                 (feature) => feature.grants,
             ).filter(Boolean) as unknown as GrantableEffect[];
 
+            const { progression, ...rest } = cls;
+
             return {
-                ...cls,
+                ...rest,
                 choices,
                 grants,
                 level,
@@ -305,125 +329,120 @@ export class Character implements ICharacter {
         });
     }
 
-    private updateClassSpellOptions(): void {
+    private getClassProgression(className: string, level: number) {
+        return this.baseClassData.find((cls) => cls.name === className)!
+            .progression[level - 1];
+    }
+
+    private updateClassSpellOptions(
+        data: ICharacterOption[],
+    ): ICharacterOption[] {
         const levelInfo = this.getClassInfo();
         const keys: (keyof CharacterClassProgressionLevel)[] = [
             'Spells Known',
             'Cantrips Known',
         ];
 
-        this.classData = this.classData.map((cls) => {
+        return data.map((cls) => {
             const level =
                 levelInfo.find((info) => info.class.name === cls.name)?.levels
                     .length ?? 0;
 
-            const currentLevelData = level > 0 && cls.progression[level - 1];
-            const nextLevelData = cls.progression[level];
+            const currentLevelData =
+                level > 0 && this.getClassProgression(cls.name, level);
+            const nextLevelData = this.getClassProgression(cls.name, level + 1);
 
             if (level >= Character.MAX_LEVEL) {
                 return { ...cls };
             }
 
-            const choices: ICharacterChoice[] = nextLevelData.Features.flatMap(
-                (feature) => feature.choices ?? [],
-            );
+            const spellChoices = keys.flatMap((key) => {
+                if (!nextLevelData[key]) {
+                    return [];
+                }
 
-            choices.push(
-                ...keys.flatMap((key) => {
-                    if (!nextLevelData[key]) {
-                        return [];
-                    }
+                const step =
+                    key === 'Spells Known'
+                        ? CharacterPlannerStep.LEARN_SPELLS
+                        : CharacterPlannerStep.LEARN_CANTRIPS;
 
-                    const step =
-                        key === 'Spells Known'
-                            ? CharacterPlannerStep.LEARN_SPELLS
-                            : CharacterPlannerStep.LEARN_CANTRIPS;
+                const netChoices =
+                    ((nextLevelData[key] as number) ?? 0) -
+                    (currentLevelData ? (currentLevelData[key] as number) : 0);
 
-                    const netChoices =
-                        ((nextLevelData[key] as number) ?? 0) -
-                        (currentLevelData
-                            ? (currentLevelData[key] as number)
-                            : 0);
+                if (netChoices === 0) {
+                    return [];
+                }
 
-                    if (netChoices === 0) {
-                        return [];
-                    }
+                if (!nextLevelData['Spell Slots']) {
+                    throw new Error('class does not have spell slots');
+                }
 
-                    if (!nextLevelData['Spell Slots']) {
-                        throw new Error('class does not have spell slots');
-                    }
+                let spells: ISpell[];
 
-                    let spells: ISpell[];
+                if (key === 'Spells Known') {
+                    const highestSlot =
+                        typeof nextLevelData['Spell Slots'] === 'number'
+                            ? nextLevelData['Slot Level']!
+                            : nextLevelData['Spell Slots'].findLastIndex(
+                                  (spellCount) => spellCount && spellCount > 0,
+                              );
+                    const spellsKnown = this.getKnownSpells(
+                        CharacterPlannerStep.LEARN_SPELLS,
+                    ).map((effect) => effect.name);
 
-                    if (key === 'Spells Known') {
-                        const highestSlot =
-                            typeof nextLevelData['Spell Slots'] === 'number'
-                                ? nextLevelData['Slot Level']!
-                                : nextLevelData['Spell Slots'].findLastIndex(
-                                      (spellCount) =>
-                                          spellCount && spellCount > 0,
-                                  );
-                        const spellsKnown = this.getKnownSpells(
-                            CharacterPlannerStep.LEARN_SPELLS,
-                        ).map((effect) => effect.name);
+                    spells = this.spellData.filter(
+                        (spell) =>
+                            spell.classes.includes(cls.name) &&
+                            spell.level > 0 &&
+                            spell.level <= highestSlot &&
+                            !spellsKnown.includes(spell.name),
+                    );
+                } else {
+                    const cantripsKnown = this.getKnownSpells(
+                        CharacterPlannerStep.LEARN_CANTRIPS,
+                    ).map((effect) => effect.name);
 
-                        spells = this.spellData.filter(
-                            (spell) =>
-                                spell.classes.includes(cls.name) &&
-                                spell.level > 0 &&
-                                spell.level <= highestSlot &&
-                                !spellsKnown.includes(spell.name),
-                        );
-                    } else {
-                        const cantripsKnown = this.getKnownSpells(
-                            CharacterPlannerStep.LEARN_CANTRIPS,
-                        ).map((effect) => effect.name);
+                    spells = this.spellData.filter(
+                        (spell) =>
+                            spell.classes.includes(cls.name) &&
+                            spell.level === 0 &&
+                            !cantripsKnown.includes(spell.name),
+                    );
+                }
 
-                        spells = this.spellData.filter(
-                            (spell) =>
-                                spell.classes.includes(cls.name) &&
-                                spell.level === 0 &&
-                                !cantripsKnown.includes(spell.name),
-                        );
-                    }
-
-                    return [
-                        {
-                            type: step,
-                            count: netChoices,
-                            options: spells.map(
-                                ({ name, description, image }) => ({
-                                    name,
-                                    description,
-                                    image,
-                                    type: step,
-                                    grants: [
-                                        {
-                                            name,
-                                            description,
-                                            type: GrantableEffectType.ACTION,
-                                            subtype:
-                                                ActionEffectType.SPELL_ACTION,
-                                            image,
-                                        },
-                                    ],
-                                }),
-                            ),
-                        },
-                    ];
-                }),
-            );
+                return [
+                    {
+                        type: step,
+                        count: netChoices,
+                        options: spells.map(
+                            (spell) => new CharacterTreeSpell(spell),
+                        ),
+                    },
+                ];
+            });
 
             return {
                 ...cls,
-                choices,
+                choices: [...(cls.choices ?? []), ...spellChoices],
             };
         });
     }
 
-    private updateClassData(): void {
-        this.updateClassFeatures();
-        this.updateClassSpellOptions();
+    private updateClassData(): ICharacterOption[] {
+        const subclassNames = this.findAllDecisionsByType(
+            CharacterPlannerStep.CHOOSE_SUBCLASS,
+        ).map((node) => node.name);
+
+        let data = this.baseClassData;
+
+        subclassNames.forEach((name) => {
+            data = Character.collapseSubclassFeatures(name, data);
+        });
+
+        const options = this.updateClassFeatures(data);
+
+        return this.updateClassSpellOptions(options);
     }
 
     levelUp(): Character {
@@ -431,7 +450,7 @@ export class Character implements ICharacter {
             return this;
         }
 
-        const currentClassNodes = this.findAllDecisionsByOptionType([
+        const currentClassNodes = this.findAllDecisionsByType([
             CharacterPlannerStep.PRIMARY_CLASS,
             CharacterPlannerStep.LEVEL_UP,
             CharacterPlannerStep.SECONDARY_CLASS,
@@ -515,6 +534,9 @@ export class Character implements ICharacter {
             node.addChild(child);
             Character.grantEffects(child);
         });
+
+        // eslint-disable-next-line no-param-reassign
+        delete node.grants;
     }
 
     removeLevel(option: ICharacterOption): void {
@@ -569,7 +591,7 @@ export class Character implements ICharacter {
         parent.children!.splice(targetIndex, 1);
 
         // Update the effects of the level we're about to grant
-        this.updateClassData();
+        this.classData = this.updateClassData();
 
         // Trigger a level up in the removed class
         this.levelUp();
@@ -624,7 +646,7 @@ export class Character implements ICharacter {
                     CharacterPlannerStep.SECONDARY_CLASS,
         ) as CharacterTreeDecision | null;
 
-        const original = this.findDecisionByOptionType(
+        const original = this.findDecisionByType(
             CharacterPlannerStep.PRIMARY_CLASS,
         );
 
@@ -634,6 +656,35 @@ export class Character implements ICharacter {
 
         target.type = CharacterPlannerStep.PRIMARY_CLASS;
         original.type = CharacterPlannerStep.SECONDARY_CLASS;
+    }
+
+    getEquipment(): CharacterEquipment {
+        const nodes = this.findAllDecisionsByType(
+            CharacterPlannerStep.EQUIP_ITEM,
+        ) as ICharacterTreeEquipmentItem[];
+
+        return Object.fromEntries(
+            nodes.map((node) => [node.equipmentSlot, node]),
+        ) as Record<EquipmentSlot, ICharacterTreeEquipmentItem>;
+    }
+
+    equipItem(slot: EquipmentSlot, item: IEquipmentItem): Character {
+        const equipment = this.getEquipment();
+
+        const oldNode = equipment[slot];
+
+        if (oldNode) {
+            this.root.removeChild(oldNode);
+        }
+
+        const node = new CharacterTreeEquipmentItem(
+            slot,
+            new EquipmentItem(item),
+        );
+
+        this.root.addChild(node);
+
+        return this.clone();
     }
 
     // "Getters" for front end ================================================
@@ -690,7 +741,7 @@ export class Character implements ICharacter {
     }
 
     getClassInfo(): CharacterClassInfo[] {
-        const allNodes = this.findAllDecisionsByOptionType([
+        const allNodes = this.findAllDecisionsByType([
             CharacterPlannerStep.PRIMARY_CLASS,
             CharacterPlannerStep.SECONDARY_CLASS,
             CharacterPlannerStep.LEVEL_UP,
@@ -712,7 +763,7 @@ export class Character implements ICharacter {
         );
 
         const info = Object.entries(levelNodes).map(([name, nodes]) => ({
-            class: this.classData.find((cls) => cls.name === name)!,
+            class: this.baseClassData.find((cls) => cls.name === name)!,
             subclass: Character.findSubclassNode(nodes),
             levels: nodes.map((node) => ({
                 node: node as CharacterTreeDecision,
@@ -771,13 +822,23 @@ export class Character implements ICharacter {
     }
 
     getGrantedEffects(): GrantableEffect[] {
-        const fx: CharacterTreeEffect[] = this.root.findAllNodes((node) => {
+        const fx: GrantableEffect[] = this.root.findAllNodes((node) => {
             if (node.nodeType !== CharacterTreeNodeType.EFFECT) {
                 return false;
             }
 
             return true;
-        }) as CharacterTreeEffect[];
+        }) as CharacterTreeEffect[] as GrantableEffect[];
+
+        const nodes = this.root.findAllNodes(
+            (node) =>
+                node.nodeType === CharacterTreeNodeType.DECISION &&
+                typeof (node as CharacterTreeDecision).grants !== 'undefined',
+        );
+
+        fx.push(
+            ...nodes.flatMap((node) => (node as CharacterTreeDecision).grants!),
+        );
 
         return fx;
     }
@@ -789,10 +850,10 @@ export class Character implements ICharacter {
         ) as Proficiency[];
     }
 
-    getActions(): ActionEffect[] {
+    getActions(): IActionEffect[] {
         return this.getGrantedEffects().filter(
             (effect) => effect.type === GrantableEffectType.ACTION,
-        ) as ActionEffect[];
+        ) as IActionEffect[];
     }
 
     getCharacteristics(): Characteristic[] {
@@ -801,43 +862,7 @@ export class Character implements ICharacter {
         ) as Characteristic[];
     }
 
-    private static findNodeByChoiceType(
-        choiceType: CharacterPlannerStep | CharacterPlannerStep[],
-    ): (node: ICharacterTreeNode) => boolean {
-        return (node: ICharacterTreeNode) => {
-            if (node.nodeType !== CharacterTreeNodeType.DECISION) {
-                return false;
-            }
-
-            const decision = node as CharacterTreeDecision;
-
-            // FIXME: Only looks at the first choice which may not work in all situations
-            return (
-                typeof decision.choices?.[0]?.type !== 'undefined' &&
-                (typeof choiceType === 'string'
-                    ? decision.choices?.[0].type === choiceType
-                    : choiceType.includes(decision.choices?.[0].type))
-            );
-        };
-    }
-
-    private findDecisionByChoiceType(
-        choiceType: CharacterPlannerStep | CharacterPlannerStep[],
-    ): CharacterTreeDecision | null {
-        return this.root.findNode(
-            Character.findNodeByChoiceType(choiceType),
-        ) as CharacterTreeDecision | null;
-    }
-
-    private findAllDecisionsByChoiceType(
-        choiceType: CharacterPlannerStep | CharacterPlannerStep[],
-    ): CharacterTreeDecision[] {
-        return this.root.findAllNodes(
-            Character.findNodeByChoiceType(choiceType),
-        ) as CharacterTreeDecision[];
-    }
-
-    private static findNodeByOptionType(
+    private static findNodeByType(
         type: CharacterPlannerStep | CharacterPlannerStep[],
     ): (node: ICharacterTreeNode) => boolean {
         return (node: ICharacterTreeNode) => {
@@ -849,26 +874,26 @@ export class Character implements ICharacter {
 
             return (
                 typeof decision.type !== 'undefined' &&
-                (typeof type === 'string'
+                (typeof type === 'number'
                     ? decision.type === type
                     : type.includes(decision.type))
             );
         };
     }
 
-    private findDecisionByOptionType(
+    private findDecisionByType(
         type: CharacterPlannerStep | CharacterPlannerStep[],
     ): CharacterTreeDecision | null {
         return this.root.findNode(
-            Character.findNodeByOptionType(type),
+            Character.findNodeByType(type),
         ) as CharacterTreeDecision | null;
     }
 
-    private findAllDecisionsByOptionType(
+    private findAllDecisionsByType(
         type: CharacterPlannerStep | CharacterPlannerStep[],
     ): CharacterTreeDecision[] {
         return this.root.findAllNodes(
-            Character.findNodeByOptionType(type),
+            Character.findNodeByType(type),
         ) as CharacterTreeDecision[];
     }
 
@@ -880,23 +905,21 @@ export class Character implements ICharacter {
 
     getRace(): ICharacterTreeDecision | undefined {
         return (
-            this.findDecisionByOptionType(CharacterPlannerStep.SET_RACE) ??
-            undefined
+            this.findDecisionByType(CharacterPlannerStep.SET_RACE) ?? undefined
         );
     }
 
     getSubrace(): ICharacterTreeDecision | undefined {
         return (
-            this.findDecisionByOptionType(
-                CharacterPlannerStep.CHOOSE_SUBRACE,
-            ) ?? undefined
+            this.findDecisionByType(CharacterPlannerStep.CHOOSE_SUBRACE) ??
+            undefined
         );
     }
 
     getBackground(): ICharacterTreeDecision | undefined {
-        return this.findDecisionByOptionType(
-            CharacterPlannerStep.SET_BACKGROUND,
-        ) as ICharacterTreeDecision | undefined;
+        return this.findDecisionByType(CharacterPlannerStep.SET_BACKGROUND) as
+            | ICharacterTreeDecision
+            | undefined;
     }
 
     getKnownSpells(
@@ -904,8 +927,8 @@ export class Character implements ICharacter {
             | CharacterPlannerStep.LEARN_CANTRIPS
             | CharacterPlannerStep.LEARN_SPELLS,
     ): GrantableEffect[] {
-        return this.findAllDecisionsByOptionType(type).flatMap(
-            (decision) => decision.grants!,
-        );
+        return this.findAllDecisionsByType(type).flatMap(
+            (decision) => decision.children!,
+        ) as GrantableEffect[];
     }
 }

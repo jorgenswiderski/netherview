@@ -19,11 +19,14 @@
     "license": "MIT",
     "devDependencies": {
         "@babel/plugin-transform-react-jsx": "^7.22.15",
+        "@types/base-x": "^3.0.6",
         "@types/d3": "^7.4.1",
         "@types/jest": "^29.5.5",
         "@types/node": "^20.8.2",
+        "@types/pako": "^2.0.2",
         "@types/react": "^18.2.25",
         "@types/react-dom": "^18.2.11",
+        "@types/react-lazyload": "^3.2.2",
         "@typescript-eslint/eslint-plugin": "^6.7.4",
         "@typescript-eslint/parser": "^6.7.4",
         "eslint": "^8.50.0",
@@ -50,10 +53,13 @@
         "@mui/icons-material": "^5.14.13",
         "@mui/material": "^5.14.12",
         "axios": "^1.5.1",
+        "base-x": "^4.0.0",
         "d3": "^7.8.5",
         "next": "^13.5.4",
+        "pako": "^2.1.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
+        "react-lazyload": "github:twobin/react-lazyload",
         "react-spinners": "^0.13.8"
     }
 }

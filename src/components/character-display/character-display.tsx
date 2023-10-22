@@ -1,13 +1,13 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Paper from '@mui/material/Paper';
 import styled from '@emotion/styled';
 import { Character } from '../../models/character/character';
 import AbilityScoresTable from './ability-scores';
 import { CharacterEffects } from './character-effects';
 import { CharacterHeader } from './character-header';
-import CharacterItems from './character-items';
+import { EquipmentPanel } from './equipment/equipment-panel';
 import CharacterBackground from './character-background';
-import { log } from '../../models/logger';
+import { ICharacter } from '../../models/character/types';
 
 const PaperContainer = styled(Paper)`
     display: flex;
@@ -66,17 +66,19 @@ const RightSection = styled.div`
 
 interface CharacterDisplayProps {
     character: Character;
+    onCharacterChanged: (character: ICharacter) => void;
 }
 
-export default function CharacterDisplay({ character }: CharacterDisplayProps) {
+export default function CharacterDisplay({
+    character,
+    onCharacterChanged,
+}: CharacterDisplayProps) {
     const abilityScores = useMemo(
         () => character.getTotalAbilityScores(),
         [character],
     );
 
     const background = useMemo(() => character.getBackground(), [character]);
-
-    useEffect(() => log(background), [background]);
 
     return (
         <PaperContainer>
@@ -91,7 +93,10 @@ export default function CharacterDisplay({ character }: CharacterDisplayProps) {
                         <CharacterBackground background={background} />
                     )}
                     <StyledPaper elevation={2}>
-                        <CharacterItems />
+                        <EquipmentPanel
+                            character={character}
+                            onCharacterChanged={onCharacterChanged}
+                        />
                     </StyledPaper>
                 </LeftSection>
 

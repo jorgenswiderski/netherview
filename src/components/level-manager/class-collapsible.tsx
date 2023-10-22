@@ -94,7 +94,7 @@ export default function ClassCollapsible({
                         effects={totalEffects}
                         level={index + 1}
                         onEdit={
-                            node.choices && node.choices.length > 0
+                            node.choices && node.numChoices > 0
                                 ? () => onEdit(node)
                                 : undefined
                         }

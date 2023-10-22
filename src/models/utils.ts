@@ -1,5 +1,11 @@
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 
+type Difference = {
+    path: string;
+    value1: any;
+    value2: any;
+};
+
 export class Utils {
     static textShadow = `text-shadow:
     -1px -1px 0px black,
@@ -65,4 +71,91 @@ export class Utils {
     static isNonEmptyArray(a?: any[] | null): boolean {
         return Array.isArray(a) && a.length > 0;
     }
+
+    // Compare two objects using JSON.stringify, sorting the keys such that a different key order still counts as a valid comparison.
+    static compareObjects(obj1: any, obj2: any) {
+        const a = Utils.deepCopyAndRemoveUndefined(obj1);
+        const b = Utils.deepCopyAndRemoveUndefined(obj2);
+        const diffs = this.deepCompare(a, b);
+
+        return diffs.length === 0;
+    }
+
+    private static deepCopyAndRemoveUndefined<T>(obj: T): T {
+        if (obj === null || typeof obj !== 'object') {
+            return obj;
+        }
+
+        if (Array.isArray(obj)) {
+            return obj.map(Utils.deepCopyAndRemoveUndefined) as unknown as T;
+        }
+
+        const newObj: Record<string, any> = {};
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const [key, value] of Object.entries(obj)) {
+            if (value !== undefined) {
+                newObj[key] = Utils.deepCopyAndRemoveUndefined(value);
+            }
+        }
+
+        return newObj as T;
+    }
+
+    private static deepCompare(
+        obj1: any,
+        obj2: any,
+        path: string = '',
+    ): Difference[] {
+        let differences: Difference[] = [];
+
+        const keys1 = new Set(Object.keys(obj1));
+        const keys2 = new Set(Object.keys(obj2));
+
+        const allKeys = new Set([...keys1, ...keys2]);
+
+        allKeys.forEach((key) => {
+            const newPath = path ? `${path}.${key}` : key;
+
+            // eslint-disable-next-line no-prototype-builtins
+            if (!obj1.hasOwnProperty(key)) {
+                differences.push({
+                    path: newPath,
+                    value1: undefined,
+                    value2: obj2[key],
+                });
+                // eslint-disable-next-line no-prototype-builtins
+            } else if (!obj2.hasOwnProperty(key)) {
+                differences.push({
+                    path: newPath,
+                    value1: obj1[key],
+                    value2: undefined,
+                });
+            } else if (
+                typeof obj1[key] === 'object' &&
+                typeof obj2[key] === 'object' &&
+                obj1[key] !== null &&
+                obj2[key] !== null
+            ) {
+                differences = differences.concat(
+                    this.deepCompare(obj1[key], obj2[key], newPath),
+                );
+            } else if (obj1[key] !== obj2[key]) {
+                differences.push({
+                    path: newPath,
+                    value1: obj1[key],
+                    value2: obj2[key],
+                });
+            }
+        });
+
+        return differences;
+    }
+
+    // static getImagePath(imageName: string): string {
+    //     const formattedImageName = imageName.replace(/ /g, '_');
+    //     const hash = MD5(formattedImageName).toString();
+
+    //     return `${CONFIG.WEAVE.BASE_IMAGE_URL}/images/${hash[0]}/${hash[0]}${hash[1]}/${formattedImageName}`;
+    // }
 }

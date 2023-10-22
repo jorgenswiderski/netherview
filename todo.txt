@@ -1,0 +1,34 @@
+
+exporting
+
+retraining
+fix downstream ramifications of editing choices (eg subclass features)
+uncollapse subclass features when removing a subclass
+choose new starting class when removing starting classes
+fix settings menu not disappearing onclick
+can pick the same feat twice
+fix 2 hander logic (range & melee) so it unequips the right things if you equip a 2h, and disable melee OH slot
+dual wield
+consistent button size and placement
+
+item effect handling (make them actually do stuff)
+granted spells from subclass etc are actions not spells
+ASI showing dummy characteristic instead of real one
+
+more stratification of spells list
+
+tab-based ui incl summary tab
+
+fix some features give everything instead of a choice
+mobile responsive
+improve item select dialog, layout & filtering & dual wield support
+wiki attribution
+feat data optimization (split out of class)
+preloading optimizations
+default ability scores
+item tooltips
+action tooltips
+drag and drop ability scores
+eldritch knight
+prepared spells
+show spell slots / charges

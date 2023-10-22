@@ -1,9 +1,15 @@
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import { ISpell } from 'planner-types/src/types/spells';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
+import {
+    EquipmentSlot,
+    IEquipmentItem,
+} from 'planner-types/src/types/equipment-item';
 import { CharacterClassProgression } from '../../api/weave/types';
 import { CharacterTreeDecision } from './character-tree-node/character-tree';
+import { CharacterEquipment } from '../items/types';
 
+// FIXME: Convert to enum instead of string labels
 export interface AbilityScores {
     Strength: number;
     Dexterity: number;
@@ -24,10 +30,13 @@ export interface CharacterBackgroundOption extends ICharacterOption {}
 
 export interface ICharacter {
     clone(): ICharacter;
-    classData: CharacterClassOption[];
+    baseClassData: CharacterClassOption[];
+    classData: ICharacterOption[];
     spellData: ISpell[];
     getTotalAbilityScores(): AbilityScores | null;
     getClassInfo(): CharacterClassInfo[];
+    getEquipment(): CharacterEquipment;
+    equipItem(slot: EquipmentSlot, item: IEquipmentItem): ICharacter;
 }
 
 export interface CharacterClassLevelInfo {

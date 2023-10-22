@@ -1,5 +1,10 @@
 import axios from 'axios';
 import { ISpell } from 'planner-types/src/types/spells';
+import {
+    EquipmentSlot,
+    IEquipmentItem,
+    equipmentSlotTypes,
+} from 'planner-types/src/types/equipment-item';
 import { CONFIG } from '../../models/config';
 import {
     CharacterClassOption,
@@ -42,5 +47,35 @@ export class WeaveApi {
 
     static getClassSpellInfo = async (): Promise<ISpell[]> => {
         return fetchFromApi('/spells/info?filter=class');
+    };
+
+    static getSpellById = async (id: number): Promise<ISpell> => {
+        const keyed: Record<string, ISpell> = await fetchFromApi(
+            `/spells/info/id?ids=${id}`,
+        );
+
+        return Object.values(keyed)[0];
+    };
+
+    static getEquipmentItemInfo = async (
+        slot: EquipmentSlot,
+    ): Promise<IEquipmentItem[]> => {
+        const types = equipmentSlotTypes[slot];
+
+        const keyed: Record<string, IEquipmentItem[]> = await fetchFromApi(
+            `/items/equipment/type?types=${types.join(',')}`,
+        );
+
+        return Object.values(keyed).flat();
+    };
+
+    static getEquipmentItemInfoById = async (
+        id: number,
+    ): Promise<IEquipmentItem> => {
+        const keyed: Record<string, IEquipmentItem> = await fetchFromApi(
+            `/items/equipment/id?ids=${id}`,
+        );
+
+        return Object.values(keyed)[0];
     };
 }

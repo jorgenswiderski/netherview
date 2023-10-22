@@ -1,6 +1,7 @@
 // types.ts
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
+import { ISpell } from 'planner-types/src/types/spells';
 
 export enum CharacterTreeNodeType {
     ROOT,
@@ -38,4 +39,8 @@ export interface ICharacterTreeDecision
 export enum TraversalMethod {
     BreadthFirst,
     DepthFirst,
+}
+
+export interface ICharacterTreeSpell extends ICharacterTreeDecision {
+    spell: ISpell;
 }

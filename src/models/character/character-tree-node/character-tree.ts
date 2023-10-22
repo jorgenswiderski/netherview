@@ -2,7 +2,6 @@
 // character-tree.ts
 import {
     CharacterPlannerStep,
-    ICharacterChoice,
     ICharacterOption,
 } from 'planner-types/src/types/character-feature-customization-option';
 import {
@@ -240,10 +239,11 @@ export class CharacterTreeDecision
     image?: string;
     grants?: GrantableEffect[];
     type?: CharacterPlannerStep;
-    choices?: ICharacterChoice[];
+    choices?: undefined;
+    numChoices: number;
 
     constructor(
-        { name, ...rest }: ICharacterOption,
+        { name, choices, ...rest }: ICharacterOption,
         // parent: CharacterTreeNode,
         children?: (ICharacterTreeDecision | ICharacterTreeEffect)[],
     ) {
@@ -254,6 +254,7 @@ export class CharacterTreeDecision
             children,
         );
 
+        this.numChoices = choices?.length ?? 0;
         this.nodeType = CharacterTreeNodeType.DECISION;
         Object.assign(this, rest);
     }

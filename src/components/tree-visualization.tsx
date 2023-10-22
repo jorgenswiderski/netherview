@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 import styled from '@emotion/styled';
@@ -8,6 +7,7 @@ interface TreeNode {
     name: string;
     children?: TreeNode[];
     nodeType: CharacterTreeNodeType;
+    size?: number;
 }
 
 interface TreeLayoutNode<Datum> extends d3.HierarchyNode<Datum> {
@@ -36,8 +36,22 @@ const linkStyle = {
 export default function TreeVisualization({ data }: TreeVisualizationProps) {
     const svgRef = useRef<SVGSVGElement | null>(null);
 
+    const calculateNodeSize = (node: TreeNode) => {
+        const { children, ...rest } = node;
+        const { size } = new Blob([JSON.stringify(rest)]); // Calculate size in bytes
+
+        // eslint-disable-next-line no-param-reassign
+        node.size = size;
+
+        if (children) {
+            children.forEach(calculateNodeSize);
+        }
+    };
+
     useEffect(() => {
         if (!svgRef.current) return;
+
+        calculateNodeSize(data); // Call this function to calculate and set size for each node
 
         // Clear previous rendering
         d3.select(svgRef.current).selectAll('*').remove();
@@ -58,8 +72,7 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
         const treeLayout = d3.tree<TreeNode>().size([height, width]); // Swap width and height for 90° rotation
         treeLayout(root);
 
-        const nodes = g
-            .selectAll('.node')
+        g.selectAll('.node')
             .data(root.descendants() as TreeLayoutNode<TreeNode>[])
             .enter()
             .append('circle')
@@ -90,7 +103,7 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
                     Object.fromEntries(
                         Object.entries(d.data)
                             .filter(
-                                ([key, value]) =>
+                                ([key]) =>
                                     key !== 'children' && key !== 'grants',
                             )
                             .map(([key, value]) =>
@@ -104,18 +117,39 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
                 ),
             );
 
-        const nodeLabels = g
-            .selectAll('.node-label')
+        g.selectAll('.node-label')
             .data(root.descendants() as TreeLayoutNode<TreeNode>[])
             .enter()
             .append('text')
             .attr('class', 'node-label')
             .attr('x', (d) => d.y - 20) // Use y for x due to 90° rotation
             .attr('y', (d) => d.x + 30) // Use x for y due to 90° rotation
-            .text((d) => d.data.name);
+            .text((d) => `${d.data.name}`);
 
-        const links = g
-            .selectAll('.link')
+        g.selectAll('.node-size-label')
+            .data(root.descendants() as TreeLayoutNode<TreeNode>[])
+            .enter()
+            .append('text')
+            .attr('class', 'node-size-label')
+            .attr('x', (d) => d.y - 20) // Adjust x and y positions as needed
+            .attr('y', (d) => d.x + 45)
+            .text((d) => `${d.data.size} bytes`)
+            .append('title')
+            .text((d) => {
+                const { children, ...rest } = d.data;
+
+                return Object.entries(rest)
+                    .map(([key, value]) => [
+                        key,
+                        new Blob([JSON.stringify(key), JSON.stringify(value)])
+                            .size,
+                    ])
+                    .sort((a, b) => (b[1] as number) - (a[1] as number))
+                    .map(([key, value]) => `${key}:\t${value} bytes`)
+                    .join('\n');
+            });
+
+        g.selectAll('.link')
             .data(root.links() as TreeLayoutLink<TreeNode>[])
             .enter()
             .append('line')
