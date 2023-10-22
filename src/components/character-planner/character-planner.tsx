@@ -247,9 +247,7 @@ export default function CharacterPlanner({
                 </DevButton>
             </ButtonBox>
             {isTreeVisible ? (
-                <TreeVisualizationOverlay
-                    data={JSON.parse(JSON.stringify(character.root))}
-                />
+                <TreeVisualizationOverlay data={character.root} />
             ) : (
                 <Container>
                     {character.root.children && // FIXME

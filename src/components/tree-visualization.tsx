@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import * as d3 from 'd3';
 import styled from '@emotion/styled';
 import { CharacterTreeNodeType } from '../models/character/character-tree-node/types';
@@ -35,17 +35,31 @@ const linkStyle = {
 
 export default function TreeVisualization({ data }: TreeVisualizationProps) {
     const svgRef = useRef<SVGSVGElement | null>(null);
+    const nodeSizes = useMemo(() => new Map<TreeNode, number>(), []);
 
     const calculateNodeSize = (node: TreeNode) => {
-        const { children, ...rest } = node;
-        const { size } = new Blob([JSON.stringify(rest)]); // Calculate size in bytes
+        const { children } = node;
+        let { size } = new Blob([JSON.stringify(node)]); // Calculate size in bytes
 
-        // eslint-disable-next-line no-param-reassign
-        node.size = size;
+        const compressed = JSON.parse(JSON.stringify(node));
 
         if (children) {
-            children.forEach(calculateNodeSize);
+            if (compressed.children) {
+                children.forEach(calculateNodeSize);
+
+                children.forEach((child) => {
+                    // eslint-disable-next-line no-param-reassign
+                    size -= nodeSizes.get(child)!;
+                });
+            } else {
+                children.forEach((child) => {
+                    // eslint-disable-next-line no-param-reassign
+                    nodeSizes.set(child, 0);
+                });
+            }
         }
+
+        nodeSizes.set(node, size);
     };
 
     useEffect(() => {
@@ -133,7 +147,7 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
             .attr('class', 'node-size-label')
             .attr('x', (d) => d.y - 20) // Adjust x and y positions as needed
             .attr('y', (d) => d.x + 45)
-            .text((d) => `${d.data.size} bytes`)
+            .text((d) => `${nodeSizes.get(d.data)} bytes`)
             .append('title')
             .text((d) => {
                 const { children, ...rest } = d.data;
