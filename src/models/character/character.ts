@@ -988,6 +988,7 @@ export class Character implements ICharacter {
         char.pendingDecisions.length = 0;
         char.pendingSteps.length = 0;
         char.root = Character.transformToClassTree(root) as CharacterTreeRoot;
+        char.classData = char.updateClassData();
 
         return char;
     }
