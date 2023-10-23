@@ -5,18 +5,23 @@ import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import Paper from '@mui/material/Paper';
-import { ISpell } from 'planner-types/src/types/spells';
 import Box from '@mui/material/Box';
+import { useRouter } from 'next/router';
+import Alert from '@mui/material/Alert';
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
     CharacterDecisionInfo,
 } from '../../models/character/character-states';
 import FeaturePicker from './feature-picker/feature-picker';
-import { CharacterClassOption } from '../../models/character/types';
 import CharacterDisplay from '../character-display/character-display';
 import TreeVisualization from '../tree-visualization';
 import SettingsMenu from '../character-display/settings-menu/settings-menu';
+import { error, log } from '../../models/logger';
+import {
+    InternOption,
+    TreeCompressor,
+} from '../../models/compressor/compressor';
 
 const Container = styled(Box)`
     display: flex;
@@ -42,6 +47,9 @@ const ButtonBox = styled(Box)`
     top: 10px;
     right: 10px;
     cursor: pointer;
+    width: 100%;
+    padding: 0 2rem;
+    box-sizing: border-box;
 
     display: flex;
     gap: 0.5rem;
@@ -101,19 +109,20 @@ const StyledSettingsMenu = styled(SettingsMenu)`
 `;
 
 interface CharacterPlannerProps {
-    classData: CharacterClassOption[];
-    spellData: ISpell[];
+    character: Character;
 }
 
 export default function CharacterPlanner({
-    classData,
-    spellData,
+    character: initialCharacter,
 }: CharacterPlannerProps) {
+    const router = useRouter();
+
     const [isTreeVisible, setIsTreeVisible] = useState(false);
     const [loading] = useState(false);
+    const [exportOverflow, setExportOverflow] = useState<number | null>(null);
 
-    const [character, setCharacter] = useState(
-        () => new Character(classData, spellData),
+    const [character, setCharacter] = useState<Character>(
+        () => initialCharacter,
     );
 
     const nextDecision = useMemo(
@@ -155,8 +164,49 @@ export default function CharacterPlanner({
         setCharacter(newCharacter);
     }, [character]);
 
+    useEffect(() => {
+        if (character.canExport()) {
+            log(character.root);
+            // log(JSON.parse(JSON.stringify(character.root)));
+            const result = TreeCompressor.internStrings(
+                JSON.parse(JSON.stringify(character.root)),
+            );
+            const result2 = TreeCompressor.internStrings(
+                JSON.parse(JSON.stringify(result.value)),
+                InternOption.KEYS,
+            );
+            log({ o: result2.value, v: result.map, k: result2.map });
+
+            TreeCompressor.deflate(character.root);
+        }
+    }, [character]);
+
+    useEffect(() => {
+        async function updateUrl() {
+            const exportStr = await character.export();
+
+            setExportOverflow(
+                exportStr.length > 2000 ? exportStr.length : null,
+            );
+
+            router.replace(
+                { pathname: router.pathname },
+                { pathname: `/b/${exportStr}` },
+                {
+                    shallow: true,
+                },
+            );
+        }
+
+        if (character.canExport()) {
+            updateUrl().catch(error);
+        }
+    }, [character]);
+
     const handleReset = () => {
-        setCharacter(new Character(classData, spellData)); // Reset the character to its initial state
+        setCharacter(
+            new Character(character.baseClassData, character.spellData),
+        );
     };
 
     const renderDecisionPanel = () => {
@@ -226,6 +276,18 @@ export default function CharacterPlanner({
     return (
         <>
             <ButtonBox>
+                {exportOverflow !== null && (
+                    <Alert
+                        severity="warning"
+                        sx={{
+                            flex: 1,
+                            zIndex: 1200,
+                        }}
+                    >
+                        Export data is too large ({exportOverflow} characters).
+                        Some features might not work as expected.
+                    </Alert>
+                )}
                 <StyledSettingsMenu
                     character={character}
                     updateCharacter={setCharacter}

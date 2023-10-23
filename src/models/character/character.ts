@@ -44,6 +44,7 @@ import {
 import { CharacterTreeEquipmentItem } from '../items/character-tree-equipment-item';
 import { EquipmentItem } from '../items/equipment-item';
 import { CharacterTreeSpell } from './character-tree-node/character-tree-spell';
+import { TreeCompressor } from '../compressor/compressor';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
@@ -930,5 +931,60 @@ export class Character implements ICharacter {
         return this.findAllDecisionsByType(type).flatMap(
             (decision) => decision.children!,
         ) as GrantableEffect[];
+    }
+
+    // Import / Export ========================================================
+
+    canExport(): boolean {
+        return (
+            this.pendingDecisions.length === 0 && this.pendingSteps.length === 0
+        );
+    }
+
+    async export(): Promise<string> {
+        return encodeURIComponent(await TreeCompressor.deflate(this.root));
+    }
+
+    private static protify(node: ICharacterTreeNode): CharacterTreeNode {
+        const { children, ...rest } = node;
+        let Node: new (...args: any[]) => CharacterTreeNode;
+
+        // FIXME: this doesn't encapsulate all possible constructors
+        // may need to add node subtype property
+        if (node.nodeType === CharacterTreeNodeType.DECISION) {
+            Node = CharacterTreeDecision;
+        } else {
+            Node = CharacterTreeEffect;
+        }
+
+        const nn = new Node({ name: node.name });
+        Object.assign(nn, rest);
+
+        if (children) {
+            children.forEach((child) => {
+                nn.addChild(
+                    Character.protify(child) as
+                        | CharacterTreeEffect
+                        | CharacterTreeDecision,
+                );
+            });
+        }
+
+        return nn;
+    }
+
+    static async import(
+        importStr: string,
+        classData: CharacterClassOption[],
+        spellData: ISpell[],
+    ): Promise<Character> {
+        const root = await TreeCompressor.inflate(importStr);
+
+        const char = new Character(classData, spellData);
+        char.pendingDecisions.length = 0;
+        char.pendingSteps.length = 0;
+        char.root = Character.protify(root) as CharacterTreeRoot;
+
+        return char;
     }
 }

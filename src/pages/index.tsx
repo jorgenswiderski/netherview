@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { BeatLoader } from 'react-spinners';
 import { ISpell } from 'planner-types/src/types/spells';
-import CharacterPlanner from '../components/character-planner/character-planner';
 import { WeaveApi } from '../api/weave/weave';
 import { CharacterClassOption } from '../models/character/types';
+import { CharacterPlannerLoader } from '../components/character-planner/loader';
 
 const PageContainer = styled.div`
     display: flex;
@@ -28,7 +28,11 @@ const PageContainer = styled.div`
     }
 `;
 
-export default function HomePage() {
+interface HomePageProps {
+    importStr?: string;
+}
+
+export default function HomePage({ importStr }: HomePageProps) {
     const [classData, setClassData] = useState<CharacterClassOption[] | null>();
     const [spellData, setSpellData] = useState<ISpell[] | null>();
 
@@ -42,7 +46,11 @@ export default function HomePage() {
             {!classData || !spellData ? (
                 <BeatLoader />
             ) : (
-                <CharacterPlanner classData={classData} spellData={spellData} />
+                <CharacterPlannerLoader
+                    classData={classData}
+                    spellData={spellData}
+                    importStr={importStr}
+                />
             )}
         </PageContainer>
     );

@@ -5,6 +5,7 @@ import { CharacterTreeRoot } from '../character/character-tree-node/character-tr
 import { Utils } from '../utils';
 import { StaticReference } from './static-reference/static-reference';
 import { RecordCompressor } from './compressable-record/compressable-record';
+import { ICharacterTreeRoot } from '../character/character-tree-node/types';
 
 const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const base62 = baseX(BASE62);
@@ -250,7 +251,7 @@ export class TreeCompressor {
         return encoded;
     }
 
-    static async inflate(compressed: string): Promise<CharacterTreeRoot> {
+    static async inflate(compressed: string): Promise<ICharacterTreeRoot> {
         const startTime = Date.now();
 
         const decoded = TreeCompressor.base62ToArrayBuffer(compressed);
@@ -280,6 +281,6 @@ export class TreeCompressor {
 
         debug(`Inflation took ${(Date.now() - startTime).toFixed(0)} ms.`);
 
-        return decomp as unknown as CharacterTreeRoot;
+        return decomp as unknown as ICharacterTreeRoot;
     }
 }
