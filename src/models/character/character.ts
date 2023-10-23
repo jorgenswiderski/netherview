@@ -945,32 +945,37 @@ export class Character implements ICharacter {
         return encodeURIComponent(await TreeCompressor.deflate(this.root));
     }
 
-    private static protify(node: ICharacterTreeNode): CharacterTreeNode {
-        const { children, ...rest } = node;
-        let Node: new (...args: any[]) => CharacterTreeNode;
-
-        // FIXME: this doesn't encapsulate all possible constructors
-        // may need to add node subtype property
-        if (node.nodeType === CharacterTreeNodeType.DECISION) {
-            Node = CharacterTreeDecision;
-        } else {
-            Node = CharacterTreeEffect;
+    private static transformToClassTree(
+        node: ICharacterTreeNode,
+    ): CharacterTreeNode {
+        if (node instanceof CharacterTreeNode) {
+            // Object was already turned into a class via StaticReference or RecordCompressor
+            return node as CharacterTreeNode;
         }
 
-        const nn = new Node({ name: node.name });
-        Object.assign(nn, rest);
+        const { children, ...rest } = node;
+        let NodeConstructor: new (...args: any[]) => CharacterTreeNode;
+
+        if (node.nodeType === CharacterTreeNodeType.DECISION) {
+            NodeConstructor = CharacterTreeDecision;
+        } else {
+            NodeConstructor = CharacterTreeEffect;
+        }
+
+        const nodeClassBased = new NodeConstructor({ name: node.name });
+        Object.assign(nodeClassBased, rest);
 
         if (children) {
             children.forEach((child) => {
-                nn.addChild(
-                    Character.protify(child) as
+                nodeClassBased.addChild(
+                    Character.transformToClassTree(child) as
                         | CharacterTreeEffect
                         | CharacterTreeDecision,
                 );
             });
         }
 
-        return nn;
+        return nodeClassBased;
     }
 
     static async import(
@@ -979,11 +984,10 @@ export class Character implements ICharacter {
         spellData: ISpell[],
     ): Promise<Character> {
         const root = await TreeCompressor.inflate(importStr);
-
         const char = new Character(classData, spellData);
         char.pendingDecisions.length = 0;
         char.pendingSteps.length = 0;
-        char.root = Character.protify(root) as CharacterTreeRoot;
+        char.root = Character.transformToClassTree(root) as CharacterTreeRoot;
 
         return char;
     }

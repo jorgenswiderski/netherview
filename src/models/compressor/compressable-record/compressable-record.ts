@@ -1,3 +1,4 @@
+import { debug } from '../../logger';
 import {
     CompressableRecord,
     CompressableRecordHandle,
@@ -35,6 +36,7 @@ export class RecordCompressor {
         identifier: CompressableRecordIdentifier,
         ...args: any[]
     ): any {
+        debug(`inflating record #${identifier}`);
         const info = RecordCompressor.classes.get(identifier);
 
         if (!info) {
@@ -57,7 +59,11 @@ export class RecordCompressor {
             );
         }
 
-        if (typeof obj === 'object' && obj !== null) {
+        if (
+            typeof obj === 'object' &&
+            obj !== null &&
+            obj.constructor === Object
+        ) {
             return Object.fromEntries(
                 await Promise.all(
                     Object.entries(obj).map(async ([key, val]) => [

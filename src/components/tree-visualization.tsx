@@ -48,12 +48,10 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
                 children.forEach(calculateNodeSize);
 
                 children.forEach((child) => {
-                    // eslint-disable-next-line no-param-reassign
                     size -= nodeSizes.get(child)!;
                 });
             } else {
                 children.forEach((child) => {
-                    // eslint-disable-next-line no-param-reassign
                     nodeSizes.set(child, 0);
                 });
             }

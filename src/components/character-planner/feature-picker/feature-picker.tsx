@@ -11,7 +11,6 @@ import styled from '@emotion/styled';
 import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
 import ProspectiveEffects from './prospective-effects/prospective-effects';
-import { log } from '../../../models/logger';
 
 enum LayoutType {
     SPARSE,
@@ -152,8 +151,6 @@ export default function FeaturePicker({
             Utils.preloadOptionImages(selectedOption?.choices[0]?.options);
         }
     }, [selectedOption]);
-
-    useEffect(() => log(decision), [decision]);
 
     const renderCardMedia = (props: CardMediaPropsExtended) => {
         const { layout, ...restProps } = props;

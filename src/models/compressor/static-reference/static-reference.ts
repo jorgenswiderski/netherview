@@ -82,7 +82,11 @@ export class StaticReference {
             );
         }
 
-        if (typeof obj === 'object' && obj !== null) {
+        if (
+            typeof obj === 'object' &&
+            obj !== null &&
+            obj.constructor === Object
+        ) {
             if (typeof obj.ref === 'string') {
                 return StaticReference.parseValue(obj);
             }

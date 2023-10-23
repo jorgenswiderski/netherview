@@ -2,10 +2,11 @@ import pako from 'pako';
 import baseX from 'base-x';
 import { debug, error } from '../logger';
 import { CharacterTreeRoot } from '../character/character-tree-node/character-tree';
-import { Utils } from '../utils';
 import { StaticReference } from './static-reference/static-reference';
 import { RecordCompressor } from './compressable-record/compressable-record';
 import { ICharacterTreeRoot } from '../character/character-tree-node/types';
+import { CONFIG } from '../config';
+import { Utils } from '../utils';
 
 const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const base62 = baseX(BASE62);
@@ -219,12 +220,17 @@ export class TreeCompressor {
             internedValues.value,
             InternOption.KEYS,
         );
+
+        const interned = {
+            o: internedKeys.value,
+            v: internedValues.map,
+            k: internedKeys.map,
+        };
+
+        // log(interned);
+
         const compressed = pako.deflate(
-            JSON.stringify({
-                o: internedKeys.value,
-                v: internedValues.map,
-                k: internedKeys.map,
-            }),
+            JSON.stringify(interned),
             {
                 to: ArrayBuffer,
             } as any, // Cast to any because typing seems to be wrong
@@ -238,14 +244,16 @@ export class TreeCompressor {
             ).toFixed(2)}%`,
         );
 
-        debug(compressed.byteLength);
+        debug(`Final encoded string length: ${encoded.length}`);
         debug(`Deflation took ${(Date.now() - startTime).toFixed(0)} ms.`);
 
-        const inf = await this.inflate(encoded);
+        if (CONFIG.IS_DEV) {
+            const inf = await this.inflate(encoded);
 
-        if (!Utils.compareObjects(data, inf)) {
-            error(inf);
-            throw new Error('Failed validation after deflating data');
+            if (!Utils.compareObjects(data, inf)) {
+                error(inf);
+                throw new Error('Failed validation after deflating data');
+            }
         }
 
         return encoded;
@@ -255,7 +263,6 @@ export class TreeCompressor {
         const startTime = Date.now();
 
         const decoded = TreeCompressor.base62ToArrayBuffer(compressed);
-        // const decompressed = await this.decompressJson(decoded);
         const decompressed = pako.inflate(decoded, { to: 'string' });
 
         const {
@@ -277,8 +284,7 @@ export class TreeCompressor {
         const dereferenced =
             await StaticReference.parseAllValues(reversedValues);
 
-        const decomp = RecordCompressor.parseAllValues(dereferenced);
-
+        const decomp = await RecordCompressor.parseAllValues(dereferenced);
         debug(`Inflation took ${(Date.now() - startTime).toFixed(0)} ms.`);
 
         return decomp as unknown as ICharacterTreeRoot;

@@ -17,11 +17,7 @@ import FeaturePicker from './feature-picker/feature-picker';
 import CharacterDisplay from '../character-display/character-display';
 import TreeVisualization from '../tree-visualization';
 import SettingsMenu from '../character-display/settings-menu/settings-menu';
-import { error, log } from '../../models/logger';
-import {
-    InternOption,
-    TreeCompressor,
-} from '../../models/compressor/compressor';
+import { error } from '../../models/logger';
 
 const Container = styled(Box)`
     display: flex;
@@ -52,6 +48,7 @@ const ButtonBox = styled(Box)`
     box-sizing: border-box;
 
     display: flex;
+    justify-content: flex-end;
     gap: 0.5rem;
 
     @media (max-width: 768px) {
@@ -165,23 +162,6 @@ export default function CharacterPlanner({
     }, [character]);
 
     useEffect(() => {
-        if (character.canExport()) {
-            log(character.root);
-            // log(JSON.parse(JSON.stringify(character.root)));
-            const result = TreeCompressor.internStrings(
-                JSON.parse(JSON.stringify(character.root)),
-            );
-            const result2 = TreeCompressor.internStrings(
-                JSON.parse(JSON.stringify(result.value)),
-                InternOption.KEYS,
-            );
-            log({ o: result2.value, v: result.map, k: result2.map });
-
-            TreeCompressor.deflate(character.root);
-        }
-    }, [character]);
-
-    useEffect(() => {
         async function updateUrl() {
             const exportStr = await character.export();
 
@@ -200,6 +180,14 @@ export default function CharacterPlanner({
 
         if (character.canExport()) {
             updateUrl().catch(error);
+        } else if (character.pendingSteps.length > 0) {
+            setExportOverflow(null);
+
+            router.replace(
+                { pathname: router.pathname },
+                { pathname: '/' },
+                { shallow: true },
+            );
         }
     }, [character]);
 
@@ -280,6 +268,7 @@ export default function CharacterPlanner({
                     <Alert
                         severity="warning"
                         sx={{
+                            paddingLeft: '1rem',
                             flex: 1,
                             zIndex: 1200,
                         }}

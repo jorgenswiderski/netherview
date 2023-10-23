@@ -1,4 +1,5 @@
 export const CONFIG = {
+    IS_DEV: process.env.NEXT_PUBLIC_ENVIRONMENT === 'dev',
     WEAVE: {
         API_URL: process.env.NEXT_PUBLIC_WEAVE_API_URL,
         BASE_IMAGE_URL: process.env.NEXT_PUBLIC_WEAVE_BASE_IMAGE_URL,
