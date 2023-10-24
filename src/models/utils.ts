@@ -158,4 +158,10 @@ export class Utils {
 
     //     return `${CONFIG.WEAVE.BASE_IMAGE_URL}/images/${hash[0]}/${hash[0]}${hash[1]}/${formattedImageName}`;
     // }
+
+    static toProperCase(str: string): string {
+        return str.replace(/\w\S*/g, function properCase(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    }
 }
