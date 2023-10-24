@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
+import { Paper, Typography } from '@mui/material';
 import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
 
 interface CharacterBackgroundProps {

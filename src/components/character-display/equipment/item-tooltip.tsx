@@ -1,5 +1,4 @@
 import React, { ReactElement, useMemo } from 'react';
-import Tooltip from '@mui/material/Tooltip';
 import {
     DamageType,
     EquipmentItemType,
@@ -10,11 +9,10 @@ import {
     WeaponHandedness,
     equipmentSlotTypes,
 } from 'planner-types/src/types/equipment-item';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import styled from '@emotion/styled';
 import { darken, useTheme } from '@mui/system';
-import { alpha } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import { Box, Typography, Tooltip } from '@mui/material';
 import { ItemColors } from '../../../models/items/types';
 import { Utils } from '../../../models/utils';
 

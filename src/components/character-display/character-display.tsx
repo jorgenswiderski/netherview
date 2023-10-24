@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import Paper from '@mui/material/Paper';
 import styled from '@emotion/styled';
+import { Paper } from '@mui/material';
 import { Character } from '../../models/character/character';
 import AbilityScoresTable from './ability-scores';
 import { CharacterEffects } from './character-effects';

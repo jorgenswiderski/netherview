@@ -1,13 +1,10 @@
 // level-collapsible.tsx
 import React, { useEffect } from 'react';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import styled from '@emotion/styled';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import IconButton from '@mui/material/IconButton';
 import BuildIcon from '@mui/icons-material/Build';
-import Tooltip from '@mui/material/Tooltip';
+import { Box, Tooltip, IconButton, Typography } from '@mui/material';
 import { CollapsibleSection } from '../character-display/collapsible-section';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { log } from '../../models/logger';

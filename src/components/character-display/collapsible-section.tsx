@@ -1,11 +1,13 @@
 import React, { ReactNode } from 'react';
-import Typography from '@mui/material/Typography';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import styled from '@emotion/styled';
-import Box from '@mui/material/Box';
+import {
+    Box,
+    Accordion,
+    AccordionSummary,
+    Typography,
+    AccordionDetails,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const HeaderBox = styled(Box)`
     display: flex;

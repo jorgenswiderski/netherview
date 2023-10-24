@@ -1,15 +1,17 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
 import styled from '@emotion/styled';
-import Button from '@mui/material/Button';
 import { ISpell } from 'planner-types/src/types/spells';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Tooltip from '@mui/material/Tooltip';
+import {
+    Card,
+    CardActionArea,
+    Button,
+    Paper,
+    Box,
+    Typography,
+    Tooltip,
+    CardMedia,
+} from '@mui/material';
 import { ICharacter } from '../../models/character/types';
 import { Utils } from '../../models/utils';
 

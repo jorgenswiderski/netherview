@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
-import Typography from '@mui/material/Typography';
 import {
     ICharacterChoice,
     ICharacterOption,
 } from 'planner-types/src/types/character-feature-customization-option';
 import styled from '@emotion/styled';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
-import Box from '@mui/material/Box';
+import { Box, Typography } from '@mui/material';
 import GrantedEffect from './granted-effect';
 import ChoiceDescription from './choice-description';
 

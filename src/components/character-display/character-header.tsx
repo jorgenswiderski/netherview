@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
+import { Paper, Box, Typography } from '@mui/material';
 import { Character } from '../../models/character/character';
 import { CharacterClassInfo } from '../../models/character/types';
 

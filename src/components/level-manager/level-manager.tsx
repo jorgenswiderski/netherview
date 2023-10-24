@@ -1,13 +1,11 @@
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import Box from '@mui/material/Box';
-import DialogContentText from '@mui/material/DialogContentText';
 import {
     CharacterPlannerStep,
     ICharacterOption,
 } from 'planner-types/src/types/character-feature-customization-option';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import IconButton from '@mui/material/IconButton';
+import { IconButton, Box, DialogContentText } from '@mui/material';
 import ClassCollapsible from './class-collapsible';
 import {
     CharacterClassLevelInfo,

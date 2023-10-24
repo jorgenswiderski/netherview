@@ -1,13 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BeatLoader } from 'react-spinners';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import styled from '@emotion/styled';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
 import { useRouter } from 'next/router';
-import Alert from '@mui/material/Alert';
+import { Box, Button, Paper, Typography, Alert } from '@mui/material';
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
@@ -18,6 +14,7 @@ import CharacterDisplay from '../character-display/character-display';
 import TreeVisualization from '../tree-visualization';
 import SettingsMenu from '../character-display/settings-menu/settings-menu';
 import { error } from '../../models/logger';
+import { CONFIG } from '../../models/config';
 
 const Container = styled(Box)`
     display: flex;
@@ -162,6 +159,10 @@ export default function CharacterPlanner({
     }, [character]);
 
     useEffect(() => {
+        if (!CONFIG.EXPORT_ENABLED) {
+            return;
+        }
+
         async function updateUrl() {
             const exportStr = await character.export();
 

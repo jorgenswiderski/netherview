@@ -1,8 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import Paper from '@mui/material/Paper';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
+import { Paper, Tooltip, Typography } from '@mui/material';
 import ImageWithFallback from '../../image-with-fallback';
 
 const StyledPaper = styled(Paper)`

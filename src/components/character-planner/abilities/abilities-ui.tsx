@@ -1,11 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import Box from '@mui/material/Box';
+import {
+    Box,
+    Typography,
+    Table,
+    TableBody,
+    TableRow,
+    TableCell,
+    Button,
+} from '@mui/material';
 import { AbilityScores } from '../../../models/character/types';
 import { AbilitiesBonusType, AbilitiesCostMode } from './types';
 

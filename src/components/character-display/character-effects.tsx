@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
 import styled from '@emotion/styled';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import { Character } from '../../models/character/character';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { CollapsibleSection } from './collapsible-section';

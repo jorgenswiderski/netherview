@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
 import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
 import Typography, { TypographyProps } from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
-import { Box, Paper } from '@mui/material';
+import { Box, Button, Card, CardActionArea, Grid, Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
