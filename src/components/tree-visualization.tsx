@@ -42,13 +42,13 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
         let { size } = new Blob([JSON.stringify(node)]); // Calculate size in bytes
 
         const compressed = JSON.parse(JSON.stringify(node));
+        const branchSize = size;
 
         if (children) {
             if (compressed.children) {
-                children.forEach(calculateNodeSize);
-
                 children.forEach((child) => {
-                    size -= nodeSizes.get(child)!;
+                    const bSize = calculateNodeSize(child);
+                    size -= bSize;
                 });
             } else {
                 children.forEach((child) => {
@@ -58,6 +58,8 @@ export default function TreeVisualization({ data }: TreeVisualizationProps) {
         }
 
         nodeSizes.set(node, size);
+
+        return branchSize;
     };
 
     useEffect(() => {

@@ -183,11 +183,7 @@ export default function CharacterPlanner({
         } else if (character.pendingSteps.length > 0) {
             setExportOverflow(null);
 
-            router.replace(
-                { pathname: router.pathname },
-                { pathname: '/' },
-                { shallow: true },
-            );
+            router.replace({ pathname: '/' }, undefined, { shallow: true });
         }
     }, [character]);
 
