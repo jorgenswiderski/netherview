@@ -15,6 +15,7 @@ import AbilitiesPointBuy from '../../components/character-planner/abilities/abil
 import AbilitiesIncrease from '../../components/character-planner/abilities/abilities-increase';
 import SpellPicker from '../../components/character-planner/spell-picker';
 import LevelManager from '../../components/level-manager/level-manager';
+import { CharacterTreeBackground } from './character-tree-node/character-tree-background';
 
 export interface CharacterWidgetProps {
     onDecision: (
@@ -56,7 +57,10 @@ export const CharacterDecisionInfo: {
     },
     [CharacterPlannerStep.SET_BACKGROUND]: {
         title: 'Choose a background',
-        getOptions: async () => WeaveApi.getBackgroundsInfo(),
+        getOptions: async () =>
+            (await WeaveApi.getBackgroundsInfo()).map(
+                (info) => new CharacterTreeBackground(info),
+            ),
     },
     [CharacterPlannerStep.SET_ABILITY_SCORES]: {
         title: 'Choose your ability scores',

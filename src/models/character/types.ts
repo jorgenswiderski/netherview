@@ -26,7 +26,9 @@ export interface CharacterClassOption extends ICharacterOption {
     progression: CharacterClassProgression;
 }
 
-export interface CharacterBackgroundOption extends ICharacterOption {}
+export interface CharacterBackgroundOption extends ICharacterOption {
+    id: number;
+}
 
 export interface ICharacter {
     clone(): ICharacter;

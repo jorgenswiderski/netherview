@@ -41,10 +41,10 @@ import {
     CharacterEquipment,
     ICharacterTreeEquipmentItem,
 } from '../items/types';
-import { CharacterTreeEquipmentItem } from '../items/character-tree-equipment-item';
 import { EquipmentItem } from '../items/equipment-item';
 import { CharacterTreeSpell } from './character-tree-node/character-tree-spell';
 import { TreeCompressor } from '../compressor/compressor';
+import { CharacterTreeEquipmentItem } from './character-tree-node/character-tree-equipment-item';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;

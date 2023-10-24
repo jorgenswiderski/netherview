@@ -45,6 +45,15 @@ export class WeaveApi {
         return fetchFromApi('/backgrounds/info');
     };
 
+    static getBackgroundById = async (
+        id: number,
+    ): Promise<CharacterBackgroundOption> => {
+        const keyed: Record<string, CharacterBackgroundOption> =
+            await fetchFromApi(`/backgrounds/info/id?ids=${id}`);
+
+        return Object.values(keyed)[0];
+    };
+
     static getClassSpellInfo = async (): Promise<ISpell[]> => {
         return fetchFromApi('/spells/info?filter=class');
     };
