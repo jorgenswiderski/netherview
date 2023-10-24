@@ -29,7 +29,10 @@ export default function EffectBase({
     style,
 }: EffectBaseProps) {
     return (
-        <Tooltip title={tooltip}>
+        <Tooltip
+            title={tooltip}
+            PopperProps={{ style: { pointerEvents: 'none' } }}
+        >
             <StyledPaper elevation={elevation} style={style}>
                 {typeof image === 'string' ? (
                     <ImageWithFallback

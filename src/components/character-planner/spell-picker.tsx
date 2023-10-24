@@ -99,6 +99,7 @@ function SpellCard({ selected, spell, onClick }: SpellCardProps) {
                       }`
                     : ''
             }
+            PopperProps={{ style: { pointerEvents: 'none' } }}
         >
             <StyledCard elevation={3} selected={selected}>
                 <ActionArea onClick={spell && onClick}>

@@ -54,6 +54,7 @@ export default function ClassCollapsible({
                                 ? `Grants the proficiencies of a 1st-level ${info.class.name}`
                                 : `Set as the primary class, granting all the proficiences of a 1st-level ${info.class.name}`
                         }
+                        PopperProps={{ style: { pointerEvents: 'none' } }}
                     >
                         <IconButton
                             onClick={(event) => {
@@ -68,7 +69,10 @@ export default function ClassCollapsible({
                             )}
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={`Remove all levels of ${info.class.name}`}>
+                    <Tooltip
+                        title={`Remove all levels of ${info.class.name}`}
+                        PopperProps={{ style: { pointerEvents: 'none' } }}
+                    >
                         <IconButton
                             onClick={(event) => {
                                 event.stopPropagation();

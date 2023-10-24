@@ -64,7 +64,6 @@ export function CharacterEffects({ character }: CharacterEffectsProps) {
                                     .filter((effect) => !effect.hidden)
                                     .map((effect) => (
                                         <GrantedEffect
-                                            key={effect.name}
                                             effect={effect}
                                             elevation={4}
                                         />

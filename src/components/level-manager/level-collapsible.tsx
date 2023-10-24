@@ -55,7 +55,10 @@ export default function LevelCollapsible({
             headerButtons={
                 <>
                     {onEdit && (
-                        <Tooltip title="Edit the choices made at this level">
+                        <Tooltip
+                            title="Edit the choices made at this level"
+                            PopperProps={{ style: { pointerEvents: 'none' } }}
+                        >
                             <IconButton
                                 onClick={(event) => {
                                     event.stopPropagation();
@@ -68,6 +71,7 @@ export default function LevelCollapsible({
                     )}
                     <Tooltip
                         title={`Remove this level and all subsequent levels of ${name}`}
+                        PopperProps={{ style: { pointerEvents: 'none' } }}
                     >
                         <IconButton
                             onClick={(event) => {

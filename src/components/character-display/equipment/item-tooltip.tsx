@@ -8,5 +8,12 @@ interface ItemTooltipProps {
 }
 
 export function ItemTooltip({ item, children }: ItemTooltipProps) {
-    return <Tooltip title={item?.description || ''}>{children}</Tooltip>;
+    return (
+        <Tooltip
+            title={item?.description || ''}
+            PopperProps={{ style: { pointerEvents: 'none' } }}
+        >
+            {children}
+        </Tooltip>
+    );
 }
