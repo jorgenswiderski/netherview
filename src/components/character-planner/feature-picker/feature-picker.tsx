@@ -13,7 +13,7 @@ enum LayoutType {
     DENSE,
 }
 
-const Container = styled.div`
+const MainBox = styled(Box)`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -112,12 +112,6 @@ const ButtonContainer = styled.div`
     width: 100%;
 `;
 
-const NextButton = styled(Button)`
-    @media (max-width: 600px) {
-        width: 100%;
-    }
-`;
-
 interface FeaturePickerProps {
     decision: IPendingDecision;
     onDecision: (decision: IPendingDecision, choice: ICharacterOption) => void;
@@ -180,7 +174,7 @@ export default function FeaturePicker({
         (selectedOption?.choices && selectedOption?.choices?.length > 0);
 
     return (
-        <Container>
+        <MainBox>
             <Box style={{ flex: 1, overflowY: 'auto', width: '100%' }}>
                 <StyledGridContainer container>
                     {options.map((option) => (
@@ -231,17 +225,18 @@ export default function FeaturePicker({
             )}
 
             <ButtonContainer>
-                <NextButton
+                <Button
                     variant="contained"
                     color="primary"
                     onClick={() =>
                         selectedOption && onDecision(decision, selectedOption)
                     }
                     disabled={!selectedOption}
+                    fullWidth
                 >
                     Next
-                </NextButton>
+                </Button>
             </ButtonContainer>
-        </Container>
+        </MainBox>
     );
 }

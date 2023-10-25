@@ -15,6 +15,7 @@ import TreeVisualization from '../tree-visualization';
 import SettingsMenu from '../character-display/settings-menu/settings-menu';
 import { error } from '../../models/logger';
 import { CONFIG } from '../../models/config';
+import { LevelUp } from './level-up';
 
 const Container = styled(Box)`
     display: flex;
@@ -197,22 +198,7 @@ export default function CharacterPlanner({
     const renderDecisionPanel = () => {
         if (!nextDecision) {
             if (character.canLevel()) {
-                return (
-                    <>
-                        <PlannerHeader elevation={2}>
-                            <Typography variant="h4">
-                                Ready to level up?
-                            </Typography>
-                        </PlannerHeader>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={levelUpCharacter}
-                        >
-                            Level Up
-                        </Button>
-                    </>
-                );
+                return <LevelUp onClick={levelUpCharacter} />;
             }
 
             return null;

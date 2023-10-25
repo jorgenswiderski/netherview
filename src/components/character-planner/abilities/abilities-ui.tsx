@@ -8,8 +8,27 @@ import {
     TableCell,
     Button,
 } from '@mui/material';
+import styled from '@emotion/styled';
 import { AbilityScores } from '../../../models/character/types';
 import { AbilitiesBonusType, AbilitiesCostMode } from './types';
+
+const MainBox = styled(Box)`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 1rem;
+
+    flex: 1;
+
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+`;
+
+const ButtonBox = styled(Box)`
+    width: 100%;
+`;
 
 function Dot({
     filled,
@@ -165,81 +184,83 @@ export default function AbilitiesUI({
     const isButtonEnabled = pointsSpent === pointsAvailable;
 
     return (
-        <>
-            <Typography variant="h6">
-                Points Used: {pointsSpent} / {pointsAvailable}
-            </Typography>
+        <MainBox>
+            <Box style={{ flex: 1, overflow: 'hidden' }}>
+                <Typography variant="h6">
+                    Points Used: {pointsSpent} / {pointsAvailable}
+                </Typography>
 
-            <Table sx={{ userSelect: 'none' }}>
-                <TableBody>
-                    {Object.keys(currentAbilities).map((abilityString) => {
-                        const ability: keyof AbilityScores =
-                            abilityString as keyof AbilityScores;
-                        const score = currentAbilities[ability];
+                <Table sx={{ userSelect: 'none' }}>
+                    <TableBody>
+                        {Object.keys(currentAbilities).map((abilityString) => {
+                            const ability: keyof AbilityScores =
+                                abilityString as keyof AbilityScores;
+                            const score = currentAbilities[ability];
 
-                        return (
-                            <TableRow key={ability}>
-                                <TableCell>
-                                    <Typography variant="h6">
-                                        {ability}
-                                    </Typography>{' '}
-                                </TableCell>
-                                <TableCell>
-                                    <Box display="flex" alignItems="center">
-                                        <Button
-                                            variant="outlined"
-                                            sx={{
-                                                width: 40,
-                                                minWidth: 'unset',
-                                            }}
-                                            onClick={() =>
-                                                handleDecrease(ability)
-                                            }
-                                            disabled={!canDecrease(ability)}
-                                        >
-                                            -
-                                        </Button>
-                                        <Box
-                                            mx={2}
-                                            sx={{
-                                                width: 24,
-                                                textAlign: 'center',
-                                            }}
-                                        >
-                                            {' '}
-                                            <Typography>
-                                                {score +
-                                                    getAbilityBonusTotal(
-                                                        ability,
-                                                    )}
-                                            </Typography>
+                            return (
+                                <TableRow key={ability}>
+                                    <TableCell>
+                                        <Typography variant="h6">
+                                            {ability}
+                                        </Typography>{' '}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Box display="flex" alignItems="center">
+                                            <Button
+                                                variant="outlined"
+                                                sx={{
+                                                    width: 40,
+                                                    minWidth: 'unset',
+                                                }}
+                                                onClick={() =>
+                                                    handleDecrease(ability)
+                                                }
+                                                disabled={!canDecrease(ability)}
+                                            >
+                                                -
+                                            </Button>
+                                            <Box
+                                                mx={2}
+                                                sx={{
+                                                    width: 24,
+                                                    textAlign: 'center',
+                                                }}
+                                            >
+                                                {' '}
+                                                <Typography>
+                                                    {score +
+                                                        getAbilityBonusTotal(
+                                                            ability,
+                                                        )}
+                                                </Typography>
+                                            </Box>
+                                            <Button
+                                                variant="outlined"
+                                                sx={{
+                                                    width: 40,
+                                                    minWidth: 'unset',
+                                                }}
+                                                onClick={() =>
+                                                    handleIncrease(ability)
+                                                }
+                                                disabled={!canIncrease(ability)}
+                                            >
+                                                +
+                                            </Button>
                                         </Box>
-                                        <Button
-                                            variant="outlined"
-                                            sx={{
-                                                width: 40,
-                                                minWidth: 'unset',
-                                            }}
-                                            onClick={() =>
-                                                handleIncrease(ability)
-                                            }
-                                            disabled={!canIncrease(ability)}
-                                        >
-                                            +
-                                        </Button>
-                                    </Box>
-                                </TableCell>
-                                <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                    <Box display="flex" alignItems="center">
-                                        <Box
-                                            mx={2}
-                                            sx={{
-                                                display: 'flex',
-                                                flexWrap: 'nowrap',
-                                            }}
-                                        >
-                                            {Array.from({ length: dots }).map(
-                                                (_, index) => (
+                                    </TableCell>
+                                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                        <Box display="flex" alignItems="center">
+                                            <Box
+                                                mx={2}
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexWrap: 'nowrap',
+                                                }}
+                                            >
+                                                {Array.from({
+                                                    length: dots,
+                                                }).map((_, index) => (
                                                     <Dot
                                                         // eslint-disable-next-line react/no-array-index-key
                                                         key={index}
@@ -253,20 +274,20 @@ export default function AbilitiesUI({
                                                                     )
                                                         }
                                                     />
-                                                ),
-                                            )}
+                                                ))}
+                                            </Box>
                                         </Box>
-                                    </Box>
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
-                </TableBody>
-            </Table>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
 
-            {children}
+                {children}
+            </Box>
 
-            <Box mt={3}>
+            <ButtonBox>
                 <Button
                     variant="contained"
                     color="primary"
@@ -274,9 +295,9 @@ export default function AbilitiesUI({
                     disabled={!isButtonEnabled}
                     fullWidth
                 >
-                    Confirm
+                    Next
                 </Button>
-            </Box>
-        </>
+            </ButtonBox>
+        </MainBox>
     );
 }

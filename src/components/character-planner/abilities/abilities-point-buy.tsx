@@ -80,64 +80,62 @@ export default function AbilitiesPointBuy({
     };
 
     return (
-        <div>
-            <AbilitiesUI
-                costMode={AbilitiesCostMode.INCREMENTAL}
-                onDecision={handleConfirm}
-                bonuses={bonuses}
-                abilities={{
-                    Strength: 15,
-                    Dexterity: 14,
-                    Constitution: 14,
-                    Intelligence: 8,
-                    Wisdom: 12,
-                    Charisma: 8,
-                }}
-            >
-                <Box mt={2}>
-                    <Typography>+2 Racial Bonus:</Typography>
-                    <Select
-                        value={bonusTwo || ''}
-                        onChange={(e) =>
-                            setBonusTwo(e.target.value as keyof AbilityScores)
-                        }
-                        fullWidth
-                    >
-                        <MenuItem value="">
-                            <em>Select Ability</em>
-                        </MenuItem>
-                        {options
-                            .filter((ability) => ability !== bonusOne)
-                            .map((ability) => (
-                                <MenuItem key={ability} value={ability}>
-                                    {ability}
-                                </MenuItem>
-                            ))}
-                    </Select>
-                </Box>
+        <AbilitiesUI
+            costMode={AbilitiesCostMode.INCREMENTAL}
+            onDecision={handleConfirm}
+            bonuses={bonuses}
+            abilities={{
+                Strength: 15,
+                Dexterity: 14,
+                Constitution: 14,
+                Intelligence: 8,
+                Wisdom: 12,
+                Charisma: 8,
+            }}
+        >
+            <Box mt={2}>
+                <Typography>+2 Racial Bonus:</Typography>
+                <Select
+                    value={bonusTwo || ''}
+                    onChange={(e) =>
+                        setBonusTwo(e.target.value as keyof AbilityScores)
+                    }
+                    fullWidth
+                >
+                    <MenuItem value="">
+                        <em>Select Ability</em>
+                    </MenuItem>
+                    {options
+                        .filter((ability) => ability !== bonusOne)
+                        .map((ability) => (
+                            <MenuItem key={ability} value={ability}>
+                                {ability}
+                            </MenuItem>
+                        ))}
+                </Select>
+            </Box>
 
-                <Box mt={2}>
-                    <Typography>+1 Racial Bonus:</Typography>
-                    <Select
-                        value={bonusOne || ''}
-                        onChange={(e) =>
-                            setBonusOne(e.target.value as keyof AbilityScores)
-                        }
-                        fullWidth
-                    >
-                        <MenuItem value="">
-                            <em>Select Ability</em>
-                        </MenuItem>
-                        {options
-                            .filter((ability) => ability !== bonusTwo)
-                            .map((ability) => (
-                                <MenuItem key={ability} value={ability}>
-                                    {ability}
-                                </MenuItem>
-                            ))}
-                    </Select>
-                </Box>
-            </AbilitiesUI>
-        </div>
+            <Box mt={2}>
+                <Typography>+1 Racial Bonus:</Typography>
+                <Select
+                    value={bonusOne || ''}
+                    onChange={(e) =>
+                        setBonusOne(e.target.value as keyof AbilityScores)
+                    }
+                    fullWidth
+                >
+                    <MenuItem value="">
+                        <em>Select Ability</em>
+                    </MenuItem>
+                    {options
+                        .filter((ability) => ability !== bonusTwo)
+                        .map((ability) => (
+                            <MenuItem key={ability} value={ability}>
+                                {ability}
+                            </MenuItem>
+                        ))}
+                </Select>
+            </Box>
+        </AbilitiesUI>
     );
 }
