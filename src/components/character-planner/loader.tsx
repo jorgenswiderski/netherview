@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ISpell } from 'planner-types/src/types/spells';
+import { ISpell } from 'planner-types/src/types/spell';
 import { BeatLoader } from 'react-spinners';
 import { Character } from '../../models/character/character';
 import { CharacterClassOption } from '../../models/character/types';

@@ -1,11 +1,33 @@
 import React from 'react';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
+import { Tooltip } from '@mui/material';
 import EffectBase from './effect-base';
+import { SpellTooltip } from '../../../tooltips/spell-tooltip';
+import { CharacterTreeSpellEffect } from '../../../../models/character/character-tree-node/character-tree-spell-effect';
 
 interface GrantedEffectProps {
     effect: GrantableEffect;
     elevation: number;
     style?: React.CSSProperties;
+}
+
+function EffectTooltip({
+    effect,
+    children,
+}: {
+    effect: GrantableEffect;
+    children: React.ReactElement;
+}) {
+    // if (effect.type === GrantableEffectType.ACTION) {
+    if (effect.constructor.name === 'CharacterTreeSpellEffect') {
+        return (
+            <SpellTooltip action={(effect as CharacterTreeSpellEffect).spell}>
+                {children}
+            </SpellTooltip>
+        );
+    }
+
+    return <Tooltip title={effect.description}>{children}</Tooltip>;
 }
 
 export default function GrantedEffect({
@@ -14,12 +36,15 @@ export default function GrantedEffect({
     style,
 }: GrantedEffectProps) {
     return (
-        <EffectBase
-            tooltip={effect.description}
-            image={effect.image}
-            label={effect.name}
-            elevation={elevation}
-            style={style}
-        />
+        <EffectTooltip effect={effect}>
+            <div>
+                <EffectBase
+                    image={effect.image}
+                    label={effect.name}
+                    elevation={elevation}
+                    style={style}
+                />
+            </div>
+        </EffectTooltip>
     );
 }

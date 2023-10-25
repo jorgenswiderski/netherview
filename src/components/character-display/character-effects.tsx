@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 import { Character } from '../../models/character/character';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { CollapsibleSection } from './collapsible-section';
+import { CharacterTreeSpellEffect } from '../../models/character/character-tree-node/character-tree-spell-effect';
 
 const ItemBox = styled(Box)`
     display: flex;
@@ -17,18 +18,22 @@ interface CharacterEffectsProps {
 }
 
 export function CharacterEffects({ character }: CharacterEffectsProps) {
-    const [spells, actions] = useMemo(() => {
-        const allActions = character.getActions();
-
-        return [
-            allActions.filter(
+    const spells: CharacterTreeSpellEffect[] = useMemo(() => {
+        return character
+            .getActions()
+            .filter(
                 (action) => action.subtype === ActionEffectType.SPELL_ACTION,
-            ),
-            allActions.filter(
-                (action) => action.subtype !== ActionEffectType.SPELL_ACTION,
-            ),
-        ];
+            ) as unknown as CharacterTreeSpellEffect[];
     }, [character]);
+
+    const actions = useMemo(() => {
+        return character
+            .getActions()
+            .filter(
+                (action) => action.subtype !== ActionEffectType.SPELL_ACTION,
+            );
+    }, [character]);
+
     const characteristics = useMemo(
         () => character.getCharacteristics(),
         [character],

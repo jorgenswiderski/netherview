@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { ISpell } from 'planner-types/src/types/spells';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import {
     Card,
@@ -9,11 +8,12 @@ import {
     Paper,
     Box,
     Typography,
-    Tooltip,
     CardMedia,
 } from '@mui/material';
+import { ISpell } from 'planner-types/src/types/spell';
 import { ICharacter } from '../../models/character/types';
 import { Utils } from '../../models/utils';
+import { SpellTooltip } from '../tooltips/spell-tooltip';
 
 const Container = styled.div`
     display: flex;
@@ -93,16 +93,7 @@ interface SpellCardProps {
 
 function SpellCard({ selected, spell, onClick }: SpellCardProps) {
     return (
-        <Tooltip
-            title={
-                spell
-                    ? `${spell.name}: ${
-                          spell.description ?? spell.summary ?? ''
-                      }`
-                    : ''
-            }
-            PopperProps={{ style: { pointerEvents: 'none' } }}
-        >
+        <SpellTooltip action={spell}>
             <StyledCard elevation={3} selected={selected}>
                 <ActionArea onClick={spell && onClick}>
                     {spell?.image && (
@@ -110,7 +101,7 @@ function SpellCard({ selected, spell, onClick }: SpellCardProps) {
                     )}
                 </ActionArea>
             </StyledCard>
-        </Tooltip>
+        </SpellTooltip>
     );
 }
 
@@ -235,21 +226,6 @@ export default function SpellPicker({
                     </RowOuterBox>
                 ))}
             </Container>
-
-            {/* {showEffects && (
-                <DescriptionPaper elevation={2}>
-                    <ProspectiveEffects
-                        options={options}
-                        text={`You will learn ${
-                            selectedSpells.length > 1
-                                ? selectedSpells.length
-                                : 'an'
-                        } additional spell${
-                            selectedSpells.length > 1 ? 's' : ''
-                        }:`}
-                    />
-                </DescriptionPaper>
-            )} */}
 
             <ButtonContainer>
                 <NextButton

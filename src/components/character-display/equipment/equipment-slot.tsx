@@ -21,7 +21,7 @@ import { BeatLoader } from 'react-spinners';
 import { WeaveApi } from '../../../api/weave/weave';
 import { error } from '../../../models/logger';
 import { ItemDialogOption } from './item-dialog-option';
-import { ItemTooltip } from './item-tooltip';
+import { ItemTooltip } from '../../tooltips/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
 
 const StyledDialog = styled(Dialog)``;

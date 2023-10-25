@@ -2,12 +2,12 @@ import {
     CharacterPlannerStep,
     ICharacterOption,
 } from 'planner-types/src/types/character-feature-customization-option';
-import { ISpell } from 'planner-types/src/types/spells';
+import { ISpell } from 'planner-types/src/types/spell';
 import {
     ActionEffectType,
     GrantableEffectType,
 } from 'planner-types/src/types/grantable-effect';
-import { CharacterTreeDecision, CharacterTreeEffect } from './character-tree';
+import { CharacterTreeDecision } from './character-tree';
 import {
     StaticReferenceHandle,
     StaticallyReferenceable,
@@ -15,6 +15,7 @@ import {
 import { StaticReference } from '../../compressor/static-reference/static-reference';
 import { WeaveApi } from '../../../api/weave/weave';
 import { ICharacterTreeSpell } from './types';
+import { CharacterTreeSpellEffect } from './character-tree-spell-effect';
 
 let ref: {
     pool: Map<number, CharacterTreeSpell>;
@@ -51,7 +52,9 @@ export class CharacterTreeSpell
             },
         ];
 
-        const children = grants.map((child) => new CharacterTreeEffect(child));
+        const children = grants.map(
+            (child) => new CharacterTreeSpellEffect(child, spell),
+        );
 
         super(option, children);
 

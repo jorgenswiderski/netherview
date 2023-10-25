@@ -13,7 +13,7 @@ import {
 import { IEquipmentItem } from 'planner-types/src/types/equipment-item';
 import ShieldIcon from '@mui/icons-material/Shield';
 import LazyLoad from 'react-lazyload';
-import { ItemTooltip } from './item-tooltip';
+import { ItemTooltip } from '../../tooltips/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
 
 const ItemContainer = styled(Card)`

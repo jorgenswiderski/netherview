@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ISpell } from 'planner-types/src/types/spells';
+import { ISpell } from 'planner-types/src/types/spell';
 import {
     EquipmentSlot,
     IEquipmentItem,
