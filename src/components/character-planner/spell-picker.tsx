@@ -257,6 +257,7 @@ export default function SpellPicker({
                     color="primary"
                     onClick={() => handleConfirm()}
                     disabled={selectedSpells.length !== numSpells}
+                    fullWidth
                 >
                     Next
                 </NextButton>
