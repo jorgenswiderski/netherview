@@ -1,8 +1,13 @@
 import React from 'react';
-import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
+import {
+    Characteristic,
+    GrantableEffect,
+    GrantableEffectType,
+} from 'planner-types/src/types/grantable-effect';
 import { Tooltip } from '@mui/material';
 import EffectBase from './effect-base';
 import { SpellTooltip } from '../../../tooltips/spell-tooltip';
+import { CharacteristicTooltip } from '../../../tooltips/characteristic-tooltip';
 import { CharacterTreeSpellEffect } from '../../../../models/character/character-tree-node/character-tree-spell-effect';
 
 interface GrantedEffectProps {
@@ -24,6 +29,14 @@ function EffectTooltip({
             <SpellTooltip action={(effect as CharacterTreeSpellEffect).spell}>
                 {children}
             </SpellTooltip>
+        );
+    }
+
+    if (effect.type === GrantableEffectType.CHARACTERISTIC) {
+        return (
+            <CharacteristicTooltip characteristic={effect as Characteristic}>
+                {children}
+            </CharacteristicTooltip>
         );
     }
 

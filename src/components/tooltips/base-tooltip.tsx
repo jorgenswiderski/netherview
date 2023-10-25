@@ -49,7 +49,7 @@ interface BaseTooltipProps extends Omit<TooltipProps, 'title'> {
     body?: React.ReactNode;
     quote?: React.ReactNode;
     footer?: React.ReactNode;
-    image: string;
+    image?: string;
     name: string;
     children: React.ReactElement;
 }
@@ -74,7 +74,7 @@ export function BaseTooltip({
                         borderRadius: '0.4rem',
                         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
                         overflow: 'hidden',
-                        minWidth: '350px',
+                        minWidth: 'min(400px, 90vw)',
                     },
                 },
                 style: {
@@ -110,7 +110,7 @@ export function BaseTooltip({
                     {body && <BodyBox>{body}</BodyBox>}
                     {quote && <QuoteBox>{quote}</QuoteBox>}
                     {footer && <FooterBox>{footer}</FooterBox>}
-                    <Icon src={image} alt={name} />
+                    {image && <Icon src={image} alt={name} />}
                 </MainBox>
             }
         >

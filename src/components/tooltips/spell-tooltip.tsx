@@ -91,9 +91,9 @@ export function SpellTooltip({ action, children }: SpellTooltipProps) {
         <BaseTooltip
             name={action.name}
             image={action.image}
-            header={<Typography variant="h6">{action.name}</Typography>}
-            quote={
+            header={
                 <>
+                    <Typography variant="h6">{action.name}</Typography>
                     <Typography variant="subtitle2" color="textSecondary">
                         {action.level > 0 ? (
                             <>
@@ -104,7 +104,10 @@ export function SpellTooltip({ action, children }: SpellTooltipProps) {
                             <>{SpellSchool[action.school]} Cantrip</>
                         )}
                     </Typography>
-
+                </>
+            }
+            quote={
+                <>
                     {action.damageType && (
                         <>
                             {action.damage && (
