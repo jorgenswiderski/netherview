@@ -87,4 +87,7 @@ export class WeaveApi {
 
         return Object.values(keyed)[0];
     };
+
+    static getImagePath = (imageName: string): string =>
+        `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}`;
 }

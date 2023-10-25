@@ -9,6 +9,7 @@ import EffectBase from './effect-base';
 import { SpellTooltip } from '../../../tooltips/spell-tooltip';
 import { CharacteristicTooltip } from '../../../tooltips/characteristic-tooltip';
 import { CharacterTreeSpellEffect } from '../../../../models/character/character-tree-node/character-tree-spell-effect';
+import { WeaveApi } from '../../../../api/weave/weave';
 
 interface GrantedEffectProps {
     effect: GrantableEffect;
@@ -52,7 +53,11 @@ export default function GrantedEffect({
         <EffectTooltip effect={effect}>
             <div>
                 <EffectBase
-                    image={effect.image}
+                    image={
+                        effect.image
+                            ? WeaveApi.getImagePath(effect.image)
+                            : undefined
+                    }
                     label={effect.name}
                     elevation={elevation}
                     style={style}

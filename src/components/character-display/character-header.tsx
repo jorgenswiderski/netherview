@@ -2,13 +2,15 @@ import React, { useMemo } from 'react';
 import { Paper, Box, Typography } from '@mui/material';
 import { Character } from '../../models/character/character';
 import { CharacterClassInfo } from '../../models/character/types';
+import { WeaveApi } from '../../api/weave/weave';
+import { log } from '../../models/logger';
 
 interface CharacterHeaderProps {
     character: Character;
 }
 
 export function CharacterHeader({ character }: CharacterHeaderProps) {
-    const imagePath = useMemo(() => {
+    const imageName = useMemo(() => {
         const classes = character.getClassInfo();
         const highestLevelClass = classes.sort(
             (a, b) => b.levels.length - a.levels.length,
@@ -45,19 +47,20 @@ export function CharacterHeader({ character }: CharacterHeaderProps) {
 
     const race = useMemo(() => character.getRace(), [character]);
     const subrace = useMemo(() => character.getSubrace(), [character]);
+    log(imageName);
 
     return (
         <Paper elevation={2} style={{ padding: '1rem' }}>
             <Box display="flex" flexDirection="column">
                 <Box display="flex" alignItems="stretch">
-                    {imagePath && (
+                    {imageName && (
                         <Box
                             position="relative"
                             mr={2}
                             sx={{ width: '88px', flexShrink: 0 }}
                         >
                             <img
-                                src={imagePath}
+                                src={WeaveApi.getImagePath(imageName)}
                                 alt="Character Class"
                                 style={{
                                     height: '100%',

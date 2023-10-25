@@ -8,6 +8,7 @@ import { AbilityScore } from 'planner-types/src/types/ability';
 import { DamageType } from 'planner-types/src/types/equipment-item';
 import { BaseTooltip } from './base-tooltip';
 import { Utils } from '../../models/utils';
+import { WeaveApi } from '../../api/weave/weave';
 
 const ConditionBox = styled(Box)`
     display: flex;
@@ -77,7 +78,7 @@ export function SpellTooltip({ action, children }: SpellTooltipProps) {
     ) {
         return (
             <ConditionBox>
-                <ConditionIcon src={image} alt={name} />
+                <ConditionIcon src={WeaveApi.getImagePath(image)} alt={name} />
                 <Typography variant="body2">
                     {duration > 0
                         ? `${name}: ${duration} turn${duration > 1 ? 's' : ''}`

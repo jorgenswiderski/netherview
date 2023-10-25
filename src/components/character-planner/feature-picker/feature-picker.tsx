@@ -7,6 +7,7 @@ import styled from '@emotion/styled';
 import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
 import ProspectiveEffects from './prospective-effects/prospective-effects';
+import { WeaveApi } from '../../../api/weave/weave';
 
 enum LayoutType {
     SPARSE,
@@ -190,7 +191,9 @@ export default function FeaturePicker({
                                     {option.image &&
                                         renderCardMedia({
                                             component: 'img',
-                                            image: option.image,
+                                            image: WeaveApi.getImagePath(
+                                                option.image,
+                                            ),
                                             layout: layoutType,
                                         })}
                                     <OptionName

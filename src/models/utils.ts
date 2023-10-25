@@ -1,4 +1,5 @@
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
+import { WeaveApi } from '../api/weave/weave';
 
 type Difference = {
     path: string;
@@ -65,7 +66,7 @@ export class Utils {
             ])
             .filter(Boolean) as string[]; // Filters out null or undefined values
 
-        Utils.preloadImages(imagesToPreload);
+        Utils.preloadImages(imagesToPreload.map(WeaveApi.getImagePath));
     }
 
     static isNonEmptyArray(a?: any[] | null): boolean {
@@ -151,13 +152,6 @@ export class Utils {
 
         return differences;
     }
-
-    // static getImagePath(imageName: string): string {
-    //     const formattedImageName = imageName.replace(/ /g, '_');
-    //     const hash = MD5(formattedImageName).toString();
-
-    //     return `${CONFIG.WEAVE.BASE_IMAGE_URL}/images/${hash[0]}/${hash[0]}${hash[1]}/${formattedImageName}`;
-    // }
 
     static toProperCase(str: string): string {
         return str.replace(/\w\S*/g, function properCase(txt) {
