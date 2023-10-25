@@ -41,10 +41,10 @@ import {
     CharacterEquipment,
     ICharacterTreeEquipmentItem,
 } from '../items/types';
-import { EquipmentItem } from '../items/equipment-item';
 import { CharacterTreeSpell } from './character-tree-node/character-tree-spell';
 import { TreeCompressor } from '../compressor/compressor';
 import { CharacterTreeEquipmentItem } from './character-tree-node/character-tree-equipment-item';
+import { EquipmentItemFactory } from '../items/equipment-item-factory';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
@@ -680,7 +680,7 @@ export class Character implements ICharacter {
 
         const node = new CharacterTreeEquipmentItem(
             slot,
-            new EquipmentItem(item),
+            EquipmentItemFactory.construct(item),
         );
 
         this.root.addChild(node);

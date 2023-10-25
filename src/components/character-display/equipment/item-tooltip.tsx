@@ -16,11 +16,6 @@ import { Box, Typography, Tooltip } from '@mui/material';
 import { ItemColors } from '../../../models/items/types';
 import { Utils } from '../../../models/utils';
 
-interface ItemTooltipProps {
-    item?: IEquipmentItem;
-    children: ReactElement<any, any>;
-}
-
 const MainBox = styled(Box)`
     position: relative;
 `;
@@ -43,7 +38,6 @@ const EffectBox = styled(Box)`
 `;
 
 const EffectName = styled.span`
-    // font-weight: 500;
     color: rgb(255, 237, 157);
 `;
 
@@ -86,6 +80,11 @@ const Icon = styled('img')`
     width: 120px;
     height: 120px;
 `;
+
+interface ItemTooltipProps {
+    item?: IEquipmentItem;
+    children: ReactElement<any, any>;
+}
 
 export function ItemTooltip({ item, children }: ItemTooltipProps) {
     const theme = useTheme();
