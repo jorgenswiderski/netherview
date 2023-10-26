@@ -67,7 +67,7 @@ export class EquipmentItem implements IEquipmentItem, StaticallyReferenceable {
     }
 
     static async fromId(id: number): Promise<EquipmentItem> {
-        const itemData = await WeaveApi.getEquipmentItemInfoById(id);
+        const itemData = await WeaveApi.items.getEquipmentItemInfoById(id);
 
         return new EquipmentItem(itemData);
     }

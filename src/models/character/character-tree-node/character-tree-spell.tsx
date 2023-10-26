@@ -33,7 +33,7 @@ export class CharacterTreeSpell
     }
 
     static async fromId(id: number): Promise<CharacterTreeSpell> {
-        const spellData = await WeaveApi.getSpellById(id);
+        const spellData = await WeaveApi.spells.getById(id);
 
         return new CharacterTreeSpell(spellData);
     }

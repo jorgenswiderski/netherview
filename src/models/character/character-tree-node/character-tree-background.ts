@@ -47,7 +47,7 @@ export class CharacterTreeBackground
     }
 
     static async fromId(id: number): Promise<CharacterTreeBackground> {
-        const backgroundData = await WeaveApi.getBackgroundById(id);
+        const backgroundData = await WeaveApi.backgrounds.getBackgroundById(id);
 
         return new CharacterTreeBackground(backgroundData);
     }

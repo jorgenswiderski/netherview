@@ -26,7 +26,7 @@ export class CharacterTreeActionEffect
     }
 
     static async fromId(id: number): Promise<CharacterTreeActionEffect> {
-        const actionData = await WeaveApi.getActionById(id);
+        const actionData = await WeaveApi.actions.getById(id);
         const actionEffect: IActionEffect = {
             type: GrantableEffectType.ACTION,
             subtype: ActionEffectType.CLASS_ACTION,

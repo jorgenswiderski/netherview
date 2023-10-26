@@ -42,8 +42,8 @@ export default function HomePage({ importStr }: HomePageProps) {
     const [spellData, setSpellData] = useState<ISpell[] | null>();
 
     useEffect(() => {
-        WeaveApi.getClassesInfo().then((data) => setClassData(data));
-        WeaveApi.getClassSpellInfo().then((data) => setSpellData(data));
+        WeaveApi.classes.getClassesInfo().then((data) => setClassData(data));
+        WeaveApi.spells.get().then((data) => setSpellData(data));
     }, []);
 
     return (

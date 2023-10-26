@@ -80,7 +80,7 @@ export function EquipmentSlotCard({
         setIsLoading(true);
 
         try {
-            const data = await WeaveApi.getEquipmentItemInfo(slot);
+            const data = await WeaveApi.items.getEquipmentItemInfo(slot);
             setItems(data);
         } catch (err) {
             error(err);

@@ -1,109 +1,18 @@
-import axios from 'axios';
-import {
-    EquipmentSlot,
-    IEquipmentItem,
-    equipmentSlotTypes,
-} from 'planner-types/src/types/equipment-item';
-import { IAction, ISpell } from 'planner-types/src/types/action';
-import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
 import { CONFIG } from '../../models/config';
-import {
-    CharacterClassOption,
-    CharacterRaceOption,
-    CharacterBackgroundOption,
-} from '../../models/character/types';
-
-async function fetchFromApi(endpoint: string) {
-    try {
-        const response = await axios.get(`${CONFIG.WEAVE.API_URL}${endpoint}`);
-
-        return response.data;
-    } catch (error) {
-        // Check if the error is an Axios error
-        if (axios.isAxiosError(error) && error.response) {
-            throw new Error(
-                `Failed to fetch from API. Status: ${error.response.status}`,
-            );
-        }
-
-        // If the error is not an Axios error or any other unknown error
-        throw error;
-    }
-}
+import { WeaveActions } from './actions';
+import { WeaveBackgrounds } from './backgrounds';
+import { WeaveClasses } from './classes';
+import { WeaveItems } from './items';
+import { WeaveRaces } from './races';
+import { WeaveSpells } from './spells';
 
 export class WeaveApi {
-    static getClassesInfo = async (): Promise<CharacterClassOption[]> => {
-        const data = await fetchFromApi('/classes/info');
-
-        return StaticReference.parseAllValues(data);
-    };
-
-    static getRacesInfo = async (): Promise<CharacterRaceOption[]> => {
-        const data = await fetchFromApi('/races/info');
-
-        return StaticReference.parseAllValues(data);
-    };
-
-    static getBackgroundsInfo = async (): Promise<
-        CharacterBackgroundOption[]
-    > => {
-        return fetchFromApi('/backgrounds/info');
-    };
-
-    static getBackgroundById = async (
-        id: number,
-    ): Promise<CharacterBackgroundOption> => {
-        const keyed: Record<string, CharacterBackgroundOption> =
-            await fetchFromApi(`/backgrounds/info/id?ids=${id}`);
-
-        return Object.values(keyed)[0];
-    };
-
-    static getActionInfo = async (): Promise<IAction[]> => {
-        return fetchFromApi('/actions/info?filter=class');
-    };
-
-    static getActionById = async (id: number): Promise<IAction> => {
-        const keyed: Record<string, IAction> = await fetchFromApi(
-            `/actions/info/id?ids=${id}`,
-        );
-
-        return Object.values(keyed)[0];
-    };
-
-    static getClassSpellInfo = async (): Promise<ISpell[]> => {
-        return fetchFromApi('/spells/info?filter=class');
-    };
-
-    static getSpellById = async (id: number): Promise<ISpell> => {
-        const keyed: Record<string, ISpell> = await fetchFromApi(
-            `/spells/info/id?ids=${id}`,
-        );
-
-        return Object.values(keyed)[0];
-    };
-
-    static getEquipmentItemInfo = async (
-        slot: EquipmentSlot,
-    ): Promise<IEquipmentItem[]> => {
-        const types = equipmentSlotTypes[slot];
-
-        const keyed: Record<string, IEquipmentItem[]> = await fetchFromApi(
-            `/items/equipment/type?types=${types.join(',')}`,
-        );
-
-        return Object.values(keyed).flat();
-    };
-
-    static getEquipmentItemInfoById = async (
-        id: number,
-    ): Promise<IEquipmentItem> => {
-        const keyed: Record<string, IEquipmentItem> = await fetchFromApi(
-            `/items/equipment/id?ids=${id}`,
-        );
-
-        return Object.values(keyed)[0];
-    };
+    static actions = new WeaveActions();
+    static backgrounds = new WeaveBackgrounds();
+    static classes = new WeaveClasses();
+    static items = new WeaveItems();
+    static races = new WeaveRaces();
+    static spells = new WeaveSpells();
 
     static getImagePath = (imageName: string): string =>
         `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}`;

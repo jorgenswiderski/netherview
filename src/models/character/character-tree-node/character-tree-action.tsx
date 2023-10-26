@@ -27,7 +27,7 @@ export class CharacterTreeAction
     }
 
     static async fromId(id: number): Promise<CharacterTreeAction> {
-        const actionData = await WeaveApi.getActionById(id);
+        const actionData = await WeaveApi.actions.getById(id);
 
         return new CharacterTreeAction(actionData);
     }

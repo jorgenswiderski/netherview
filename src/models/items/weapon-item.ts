@@ -64,7 +64,7 @@ export class WeaponItem extends EquipmentItem implements IWeaponItem {
     }
 
     static async fromId(id: number): Promise<WeaponItem> {
-        const itemData = await WeaveApi.getEquipmentItemInfoById(id);
+        const itemData = await WeaveApi.items.getEquipmentItemInfoById(id);
 
         return new WeaponItem(itemData as IWeaponItem);
     }

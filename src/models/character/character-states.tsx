@@ -46,7 +46,7 @@ export const CharacterDecisionInfo: {
 } = {
     [CharacterPlannerStep.SET_RACE]: {
         title: 'Select your race',
-        getOptions: async () => WeaveApi.getRacesInfo(),
+        getOptions: async () => WeaveApi.races.getRacesInfo(),
     },
     [CharacterPlannerStep.CHOOSE_SUBRACE]: {
         title: 'Select your subrace',
@@ -58,7 +58,7 @@ export const CharacterDecisionInfo: {
     [CharacterPlannerStep.SET_BACKGROUND]: {
         title: 'Choose a background',
         getOptions: async () =>
-            (await WeaveApi.getBackgroundsInfo()).map(
+            (await WeaveApi.backgrounds.getBackgroundsInfo()).map(
                 (info) => new CharacterTreeBackground(info),
             ),
     },
