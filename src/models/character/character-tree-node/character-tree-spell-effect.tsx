@@ -4,20 +4,20 @@ import {
     GrantableEffectType,
     IActionEffect,
 } from 'planner-types/src/types/grantable-effect';
-import { ISpell } from 'planner-types/src/types/action';
+import { IActionBase } from 'planner-types/src/types/action';
 import { CharacterTreeEffect } from './character-tree';
 
-export class CharacterTreeSpellEffect
+export class CharacterTreeActionEffect
     extends CharacterTreeEffect
     implements IActionEffect
 {
     type: GrantableEffectType.ACTION = GrantableEffectType.ACTION;
-    subtype: ActionEffectType = ActionEffectType.SPELL_ACTION;
     id: number;
 
     constructor(
         effect: GrantableEffect,
-        public action: ISpell,
+        public subtype: ActionEffectType,
+        public action: IActionBase,
     ) {
         super(effect);
 

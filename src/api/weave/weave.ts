@@ -4,7 +4,7 @@ import {
     IEquipmentItem,
     equipmentSlotTypes,
 } from 'planner-types/src/types/equipment-item';
-import { ISpell } from 'planner-types/src/types/action';
+import { IAction, ISpell } from 'planner-types/src/types/action';
 import { CONFIG } from '../../models/config';
 import {
     CharacterClassOption,
@@ -50,6 +50,18 @@ export class WeaveApi {
     ): Promise<CharacterBackgroundOption> => {
         const keyed: Record<string, CharacterBackgroundOption> =
             await fetchFromApi(`/backgrounds/info/id?ids=${id}`);
+
+        return Object.values(keyed)[0];
+    };
+
+    static getActionInfo = async (): Promise<IAction[]> => {
+        return fetchFromApi('/actions/info?filter=class');
+    };
+
+    static getActionById = async (id: number): Promise<IAction> => {
+        const keyed: Record<string, IAction> = await fetchFromApi(
+            `/actions/info/id?ids=${id}`,
+        );
 
         return Object.values(keyed)[0];
     };

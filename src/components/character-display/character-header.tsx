@@ -3,7 +3,6 @@ import { Paper, Box, Typography } from '@mui/material';
 import { Character } from '../../models/character/character';
 import { CharacterClassInfo } from '../../models/character/types';
 import { WeaveApi } from '../../api/weave/weave';
-import { log } from '../../models/logger';
 
 interface CharacterHeaderProps {
     character: Character;
@@ -47,7 +46,6 @@ export function CharacterHeader({ character }: CharacterHeaderProps) {
 
     const race = useMemo(() => character.getRace(), [character]);
     const subrace = useMemo(() => character.getSubrace(), [character]);
-    log(imageName);
 
     return (
         <Paper elevation={2} style={{ padding: '1rem' }}>
