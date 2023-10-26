@@ -12,7 +12,6 @@ import EffectBase from './effect-base';
 import { SpellTooltip } from '../../../tooltips/spell-tooltip';
 import { CharacteristicTooltip } from '../../../tooltips/characteristic-tooltip';
 import { WeaveApi } from '../../../../api/weave/weave';
-import { log } from '../../../../models/logger';
 
 interface GrantedEffectProps {
     effect: GrantableEffect;
@@ -55,8 +54,6 @@ export default function GrantedEffect({
     elevation,
     style,
 }: GrantedEffectProps) {
-    log(effect);
-
     const image = useMemo(() => {
         let path: string | undefined;
 
