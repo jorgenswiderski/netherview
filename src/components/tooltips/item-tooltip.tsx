@@ -1,7 +1,6 @@
 // item-tooltip.tsx
 import React, { ReactElement, useMemo } from 'react';
 import {
-    DamageType,
     EquipmentItemType,
     EquipmentSlot,
     IEquipmentItem,
@@ -14,6 +13,7 @@ import styled from '@emotion/styled';
 import { darken, useTheme } from '@mui/system';
 import { alpha } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
+import { DamageType } from 'planner-types/src/types/damage';
 import { ItemColors } from '../../models/items/types';
 import { Utils } from '../../models/utils';
 import { BaseTooltip } from './base-tooltip';

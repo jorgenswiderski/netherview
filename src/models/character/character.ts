@@ -394,9 +394,10 @@ export class Character implements ICharacter {
 
                     spells = this.spellData.filter(
                         (spell) =>
-                            spell.classes.includes(cls.name) &&
+                            !spell.isVariant &&
                             spell.level > 0 &&
                             spell.level <= highestSlot &&
+                            spell.classes.includes(cls.name) &&
                             !spellsKnown.includes(spell.name),
                     );
                 } else {

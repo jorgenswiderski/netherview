@@ -9,7 +9,7 @@ import {
 } from 'planner-types/src/types/action';
 import styled from '@emotion/styled';
 import { AbilityScore } from 'planner-types/src/types/ability';
-import { DamageType } from 'planner-types/src/types/equipment-item';
+import { DamageType } from 'planner-types/src/types/damage';
 import { BaseTooltip } from './base-tooltip';
 import { Utils } from '../../models/utils';
 import { WeaveApi } from '../../api/weave/weave';

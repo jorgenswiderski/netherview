@@ -1,11 +1,11 @@
 import {
-    DamageType,
     IWeaponItem,
     WeaponCategory,
     WeaponHandedness,
     WeaponRange,
     WeaponRangeType,
 } from 'planner-types/src/types/equipment-item';
+import { DamageType } from 'planner-types/src/types/damage';
 import { EquipmentItem } from './equipment-item';
 import { WeaveApi } from '../../api/weave/weave';
 import { StaticReference } from '../compressor/static-reference/static-reference';
