@@ -1,5 +1,7 @@
+import { CONFIG as SharedConfig } from 'planner-types/src/models/config';
+
 export const CONFIG = {
-    IS_DEV: process.env.NEXT_PUBLIC_ENVIRONMENT === 'dev',
+    ...SharedConfig,
     EXPORT_ENABLED: process.env.NEXT_PUBLIC_EXPORT_ENABLED === 'true',
     WEAVE: {
         API_URL: process.env.NEXT_PUBLIC_WEAVE_API_URL,

@@ -1,10 +1,10 @@
 import { IAction } from 'planner-types/src/types/action';
 import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
+import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
 import {
     StaticReferenceHandle,
     StaticallyReferenceable,
-} from '../../compressor/static-reference/types';
-import { StaticReference } from '../../compressor/static-reference/static-reference';
+} from 'planner-types/src/models/static-reference/types';
 import { WeaveApi } from '../../../api/weave/weave';
 import { CharacterTreeActionBase } from './character-tree-action-base';
 

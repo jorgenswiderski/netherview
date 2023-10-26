@@ -1,10 +1,10 @@
-import { CharacterTreeDecision, CharacterTreeEffect } from './character-tree';
-import { CharacterBackgroundOption } from '../types';
 import {
     StaticReferenceHandle,
     StaticallyReferenceable,
-} from '../../compressor/static-reference/types';
-import { StaticReference } from '../../compressor/static-reference/static-reference';
+} from 'planner-types/src/models/static-reference/types';
+import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
+import { CharacterTreeDecision, CharacterTreeEffect } from './character-tree';
+import { CharacterBackgroundOption } from '../types';
 import { WeaveApi } from '../../../api/weave/weave';
 
 let ref: {

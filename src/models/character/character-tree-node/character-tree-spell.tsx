@@ -4,8 +4,8 @@ import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
 import {
     StaticReferenceHandle,
     StaticallyReferenceable,
-} from '../../compressor/static-reference/types';
-import { StaticReference } from '../../compressor/static-reference/static-reference';
+} from 'planner-types/src/models/static-reference/types';
+import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
 import { WeaveApi } from '../../../api/weave/weave';
 import { CharacterTreeActionBase } from './character-tree-action-base';
 

@@ -6,10 +6,10 @@ import {
     WeaponRangeType,
 } from 'planner-types/src/types/equipment-item';
 import { DamageType } from 'planner-types/src/types/damage';
+import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
+import { StaticReferenceHandle } from 'planner-types/src/models/static-reference/types';
 import { EquipmentItem } from './equipment-item';
 import { WeaveApi } from '../../api/weave/weave';
-import { StaticReference } from '../compressor/static-reference/static-reference';
-import { StaticReferenceHandle } from '../compressor/static-reference/types';
 
 let ref: {
     pool: Map<number, EquipmentItem>;

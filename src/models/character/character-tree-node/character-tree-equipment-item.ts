@@ -1,13 +1,13 @@
 import { EquipmentSlot } from 'planner-types/src/types/equipment-item';
 import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
+import { RecordCompressor } from 'planner-types/src/models/compressable-record/compressable-record';
+import {
+    CompressableRecordHandle,
+    CompressableRecord,
+} from 'planner-types/src/models/compressable-record/types';
 import { CharacterTreeDecision, CharacterTreeEffect } from './character-tree';
 import { ICharacterTreeEquipmentItem } from '../../items/types';
 import { EquipmentItem } from '../../items/equipment-item';
-import {
-    CompressableRecord,
-    CompressableRecordHandle,
-} from '../../compressor/compressable-record/types';
-import { RecordCompressor } from '../../compressor/compressable-record/compressable-record';
 
 let compress: (...args: any[]) => CompressableRecordHandle;
 

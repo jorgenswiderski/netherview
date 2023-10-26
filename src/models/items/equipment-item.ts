@@ -5,11 +5,11 @@ import {
     ItemRarity,
 } from 'planner-types/src/types/equipment-item';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
-import { StaticReference } from '../compressor/static-reference/static-reference';
+import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
 import {
     StaticReferenceHandle,
     StaticallyReferenceable,
-} from '../compressor/static-reference/types';
+} from 'planner-types/src/models/static-reference/types';
 import { WeaveApi } from '../../api/weave/weave';
 
 let ref: {
