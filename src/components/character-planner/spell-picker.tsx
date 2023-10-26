@@ -10,10 +10,11 @@ import {
     Typography,
     CardMedia,
 } from '@mui/material';
-import { ISpell } from 'planner-types/src/types/spell';
+import { ISpell } from 'planner-types/src/types/action';
 import { ICharacter } from '../../models/character/types';
 import { Utils } from '../../models/utils';
 import { SpellTooltip } from '../tooltips/spell-tooltip';
+import { WeaveApi } from '../../api/weave/weave';
 
 const Container = styled.div`
     display: flex;
@@ -97,7 +98,10 @@ function SpellCard({ selected, spell, onClick }: SpellCardProps) {
             <StyledCard elevation={3} selected={selected}>
                 <ActionArea onClick={spell && onClick}>
                     {spell?.image && (
-                        <CardMedia component="img" image={spell.image} />
+                        <CardMedia
+                            component="img"
+                            image={WeaveApi.getImagePath(spell.image)}
+                        />
                     )}
                 </ActionArea>
             </StyledCard>

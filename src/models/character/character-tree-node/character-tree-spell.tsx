@@ -2,7 +2,7 @@ import {
     CharacterPlannerStep,
     ICharacterOption,
 } from 'planner-types/src/types/character-feature-customization-option';
-import { ISpell } from 'planner-types/src/types/spell';
+import { ISpell } from 'planner-types/src/types/action';
 import {
     ActionEffectType,
     GrantableEffectType,

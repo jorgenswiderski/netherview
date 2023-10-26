@@ -12,7 +12,7 @@ import {
     Proficiency,
     IActionEffect,
 } from 'planner-types/src/types/grantable-effect';
-import { ISpell } from 'planner-types/src/types/spell';
+import { ISpell } from 'planner-types/src/types/action';
 import {
     EquipmentSlot,
     IEquipmentItem,

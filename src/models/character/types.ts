@@ -1,5 +1,5 @@
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
-import { ISpell } from 'planner-types/src/types/spell';
+import { ISpell } from 'planner-types/src/types/action';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
 import {
     EquipmentSlot,

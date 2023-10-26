@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { BeatLoader } from 'react-spinners';
-import { ISpell } from 'planner-types/src/types/spell';
+import { ISpell } from 'planner-types/src/types/action';
 import { WeaveApi } from '../api/weave/weave';
 import { CharacterClassOption } from '../models/character/types';
 import { CharacterPlannerLoader } from '../components/character-planner/loader';

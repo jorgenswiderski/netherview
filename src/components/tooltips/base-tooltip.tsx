@@ -76,6 +76,7 @@ export function BaseTooltip({
                         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
                         overflow: 'hidden',
                         minWidth: 'min(400px, 90vw)',
+                        // minHeight: '120px',
                     },
                 },
                 style: {

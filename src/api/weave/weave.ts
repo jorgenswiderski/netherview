@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { ISpell } from 'planner-types/src/types/spell';
 import {
     EquipmentSlot,
     IEquipmentItem,
     equipmentSlotTypes,
 } from 'planner-types/src/types/equipment-item';
+import { ISpell } from 'planner-types/src/types/action';
 import { CONFIG } from '../../models/config';
 import {
     CharacterClassOption,

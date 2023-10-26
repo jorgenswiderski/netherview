@@ -1,8 +1,12 @@
 // action-tooltip.tsx
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { ActionRangeType, ActionType } from 'planner-types/src/types/action';
-import { ISpell, SpellSchool } from 'planner-types/src/types/spell';
+import {
+    ActionRangeType,
+    ISpell,
+    ActionSchool,
+    ActionResource,
+} from 'planner-types/src/types/action';
 import styled from '@emotion/styled';
 import { AbilityScore } from 'planner-types/src/types/ability';
 import { DamageType } from 'planner-types/src/types/equipment-item';
@@ -99,10 +103,10 @@ export function SpellTooltip({ action, children }: SpellTooltipProps) {
                         {action.level > 0 ? (
                             <>
                                 Level {action.level}{' '}
-                                {SpellSchool[action.school]} Spell
+                                {ActionSchool[action.school]} Spell
                             </>
                         ) : (
-                            <>{SpellSchool[action.school]} Cantrip</>
+                            <>{ActionSchool[action.school]} Cantrip</>
                         )}
                     </Typography>
                 </>
@@ -155,9 +159,11 @@ export function SpellTooltip({ action, children }: SpellTooltipProps) {
             }
             footer={
                 <SpellDetailsBox>
-                    <Typography variant="body2">
-                        {Utils.toProperCase(ActionType[action.actionType])}
-                    </Typography>
+                    {action.cost && (
+                        <Typography variant="body2">
+                            {Utils.toProperCase(ActionResource[action.cost])}
+                        </Typography>
+                    )}
                     {action.ritual && (
                         <Typography variant="body2" color="textSecondary">
                             Ritual

@@ -1,7 +1,7 @@
 // types.ts
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
-import { ISpell } from 'planner-types/src/types/spell';
+import { ISpell } from 'planner-types/src/types/action';
 
 export enum CharacterTreeNodeType {
     ROOT,
