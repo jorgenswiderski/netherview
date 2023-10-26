@@ -5,6 +5,7 @@ import {
     equipmentSlotTypes,
 } from 'planner-types/src/types/equipment-item';
 import { IAction, ISpell } from 'planner-types/src/types/action';
+import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
 import { CONFIG } from '../../models/config';
 import {
     CharacterClassOption,
@@ -32,11 +33,15 @@ async function fetchFromApi(endpoint: string) {
 
 export class WeaveApi {
     static getClassesInfo = async (): Promise<CharacterClassOption[]> => {
-        return fetchFromApi('/classes/info');
+        const data = await fetchFromApi('/classes/info');
+
+        return StaticReference.parseAllValues(data);
     };
 
     static getRacesInfo = async (): Promise<CharacterRaceOption[]> => {
-        return fetchFromApi('/races/info');
+        const data = await fetchFromApi('/races/info');
+
+        return StaticReference.parseAllValues(data);
     };
 
     static getBackgroundsInfo = async (): Promise<

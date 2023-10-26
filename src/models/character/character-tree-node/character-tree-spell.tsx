@@ -6,6 +6,7 @@ import {
     StaticallyReferenceable,
 } from 'planner-types/src/models/static-reference/types';
 import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
+import { SpellStubConstructor } from 'planner-types/src/models/static-reference/stubs';
 import { WeaveApi } from '../../../api/weave/weave';
 import { CharacterTreeActionBase } from './character-tree-action-base';
 
@@ -31,11 +32,16 @@ export class CharacterTreeSpell
         return ref.create(this.id);
     }
 
-    static async fromId(id: number): Promise<CharacterTreeActionBase> {
+    static async fromId(id: number): Promise<CharacterTreeSpell> {
         const spellData = await WeaveApi.getSpellById(id);
 
         return new CharacterTreeSpell(spellData);
     }
 }
 
-ref = StaticReference.registerClass(CharacterTreeSpell, 's');
+// Assure that the constructor signature matches that defined by the class stub
+// See stubs.ts for more info
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const typeCheck: SpellStubConstructor = CharacterTreeSpell;
+
+ref = StaticReference.registerClass(CharacterTreeSpell, 's2'); // unused

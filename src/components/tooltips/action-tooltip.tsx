@@ -3,9 +3,9 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import {
     ActionRangeType,
-    ISpell,
     ActionSchool,
     ActionResource,
+    IActionBase,
 } from 'planner-types/src/types/action';
 import styled from '@emotion/styled';
 import { AbilityScore } from 'planner-types/src/types/ability';
@@ -27,34 +27,40 @@ const ConditionIcon = styled.img`
     height: 32px;
 `;
 
-const SpellDetailsBox = styled(Box)`
+const ActionDetailsBox = styled(Box)`
     display: flex;
     gap: 1rem;
 `;
 
-const SpellDetails: Record<string, (key: string, value: any) => string | null> =
-    {
-        aoeM: (key, value) => `Radius: ${value}m`, // FIXME: not always a circle, depends on "aoe" property
-        range: (key, value) => {
-            if (value === ActionRangeType.ranged) {
-                return `Range: 18m`;
-            }
+const ActionDetails: Record<
+    string,
+    (key: string, value: any) => string | null
+> = {
+    aoeM: (key, value) => `Radius: ${value}m`, // FIXME: not always a circle, depends on "aoe" property
+    range: (key, value) => {
+        if (value === ActionRangeType.ranged) {
+            return `Range: 18m`;
+        }
 
-            if (value === ActionRangeType.melee) {
-                return 'Range: Melee';
-            }
+        if (value === ActionRangeType.melee) {
+            return 'Range: Melee';
+        }
 
-            return 'Range: Self';
-        },
-        conditionSave: (key, value) =>
-            `${AbilityScore[value].slice(0, 3).toUpperCase()} Save`,
-        concentration: (key, value) => (value ? 'Concentration' : null),
-    };
+        return 'Range: Self';
+    },
+    conditionSave: (key, value) =>
+        `${AbilityScore[value].slice(0, 3).toUpperCase()} Save`,
+    concentration: (key, value) => (value ? 'Concentration' : null),
+};
 
-function renderSpellDetails(action: ISpell) {
-    const details = Object.entries(SpellDetails)
-        .filter(([key]) => typeof action[key as keyof ISpell] !== 'undefined')
-        .map(([key, formatter]) => formatter(key, action[key as keyof ISpell]))
+function renderActionDetails(action: IActionBase) {
+    const details = Object.entries(ActionDetails)
+        .filter(
+            ([key]) => typeof action[key as keyof IActionBase] !== 'undefined',
+        )
+        .map(([key, formatter]) =>
+            formatter(key, action[key as keyof IActionBase]),
+        )
         .filter(Boolean)
         .map((string) => <Typography variant="body2">{string}</Typography>);
 
@@ -62,17 +68,30 @@ function renderSpellDetails(action: ISpell) {
         return null;
     }
 
-    return <SpellDetailsBox>{details}</SpellDetailsBox>;
+    return <ActionDetailsBox>{details}</ActionDetailsBox>;
 }
 
-interface SpellTooltipProps {
-    action?: ISpell;
+interface ActionTooltipProps {
+    action?: IActionBase;
     children: React.ReactElement;
 }
 
-export function SpellTooltip({ action, children }: SpellTooltipProps) {
+export function ActionTooltip({ action, children }: ActionTooltipProps) {
     if (!action) {
         return children;
+    }
+
+    function getSubheaderText() {
+        if (
+            action!.school === ActionSchool['Class Action'] ||
+            action!.school === ActionSchool.NONE
+        ) {
+            return 'Class Action';
+        }
+
+        return action!.level > 0
+            ? `Level ${action!.level} ${ActionSchool[action!.school]} Spell`
+            : `${ActionSchool[action!.school]} Cantrip`;
     }
 
     function renderConditionOrArea(
@@ -100,14 +119,7 @@ export function SpellTooltip({ action, children }: SpellTooltipProps) {
                 <>
                     <Typography variant="h6">{action.name}</Typography>
                     <Typography variant="subtitle2" color="textSecondary">
-                        {action.level > 0 ? (
-                            <>
-                                Level {action.level}{' '}
-                                {ActionSchool[action.school]} Spell
-                            </>
-                        ) : (
-                            <>{ActionSchool[action.school]} Cantrip</>
-                        )}
+                        {getSubheaderText()}
                     </Typography>
                 </>
             }
@@ -154,11 +166,11 @@ export function SpellTooltip({ action, children }: SpellTooltipProps) {
                             action.conditionDuration,
                         )}
 
-                    {renderSpellDetails(action)}
+                    {renderActionDetails(action)}
                 </>
             }
             footer={
-                <SpellDetailsBox>
+                <ActionDetailsBox>
                     {action.cost && (
                         <Typography variant="body2">
                             {Utils.toProperCase(ActionResource[action.cost])}
@@ -169,7 +181,7 @@ export function SpellTooltip({ action, children }: SpellTooltipProps) {
                             Ritual
                         </Typography>
                     )}
-                </SpellDetailsBox>
+                </ActionDetailsBox>
             }
         >
             {children}

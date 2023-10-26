@@ -13,7 +13,7 @@ import {
 import { ISpell } from 'planner-types/src/types/action';
 import { ICharacter } from '../../models/character/types';
 import { Utils } from '../../models/utils';
-import { SpellTooltip } from '../tooltips/spell-tooltip';
+import { ActionTooltip } from '../tooltips/action-tooltip';
 import { WeaveApi } from '../../api/weave/weave';
 
 const Container = styled.div`
@@ -94,7 +94,7 @@ interface SpellCardProps {
 
 function SpellCard({ selected, spell, onClick }: SpellCardProps) {
     return (
-        <SpellTooltip action={spell}>
+        <ActionTooltip action={spell}>
             <StyledCard elevation={3} selected={selected}>
                 <ActionArea onClick={spell && onClick}>
                     {spell?.image && (
@@ -105,7 +105,7 @@ function SpellCard({ selected, spell, onClick }: SpellCardProps) {
                     )}
                 </ActionArea>
             </StyledCard>
-        </SpellTooltip>
+        </ActionTooltip>
     );
 }
 

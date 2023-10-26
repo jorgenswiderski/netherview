@@ -6,10 +6,11 @@ import { IActionBase } from 'planner-types/src/types/action';
 import {
     ActionEffectType,
     GrantableEffectType,
+    IActionEffect,
 } from 'planner-types/src/types/grantable-effect';
 import { CharacterTreeDecision } from './character-tree';
 import { ICharacterTreeAction } from './types';
-import { CharacterTreeActionEffect } from './character-tree-spell-effect';
+import { CharacterTreeActionBaseEffect } from './character-tree-action-base-effect';
 
 export class CharacterTreeActionBase
     extends CharacterTreeDecision
@@ -29,7 +30,7 @@ export class CharacterTreeActionBase
             type,
         };
 
-        const grants = [
+        const grants: IActionEffect[] = [
             {
                 name: action.name,
                 description: action.description,
@@ -37,11 +38,12 @@ export class CharacterTreeActionBase
                 subtype,
                 image: action.image,
                 id: action.id,
+                action,
             },
         ];
 
         const children = grants.map(
-            (child) => new CharacterTreeActionEffect(child, subtype, action),
+            (child) => new CharacterTreeActionBaseEffect(child),
         );
 
         super(option, children);

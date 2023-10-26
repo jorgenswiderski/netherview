@@ -13,11 +13,11 @@ import { CharacterTreeActionBaseEffect } from './character-tree-action-base-effe
 import { WeaveApi } from '../../../api/weave/weave';
 
 let ref: {
-    pool: Map<number, CharacterTreeSpellEffect>;
+    pool: Map<number, CharacterTreeActionEffect>;
     create: (id: number) => StaticReferenceHandle;
 };
 
-export class CharacterTreeSpellEffect
+export class CharacterTreeActionEffect
     extends CharacterTreeActionBaseEffect
     implements StaticallyReferenceable
 {
@@ -25,24 +25,24 @@ export class CharacterTreeSpellEffect
         return ref.create(this.id);
     }
 
-    static async fromId(id: number): Promise<CharacterTreeSpellEffect> {
-        const actionData = await WeaveApi.getSpellById(id);
+    static async fromId(id: number): Promise<CharacterTreeActionEffect> {
+        const actionData = await WeaveApi.getActionById(id);
         const actionEffect: IActionEffect = {
             type: GrantableEffectType.ACTION,
-            subtype: ActionEffectType.SPELL_ACTION,
+            subtype: ActionEffectType.CLASS_ACTION,
             action: actionData,
             name: actionData.name,
             id: actionData.id,
         };
 
-        return new CharacterTreeSpellEffect(actionEffect);
+        return new CharacterTreeActionEffect(actionEffect);
     }
 }
 
 // Assure that the constructor signature matches that defined by the class stub
 // See stubs.ts for more info
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const typeCheck: ActionEffectStubConstructor = CharacterTreeSpellEffect;
+const typeCheck: ActionEffectStubConstructor = CharacterTreeActionEffect;
 
-ref = StaticReference.registerClass(CharacterTreeSpellEffect, 's');
-export const initCharacterTreeSpellEffectRef = () => ref;
+ref = StaticReference.registerClass(CharacterTreeActionEffect, 'a');
+export const initCharacterTreeActionEffectRef = () => ref;

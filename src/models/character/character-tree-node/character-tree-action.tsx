@@ -5,6 +5,7 @@ import {
     StaticReferenceHandle,
     StaticallyReferenceable,
 } from 'planner-types/src/models/static-reference/types';
+import { ActionStubConstructor } from 'planner-types/src/models/static-reference/stubs';
 import { WeaveApi } from '../../../api/weave/weave';
 import { CharacterTreeActionBase } from './character-tree-action-base';
 
@@ -32,4 +33,9 @@ export class CharacterTreeAction
     }
 }
 
-ref = StaticReference.registerClass(CharacterTreeAction, 'a');
+// Assure that the constructor signature matches that defined by the class stub
+// See stubs.ts for more info
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const typeCheck: ActionStubConstructor = CharacterTreeAction;
+
+ref = StaticReference.registerClass(CharacterTreeAction, 'a2'); // unused
