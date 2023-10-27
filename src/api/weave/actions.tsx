@@ -8,7 +8,7 @@ export class WeaveActions extends WeaveRouteBase {
     }
 
     get = async (): Promise<IAction[]> => {
-        const actions = await this.memoize(() => this.fetchFromApi('/info'));
+        const actions = await this.memoize(() => this.fetchFromApi('/'));
 
         return actions as IAction[];
     };

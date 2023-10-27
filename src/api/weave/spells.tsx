@@ -7,7 +7,9 @@ export class WeaveSpells extends WeaveRouteBase {
     }
 
     get = async (): Promise<ISpell[]> => {
-        const actions = await this.memoize(() => this.fetchFromApi('/info'));
+        const actions = await this.memoize(() =>
+            this.fetchFromApi('/?filter=class'),
+        );
 
         return actions as ISpell[];
     };

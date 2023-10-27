@@ -8,7 +8,7 @@ export class WeaveClasses extends WeaveRouteBase {
     }
 
     getClassesInfo = async (): Promise<CharacterClassOption[]> => {
-        const data = await this.fetchFromApi('/info');
+        const data = await this.fetchFromApi('/');
 
         return StaticReference.parseAllValues(data);
     };
