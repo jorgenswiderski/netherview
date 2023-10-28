@@ -807,7 +807,9 @@ export class Character implements ICharacter {
 
             if (
                 offhandNode &&
-                (!this.canUseOffhand(slot) || !this.canDualWield())
+                (!this.canUseOffhand(slot) ||
+                    (!this.canDualWield() &&
+                        offhandNode.item.type !== EquipmentItemType.Shields))
             ) {
                 this.root.removeChild(offhandNode);
             }
