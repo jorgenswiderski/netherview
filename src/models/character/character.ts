@@ -553,15 +553,13 @@ export class Character implements ICharacter {
             node: CharacterTreeDecision;
         };
 
-        const parent = this.findNodeParent(target) as ICharacterTreeDecision;
+        const parent = this.findNodeParent(target) as CharacterTreeNode;
 
         if (!target || !parent) {
             throw new Error('failed to remove level');
         }
 
-        parent.children!.splice(
-            parent.children!.findIndex((node) => node === target),
-        );
+        parent.removeChild(target);
     }
 
     manageLevels(): Character {
