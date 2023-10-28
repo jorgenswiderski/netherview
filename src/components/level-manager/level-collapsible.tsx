@@ -1,5 +1,5 @@
 // level-collapsible.tsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
 import styled from '@emotion/styled';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -7,7 +7,6 @@ import BuildIcon from '@mui/icons-material/Build';
 import { Box, Tooltip, IconButton, Typography } from '@mui/material';
 import { CollapsibleSection } from '../character-display/collapsible-section';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
-import { log } from '../../models/logger';
 
 const EffectBox = styled(Box)`
     display: flex;
@@ -43,8 +42,6 @@ export default function LevelCollapsible({
     onHoverDelete,
     disabled = false,
 }: LevelCollapsibleProps) {
-    useEffect(() => log(disabled), [disabled]);
-
     return (
         <StyledCollapsibleSection
             defaultExpanded={false}

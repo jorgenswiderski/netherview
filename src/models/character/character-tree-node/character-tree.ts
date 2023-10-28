@@ -40,6 +40,10 @@ export class CharacterTreeNode implements ICharacterTreeNode {
 
             if (index !== -1) {
                 this.children.splice(index, 1);
+            } else {
+                throw new Error(
+                    `failed to remove ${node.name} from ${this.name}`,
+                );
             }
         }
     }
@@ -245,6 +249,7 @@ export class CharacterTreeDecision
     constructor(
         { name, choices, ...rest }: ICharacterOption,
         // parent: CharacterTreeNode,
+        public choiceId: string | null,
         children?: (ICharacterTreeDecision | ICharacterTreeEffect)[],
     ) {
         super(

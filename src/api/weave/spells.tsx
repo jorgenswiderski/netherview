@@ -17,6 +17,12 @@ export class WeaveSpells extends WeaveRouteBase {
     getById = async (id: number): Promise<ISpell> => {
         await this.get();
 
-        return (await this.cacheMap)?.get(id)! as ISpell;
+        const spell = (await this.cacheMap)?.get(id);
+
+        if (!spell) {
+            throw new Error(`Could not find spell with id=${id}`);
+        }
+
+        return spell as ISpell;
     };
 }

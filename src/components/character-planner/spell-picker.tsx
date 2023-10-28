@@ -198,6 +198,8 @@ export default function SpellPicker({
 
                             return (
                                 <SpellCard
+                                    // eslint-disable-next-line react/no-array-index-key
+                                    key={idx}
                                     spell={spell}
                                     selected={selectedSpells.includes(spell)}
                                     onClick={() => handleSpellClick(spell)}
@@ -207,7 +209,8 @@ export default function SpellPicker({
                     </RowInnerBox>
                 </SelectedBoxPaper>
                 {spellsByLevel.map((levelSpells, idx) => (
-                    <RowOuterBox elevation={2}>
+                    // eslint-disable-next-line react/no-array-index-key
+                    <RowOuterBox key={idx} elevation={2}>
                         <RowLabel
                             variant="h5"
                             style={{
@@ -221,6 +224,7 @@ export default function SpellPicker({
                         <RowInnerBox>
                             {levelSpells.map((spell) => (
                                 <SpellCard
+                                    key={spell.id}
                                     spell={spell}
                                     selected={selectedSpells.includes(spell)}
                                     onClick={() => handleSpellClick(spell)}

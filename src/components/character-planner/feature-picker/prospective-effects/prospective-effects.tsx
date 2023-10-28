@@ -36,24 +36,54 @@ export default function ProspectiveEffects({
     options,
     text,
 }: ProspectiveEffectsProps) {
-    const effects = useMemo(() => {
-        if (Array.isArray(options)) {
-            return options
-                .flatMap((option) => option?.grants)
-                .filter(Boolean) as GrantableEffect[];
+    const getEffectsFromOption = (
+        option: ICharacterOption,
+    ): GrantableEffect[] => {
+        const effects = option.grants ? [...option.grants] : [];
+
+        if (option.choices) {
+            effects.push(
+                ...option.choices
+                    .filter((choice) => choice.forcedOptions)
+                    .flatMap((choice) => choice.forcedOptions!)
+                    .flatMap((opt) => getEffectsFromOption(opt!)),
+            );
         }
 
-        return options.grants ?? [];
+        return effects;
+    };
+
+    const getChoicesFromOption = (
+        option: ICharacterOption,
+    ): ICharacterChoice[] => {
+        const effects = option.choices ? [...option.choices] : [];
+
+        if (option.choices) {
+            effects.push(
+                ...option.choices
+                    .filter((choice) => choice.forcedOptions)
+                    .flatMap((choice) => choice.forcedOptions!)
+                    .flatMap((opt) => getChoicesFromOption(opt!)),
+            );
+        }
+
+        return effects;
+    };
+
+    const effects = useMemo(() => {
+        if (Array.isArray(options)) {
+            return options.flatMap((option) => getEffectsFromOption(option));
+        }
+
+        return getEffectsFromOption(options) ?? [];
     }, [options]);
 
     const choices = useMemo(() => {
         if (Array.isArray(options)) {
-            return options
-                .flatMap((option) => option?.choices)
-                .filter(Boolean) as ICharacterChoice[];
+            return options.flatMap((option) => getChoicesFromOption(option));
         }
 
-        return options.choices ?? [];
+        return getChoicesFromOption(options) ?? [];
     }, [options]);
 
     return (
@@ -63,11 +93,21 @@ export default function ProspectiveEffects({
                 {effects
                     .filter((fx) => !fx.hidden)
                     .map((fx) => (
-                        <GrantedEffect effect={fx} elevation={4} />
+                        <GrantedEffect
+                            key={`${fx.name}-${fx.description}`}
+                            effect={fx}
+                            elevation={4}
+                        />
                     ))}
-                {choices.map((choice) => (
-                    <ChoiceDescription step={choice.type} elevation={4} />
-                ))}
+                {choices
+                    .filter((choice) => !choice.forcedOptions)
+                    .map((choice) => (
+                        <ChoiceDescription
+                            key={choice.type}
+                            step={choice.type}
+                            elevation={4}
+                        />
+                    ))}
             </ItemBox>
         </EffectsContainer>
     );

@@ -1,35 +1,41 @@
 import { IAction } from 'planner-types/src/types/action';
 import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
-import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
-import {
-    StaticReferenceHandle,
-    StaticallyReferenceable,
-} from 'planner-types/src/models/static-reference/types';
 import { ActionStubConstructor } from 'planner-types/src/models/static-reference/stubs';
-import { WeaveApi } from '../../../api/weave/weave';
+import {
+    CompressableRecord,
+    CompressableRecordHandle,
+} from 'planner-types/src/models/compressable-record/types';
+import { RecordCompressor } from 'planner-types/src/models/compressable-record/compressable-record';
 import { CharacterTreeActionBase } from './character-tree-action-base';
+import { WeaveApi } from '../../../api/weave/weave';
 
-let ref: {
-    pool: Map<number, CharacterTreeAction>;
-    create: (id: number) => StaticReferenceHandle;
-};
+let compress: (id: number, choiceId: string) => CompressableRecordHandle;
 
 export class CharacterTreeAction
     extends CharacterTreeActionBase
-    implements StaticallyReferenceable
+    implements CompressableRecord
 {
-    constructor(public action: IAction) {
-        super(action, ActionEffectType.CLASS_ACTION);
+    choiceId: string;
+
+    constructor(
+        public action: IAction,
+        choiceId: string,
+    ) {
+        super(action, ActionEffectType.SPELL_ACTION, choiceId);
+        this.choiceId = choiceId;
     }
 
-    toJSON(): StaticReferenceHandle {
-        return ref.create(this.id);
+    toJSON(): CompressableRecordHandle {
+        return compress(this.id, this.choiceId);
     }
 
-    static async fromId(id: number): Promise<CharacterTreeAction> {
+    static async decompress(
+        id: number,
+        choiceId: string,
+    ): Promise<CharacterTreeAction> {
         const actionData = await WeaveApi.actions.getById(id);
 
-        return new CharacterTreeAction(actionData);
+        return new CharacterTreeAction(actionData, choiceId);
     }
 }
 
@@ -38,4 +44,4 @@ export class CharacterTreeAction
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const typeCheck: ActionStubConstructor = CharacterTreeAction;
 
-ref = StaticReference.registerClass(CharacterTreeAction, 'a2'); // unused
+compress = RecordCompressor.registerClass(CharacterTreeAction, 2);

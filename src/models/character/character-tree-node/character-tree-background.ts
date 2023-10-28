@@ -36,7 +36,7 @@ export class CharacterTreeBackground
                   )
                 : undefined;
 
-        super(option, children);
+        super(option, null, children);
 
         this.id = background.id;
         ref.pool.set(this.id, this);

@@ -96,9 +96,7 @@ export default function ClassCollapsible({
                         effects={totalEffects}
                         level={index + 1}
                         onEdit={
-                            node.choices && node.numChoices > 0
-                                ? () => onEdit(node)
-                                : undefined
+                            node.numChoices > 0 ? () => onEdit(node) : undefined
                         }
                         onDelete={() => onDelete(info, node)}
                         onHoverDelete={(hover: boolean) =>

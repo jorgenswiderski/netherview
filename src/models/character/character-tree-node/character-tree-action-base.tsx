@@ -21,6 +21,7 @@ export class CharacterTreeActionBase
     constructor(
         public action: IActionBase,
         subtype: ActionEffectType,
+        choiceId: string,
         type?: CharacterPlannerStep,
     ) {
         const option: ICharacterOption = {
@@ -46,7 +47,7 @@ export class CharacterTreeActionBase
             (child) => new CharacterTreeActionBaseEffect(child),
         );
 
-        super(option, children);
+        super(option, choiceId, children);
 
         this.id = action.id;
     }

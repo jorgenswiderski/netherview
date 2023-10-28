@@ -39,6 +39,7 @@ export interface IPendingDecision {
     options: ICharacterOption[];
     count: number;
     parent: CharacterTreeDecision | CharacterTreeRoot | null;
+    id: string;
 }
 
 export const CharacterDecisionInfo: {
@@ -53,7 +54,8 @@ export const CharacterDecisionInfo: {
     },
     [CharacterPlannerStep.PRIMARY_CLASS]: {
         title: 'Select your starting class',
-        getOptions: async (character: ICharacter) => character.classData,
+        getOptions: async (character: ICharacter) =>
+            character.getCurrentClassData(),
     },
     [CharacterPlannerStep.SET_BACKGROUND]: {
         title: 'Choose a background',

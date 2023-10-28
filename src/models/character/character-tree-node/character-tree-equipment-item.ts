@@ -36,7 +36,7 @@ export class CharacterTreeEquipmentItem
                   )
                 : undefined;
 
-        super(option, children);
+        super(option, null, children);
     }
 
     toJSON() {

@@ -34,6 +34,7 @@ export interface ICharacterTreeDecision
         ICharacterTreeNode {
     // parent: ICharacterTreeNode;
     nodeType: CharacterTreeNodeType.DECISION;
+    choiceId: string | null;
 }
 
 export enum TraversalMethod {

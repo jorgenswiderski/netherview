@@ -17,6 +17,7 @@ import {
     EquipmentSlot,
     IEquipmentItem,
 } from 'planner-types/src/types/equipment-item';
+import assert from 'assert';
 import {
     AbilityScores,
     CharacterClassInfo,
@@ -71,10 +72,7 @@ export class Character implements ICharacter {
     constructor(
         public baseClassData: CharacterClassOption[],
         public spellData: ISpell[],
-        classData?: ICharacterOption[],
-    ) {
-        this.classData = classData ?? this.updateClassData();
-    }
+    ) {}
 
     multiclassRoot: ICharacterOption = {
         name: 'Add a class',
@@ -126,7 +124,7 @@ export class Character implements ICharacter {
         pending: IPendingDecision,
         optionOrOptions: ICharacterOption | ICharacterOption[],
     ): Character {
-        const { type } = pending;
+        const { type, id: choiceId } = pending;
         let { parent } = pending;
         this.unqueueDecision(pending as PendingDecision);
 
@@ -182,21 +180,13 @@ export class Character implements ICharacter {
                 const decision =
                     option instanceof CharacterTreeDecision
                         ? option
-                        : new CharacterTreeDecision({ type, ...option });
+                        : new CharacterTreeDecision(
+                              { type, ...option },
+                              choiceId,
+                          );
 
                 parent.addChild(decision);
                 Character.grantEffects(decision);
-
-                if (
-                    [
-                        ...Character.LEVEL_STEPS,
-                        CharacterPlannerStep.LEARN_CANTRIPS,
-                        CharacterPlannerStep.LEARN_SPELLS,
-                        CharacterPlannerStep.CHOOSE_SUBCLASS,
-                    ].includes(type)
-                ) {
-                    this.classData = this.updateClassData();
-                }
 
                 this.queueSubchoices(decision, option.choices);
             }
@@ -207,7 +197,7 @@ export class Character implements ICharacter {
 
     clone(): Character {
         return Object.assign(
-            new Character(this.baseClassData, this.spellData, this.classData),
+            new Character(this.baseClassData, this.spellData),
             this,
         );
     }
@@ -220,13 +210,31 @@ export class Character implements ICharacter {
             return;
         }
 
-        this.pendingDecisions.unshift(
-            ...choices.map((choice) => new PendingDecision(parent, choice)),
-        );
+        choices.forEach((choice) => {
+            const pending = new PendingDecision(parent, choice);
+
+            if (choice.forcedOptions) {
+                assert(choice.forcedOptions.length === (choice.count ?? 1));
+
+                choice.forcedOptions.forEach((option) => {
+                    const decision = new CharacterTreeDecision(
+                        option,
+                        pending.id,
+                    );
+                    parent.addChild(decision);
+                    Character.grantEffects(decision);
+                    this.queueSubchoices(decision);
+                });
+
+                return;
+            }
+
+            this.pendingDecisions.unshift(pending);
+        });
     }
 
-    private static collapseSubclassFeatures(
-        subclassName: string,
+    private static restrictSubclassFeatures(
+        subclassNode: CharacterTreeDecision,
         data: CharacterClassOption[],
     ): CharacterClassOption[] {
         return data.map((cls) => {
@@ -242,60 +250,48 @@ export class Character implements ICharacter {
                         const subclassChoices = feature.choices.filter(
                             (choice) =>
                                 choice.type ===
-                                CharacterPlannerStep.SUBCLASS_FEATURE,
+                                    CharacterPlannerStep.SUBCLASS_FEATURE &&
+                                choice.options.find(
+                                    (option) =>
+                                        option.name === subclassNode.name,
+                                ),
                         );
 
                         if (subclassChoices.length === 0) {
                             return feature;
                         }
 
-                        const options = subclassChoices.flatMap((choice) =>
-                            choice.options.filter(
-                                (option) => option.name === subclassName,
-                            ),
-                        );
-
-                        // Make sure the subclass we're collapsing exists in these choices
-                        if (options.length === 0) {
-                            return feature;
-                        }
-
                         const otherChoices = feature.choices.filter(
-                            (choice) =>
-                                choice.type !==
-                                CharacterPlannerStep.SUBCLASS_FEATURE,
-                        );
-
-                        const choices: ICharacterChoice[] = [...otherChoices];
-
-                        choices.push(
-                            ...options.flatMap(
-                                (option) => option?.choices ?? [],
-                            ),
-                        );
-
-                        const grants: GrantableEffect[] = feature.grants
-                            ? [...feature.grants]
-                            : [];
-
-                        grants.push(
-                            ...options.flatMap(
-                                (option) => option?.grants ?? [],
-                            ),
+                            (choice) => !subclassChoices.includes(choice),
                         );
 
                         return {
                             ...feature,
-                            choices,
-                            grants,
+                            choices: [
+                                ...otherChoices,
+                                ...subclassChoices.map((choice) => {
+                                    const option = choice.options.find(
+                                        (opt) => opt.name === subclassNode.name,
+                                    );
+
+                                    if (!option) {
+                                        throw new Error(
+                                            'could not find option when restricing subclass features',
+                                        );
+                                    }
+
+                                    return {
+                                        ...choice,
+                                        forcedOptions: [option],
+                                    };
+                                }),
+                            ],
                         };
                     }),
                 })),
             };
         });
     }
-
-    classData: ICharacterOption[];
 
     private updateClassFeatures(
         data: CharacterClassOption[],
@@ -413,12 +409,19 @@ export class Character implements ICharacter {
                     );
                 }
 
+                // FIXME
+                const choiceId = PendingDecision.generateUuid(
+                    step,
+                    cls.name,
+                    CharacterPlannerStep.LEVEL_UP,
+                );
+
                 return [
                     {
                         type: step,
                         count: netChoices,
                         options: spells.map(
-                            (spell) => new CharacterTreeSpell(spell),
+                            (spell) => new CharacterTreeSpell(spell, choiceId),
                         ),
                     },
                 ];
@@ -431,15 +434,15 @@ export class Character implements ICharacter {
         });
     }
 
-    private updateClassData(): ICharacterOption[] {
-        const subclassNames = this.findAllDecisionsByType(
+    getCurrentClassData(): ICharacterOption[] {
+        const subclassNodes = this.findAllDecisionsByType(
             CharacterPlannerStep.CHOOSE_SUBCLASS,
-        ).map((node) => node.name);
+        );
 
         let data = this.baseClassData;
 
-        subclassNames.forEach((name) => {
-            data = Character.collapseSubclassFeatures(name, data);
+        subclassNodes.forEach((node) => {
+            data = Character.restrictSubclassFeatures(node, data);
         });
 
         const options = this.updateClassFeatures(data);
@@ -451,6 +454,8 @@ export class Character implements ICharacter {
         if (!this.canLevel()) {
             return this;
         }
+
+        const classData = this.getCurrentClassData();
 
         const currentClassNodes = this.findAllDecisionsByType([
             CharacterPlannerStep.PRIMARY_CLASS,
@@ -466,7 +471,7 @@ export class Character implements ICharacter {
             (decision) => decision.name,
         );
 
-        const currentClasses = this.classData.filter((cls) =>
+        const currentClasses = classData.filter((cls) =>
             isChoosingPrimaryClass
                 ? !currentClassNames.includes(cls.name)
                 : currentClassNames.includes(cls.name),
@@ -474,7 +479,7 @@ export class Character implements ICharacter {
 
         const newClasses = isChoosingPrimaryClass
             ? []
-            : this.classData.filter((cls) => !currentClasses.includes(cls));
+            : classData.filter((cls) => !currentClasses.includes(cls));
 
         const multiclassOption =
             newClasses.length > 0
@@ -493,7 +498,9 @@ export class Character implements ICharacter {
 
         const decision: PendingDecision = new PendingDecision(null, {
             options: [...currentClasses, ...multiclassOption],
-            type: CharacterPlannerStep.LEVEL_UP,
+            type: isChoosingPrimaryClass
+                ? CharacterPlannerStep.PRIMARY_CLASS
+                : CharacterPlannerStep.LEVEL_UP,
         });
 
         this.pendingDecisions.unshift(decision);
@@ -555,9 +562,6 @@ export class Character implements ICharacter {
         parent.children!.splice(
             parent.children!.findIndex((node) => node === target),
         );
-
-        this.updateClassData();
-        // FIXME: Need to uncollapse subclass features somehow
     }
 
     manageLevels(): Character {
@@ -575,12 +579,15 @@ export class Character implements ICharacter {
         return this.clone();
     }
 
+    replayNodes?: CharacterTreeDecision;
+
     reviseLevel(option: ICharacterOption): void {
         const { node: target } = option as ICharacterOption & {
             node: CharacterTreeDecision;
         };
 
-        const parent = this.findNodeParent(target) as ICharacterTreeDecision;
+        const parentNode = this.findNodeParent(target);
+        const parent = parentNode as ICharacterTreeDecision;
 
         if (!target || !parent) {
             throw new Error('failed to remove level');
@@ -592,14 +599,28 @@ export class Character implements ICharacter {
         );
         parent.children!.splice(targetIndex, 1);
 
-        // Update the effects of the level we're about to grant
-        this.classData = this.updateClassData();
-
         // Trigger a level up in the removed class
+        this.levelUpClass(target.name, target.type);
+
+        // Get the tree of the subsequent levels of the old node
+        const subsequentLevels = target.children?.find(
+            (node) => node.type === CharacterPlannerStep.LEVEL_UP,
+        ) as CharacterTreeDecision;
+
+        if (!subsequentLevels) {
+            return;
+        }
+
+        assert(typeof this.replayNodes === 'undefined');
+
+        this.replayNodes = subsequentLevels;
+    }
+
+    levelUpClass(className: string, levelUpType?: CharacterPlannerStep): void {
         this.levelUp();
         let levelDecision = this.pendingDecisions[0];
 
-        if (target.type === CharacterPlannerStep.SECONDARY_CLASS) {
+        if (levelUpType === CharacterPlannerStep.SECONDARY_CLASS) {
             // make the multiclass sub-decision
             const multiclassOption = levelDecision.options.find(
                 (opt) => opt.type === CharacterPlannerStep.MULTICLASS_PROXY,
@@ -616,27 +637,112 @@ export class Character implements ICharacter {
         }
 
         const classOption = levelDecision.options.find(
-            (opt) => opt.name === target.name,
+            (opt) => opt.name === className,
         )!;
 
         this.makeDecision(levelDecision, classOption);
+    }
 
-        // Get the tree of the subsequent levels of the old node
-        const subsequentLevels = target.children?.find(
-            (node) => node.type === CharacterPlannerStep.LEVEL_UP,
-        ) as CharacterTreeDecision;
-
-        if (!subsequentLevels) {
-            return;
+    progressReplay(): Character {
+        if (!this.replayNodes) {
+            return this;
         }
 
-        // Find the replacement node
-        const replacementNode: CharacterTreeDecision = parent.children?.find(
-            (node) => node.name === target.name,
-        )! as CharacterTreeDecision;
+        const levelNode = this.replayNodes;
 
-        // Graft the children back on to the new node
-        replacementNode.addChild(subsequentLevels);
+        assert(
+            levelNode.type && Character.LEVEL_STEPS.includes(levelNode.type),
+        );
+
+        const classInfo = this.getClassInfo().find(
+            (cls) => cls.class.name === levelNode.name,
+        )!;
+
+        if (classInfo.levels.length <= (levelNode as any).level) {
+            this.levelUpClass(levelNode.name, levelNode.type);
+        }
+
+        if (!levelNode.children) {
+            return this.clone();
+        }
+
+        const pastDecisions = levelNode.children.filter(
+            (child) => child.nodeType === CharacterTreeNodeType.DECISION,
+        ) as CharacterTreeDecision[];
+
+        function getFastforwardableDecisions(
+            pending: PendingDecision[],
+            past: CharacterTreeDecision[],
+        ): Map<PendingDecision, CharacterTreeDecision[]> {
+            const map = new Map<PendingDecision, CharacterTreeDecision[]>();
+
+            pending.forEach((decision) => {
+                const pastDecision = past.filter(
+                    (pDec) => pDec.choiceId === decision.id,
+                );
+
+                if (pastDecision.length !== decision.count) {
+                    return;
+                }
+
+                if (
+                    !pastDecision.every((p) =>
+                        decision.options.find(
+                            (option) => option.name === p.name,
+                        ),
+                    )
+                ) {
+                    return;
+                }
+
+                if (
+                    decision.forcedOptions &&
+                    !pastDecision.every((p) =>
+                        decision.forcedOptions!.find(
+                            (option) => option.name === p.name,
+                        ),
+                    )
+                ) {
+                    return;
+                }
+
+                map.set(decision, pastDecision);
+            });
+
+            return map;
+        }
+
+        let fastforwards = getFastforwardableDecisions(
+            this.pendingDecisions,
+            pastDecisions,
+        );
+
+        while (fastforwards.size > 0) {
+            [...fastforwards.entries()].forEach(([pending, past]) => {
+                const option = past.map(
+                    (p) => pending.options.find((opt) => opt.name === p.name)!,
+                );
+
+                this.makeDecision(pending, option);
+            });
+
+            fastforwards = getFastforwardableDecisions(
+                this.pendingDecisions,
+                pastDecisions,
+            );
+        }
+
+        if (this.pendingDecisions.length === 0) {
+            this.replayNodes = levelNode.children.find(
+                (child) => child.name === levelNode.name,
+            ) as CharacterTreeDecision | undefined;
+
+            if (this.replayNodes) {
+                return this.progressReplay();
+            }
+        }
+
+        return this.clone();
     }
 
     changePrimaryClass(className: string): void {
@@ -730,7 +836,7 @@ export class Character implements ICharacter {
                 const decision = child as CharacterTreeDecision;
 
                 return decision.type !== CharacterPlannerStep.LEVEL_UP;
-            }) as CharacterTreeNode[];
+            }) as CharacterTreeDecision[];
 
         const effects: GrantableEffect[] = childrenExcludingLevelUps.flatMap(
             (child) =>
@@ -989,7 +1095,6 @@ export class Character implements ICharacter {
         char.pendingDecisions.length = 0;
         char.pendingSteps.length = 0;
         char.root = Character.transformToClassTree(root) as CharacterTreeRoot;
-        char.classData = char.updateClassData();
 
         return char;
     }

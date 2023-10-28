@@ -58,11 +58,16 @@ function renderActionDetails(action: IActionBase) {
         .filter(
             ([key]) => typeof action[key as keyof IActionBase] !== 'undefined',
         )
-        .map(([key, formatter]) =>
+        .map(([key, formatter]) => [
+            key,
             formatter(key, action[key as keyof IActionBase]),
-        )
-        .filter(Boolean)
-        .map((string) => <Typography variant="body2">{string}</Typography>);
+        ])
+        .filter(([, string]) => string)
+        .map(([key, string]) => (
+            <Typography key={key} variant="body2">
+                {string}
+            </Typography>
+        ));
 
     if (details.length === 0) {
         return null;

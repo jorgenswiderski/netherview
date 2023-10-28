@@ -1,41 +1,47 @@
 import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
 import { ISpell } from 'planner-types/src/types/action';
 import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
-import {
-    StaticReferenceHandle,
-    StaticallyReferenceable,
-} from 'planner-types/src/models/static-reference/types';
-import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
 import { SpellStubConstructor } from 'planner-types/src/models/static-reference/stubs';
-import { WeaveApi } from '../../../api/weave/weave';
+import {
+    CompressableRecord,
+    CompressableRecordHandle,
+} from 'planner-types/src/models/compressable-record/types';
+import { RecordCompressor } from 'planner-types/src/models/compressable-record/compressable-record';
 import { CharacterTreeActionBase } from './character-tree-action-base';
+import { WeaveApi } from '../../../api/weave/weave';
 
-let ref: {
-    pool: Map<number, CharacterTreeActionBase>;
-    create: (id: number) => StaticReferenceHandle;
-};
+let compress: (id: number, choiceId: string) => CompressableRecordHandle;
 
 export class CharacterTreeSpell
     extends CharacterTreeActionBase
-    implements StaticallyReferenceable
+    implements CompressableRecord
 {
-    constructor(public action: ISpell) {
+    choiceId: string;
+
+    constructor(
+        public action: ISpell,
+        choiceId: string,
+    ) {
         const type =
             action.level === 0
                 ? CharacterPlannerStep.LEARN_CANTRIPS
                 : CharacterPlannerStep.LEARN_SPELLS;
 
-        super(action, ActionEffectType.SPELL_ACTION, type);
+        super(action, ActionEffectType.SPELL_ACTION, choiceId, type);
+        this.choiceId = choiceId;
     }
 
-    toJSON(): StaticReferenceHandle {
-        return ref.create(this.id);
+    toJSON(): CompressableRecordHandle {
+        return compress(this.id, this.choiceId);
     }
 
-    static async fromId(id: number): Promise<CharacterTreeSpell> {
+    static async decompress(
+        id: number,
+        choiceId: string,
+    ): Promise<CharacterTreeSpell> {
         const spellData = await WeaveApi.spells.getById(id);
 
-        return new CharacterTreeSpell(spellData);
+        return new CharacterTreeSpell(spellData, choiceId);
     }
 }
 
@@ -44,4 +50,4 @@ export class CharacterTreeSpell
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const typeCheck: SpellStubConstructor = CharacterTreeSpell;
 
-ref = StaticReference.registerClass(CharacterTreeSpell, 's2'); // unused
+compress = RecordCompressor.registerClass(CharacterTreeSpell, 1);

@@ -119,7 +119,12 @@ export function EquipmentSlotCard({
                     item={item}
                     disabled={disabled}
                 >
-                    {item && <ItemIcon image={item.image} component="img" />}
+                    {item && (
+                        <ItemIcon
+                            image={WeaveApi.getImagePath(item.image)}
+                            component="img"
+                        />
+                    )}
                     <CardContent />
                 </StyledCard>
             </ItemTooltip>

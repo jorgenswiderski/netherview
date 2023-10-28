@@ -33,12 +33,12 @@ export interface CharacterBackgroundOption extends ICharacterOption {
 export interface ICharacter {
     clone(): ICharacter;
     baseClassData: CharacterClassOption[];
-    classData: ICharacterOption[];
     spellData: ISpell[];
     getTotalAbilityScores(): AbilityScores | null;
     getClassInfo(): CharacterClassInfo[];
     getEquipment(): CharacterEquipment;
     equipItem(slot: EquipmentSlot, item: IEquipmentItem): ICharacter;
+    getCurrentClassData(): ICharacterOption[];
 }
 
 export interface CharacterClassLevelInfo {

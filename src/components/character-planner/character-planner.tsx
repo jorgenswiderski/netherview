@@ -143,6 +143,16 @@ export default function CharacterPlanner({
         }
     }, [character]);
 
+    useEffect(() => {
+        if (
+            character.replayNodes &&
+            character.pendingDecisions.length === 0 &&
+            character.pendingSteps.length === 0
+        ) {
+            setCharacter(character.progressReplay());
+        }
+    }, [character]);
+
     const handleDecision = useCallback(
         (
             decision: IPendingDecision,
