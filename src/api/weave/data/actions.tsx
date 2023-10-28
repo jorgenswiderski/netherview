@@ -1,10 +1,10 @@
 // actions.tsx
 import { IAction } from 'planner-types/src/types/action';
-import { WeaveRouteBase } from './weave-route-base';
+import { WeaveRouteBase } from '../weave-route-base';
 
 export class WeaveActions extends WeaveRouteBase {
     constructor() {
-        super('/actions');
+        super('/data/actions');
     }
 
     get = async (): Promise<IAction[]> => {

@@ -1,9 +1,9 @@
 import { ISpell } from 'planner-types/src/types/action';
-import { WeaveRouteBase } from './weave-route-base';
+import { WeaveRouteBase } from '../weave-route-base';
 
 export class WeaveSpells extends WeaveRouteBase {
     constructor() {
-        super('/spells');
+        super('/data/spells');
     }
 
     get = async (): Promise<ISpell[]> => {

@@ -1,9 +1,9 @@
-import { CharacterBackgroundOption } from '../../models/character/types';
-import { WeaveRouteBase } from './weave-route-base';
+import { CharacterBackgroundOption } from '../../../models/character/types';
+import { WeaveRouteBase } from '../weave-route-base';
 
 export class WeaveBackgrounds extends WeaveRouteBase {
     constructor() {
-        super('/backgrounds');
+        super('/data/backgrounds');
     }
 
     getBackgroundsInfo = async (): Promise<CharacterBackgroundOption[]> => {

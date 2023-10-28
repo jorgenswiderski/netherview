@@ -3,11 +3,11 @@ import {
     IEquipmentItem,
     equipmentSlotTypes,
 } from 'planner-types/src/types/equipment-item';
-import { WeaveRouteBase } from './weave-route-base';
+import { WeaveRouteBase } from '../weave-route-base';
 
 export class WeaveItems extends WeaveRouteBase {
     constructor() {
-        super('/items');
+        super('/data/items');
     }
 
     getEquipmentItemInfo = async (

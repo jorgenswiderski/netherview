@@ -1,10 +1,10 @@
 import { RecordCompressor } from 'planner-types/src/models/compressable-record/compressable-record';
-import { WeaveRouteBase } from './weave-route-base';
-import { CharacterClassOption } from '../../models/character/types';
+import { WeaveRouteBase } from '../weave-route-base';
+import { CharacterClassOption } from '../../../models/character/types';
 
 export class WeaveClasses extends WeaveRouteBase {
     constructor() {
-        super('/classes');
+        super('/data/classes');
     }
 
     getClassesInfo = async (): Promise<CharacterClassOption[]> => {
