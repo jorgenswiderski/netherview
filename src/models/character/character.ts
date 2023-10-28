@@ -297,6 +297,22 @@ export class Character implements ICharacter {
         });
     }
 
+    private filterFeatChoices(choice: ICharacterChoice): ICharacterChoice {
+        assert(choice.type === CharacterPlannerStep.FEAT);
+
+        const feats = this.findAllDecisionsByType(CharacterPlannerStep.FEAT);
+        const featNames = feats.map((feat) => feat.name);
+
+        return {
+            ...choice,
+            options: choice.options.filter(
+                (option) =>
+                    !featNames.includes(option.name) ||
+                    option.name === 'Ability Improvement',
+            ),
+        };
+    }
+
     private updateClassFeatures(
         data: CharacterClassOption[],
     ): ICharacterOption[] {
@@ -313,7 +329,15 @@ export class Character implements ICharacter {
 
             const choices = cls.progression[level].Features.flatMap(
                 (feature) => feature.choices,
-            ).filter(Boolean) as ICharacterChoice[];
+            )
+                .filter(Boolean)
+                .map((choice) => {
+                    if (choice?.type === CharacterPlannerStep.FEAT) {
+                        return this.filterFeatChoices(choice);
+                    }
+
+                    return choice;
+                }) as ICharacterChoice[];
 
             const grants = cls.progression[level].Features.flatMap(
                 (feature) => feature.grants,
