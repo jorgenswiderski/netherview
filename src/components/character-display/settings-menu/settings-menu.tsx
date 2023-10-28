@@ -35,6 +35,7 @@ export default function SettingsMenu({
             .onClick(character);
 
         updateCharacter(newCharacter);
+        handleClose();
     };
 
     return (
