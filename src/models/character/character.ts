@@ -14,8 +14,11 @@ import {
 } from 'planner-types/src/types/grantable-effect';
 import { ISpell } from 'planner-types/src/types/action';
 import {
+    EquipmentItemType,
     EquipmentSlot,
     IEquipmentItem,
+    IWeaponItem,
+    WeaponHandedness,
 } from 'planner-types/src/types/equipment-item';
 import assert from 'assert';
 import {
@@ -46,6 +49,7 @@ import { CharacterTreeEquipmentItem } from './character-tree-node/character-tree
 import { EquipmentItemFactory } from '../items/equipment-item-factory';
 import { CharacterTreeSpell } from './character-tree-node/character-tree-spell';
 import { TreeCompressor } from '../tree-compressor';
+import { WeaponItem } from '../items/weapon-item';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
@@ -790,6 +794,25 @@ export class Character implements ICharacter {
 
         this.root.addChild(node);
 
+        if (
+            slot === EquipmentSlot.MeleeMainhand ||
+            slot === EquipmentSlot.RangedMainhand
+        ) {
+            const offhandNode =
+                equipment[
+                    slot === EquipmentSlot.MeleeMainhand
+                        ? EquipmentSlot.MeleeOffhand
+                        : EquipmentSlot.RangedOffhand
+                ];
+
+            if (
+                offhandNode &&
+                (!this.canUseOffhand(slot) || !this.canDualWield())
+            ) {
+                this.root.removeChild(offhandNode);
+            }
+        }
+
         return this.clone();
     }
 
@@ -1036,6 +1059,74 @@ export class Character implements ICharacter {
         return this.findAllDecisionsByType(type).flatMap(
             (decision) => decision.children!,
         ) as GrantableEffect[];
+    }
+
+    canDualWield(): boolean {
+        const equipment = this.getEquipment();
+        const weaponNode = equipment[EquipmentSlot.MeleeMainhand];
+        const weapon = weaponNode?.item as WeaponItem | undefined;
+
+        return !weapon || this.getDualWieldFilter()(weapon);
+    }
+
+    canUseOffhand(
+        slot: EquipmentSlot.MeleeMainhand | EquipmentSlot.RangedMainhand,
+    ): boolean {
+        const equipment = this.getEquipment();
+        const weaponNode = equipment[slot];
+        const weapon = weaponNode?.item as WeaponItem | undefined;
+
+        return weapon?.handedness !== WeaponHandedness['two-handed'];
+    }
+
+    getFeatByName(featName: string): CharacterTreeDecision | null {
+        return this.root.findNode((node) => {
+            if (node.nodeType !== CharacterTreeNodeType.DECISION) {
+                return false;
+            }
+
+            const decision = node as CharacterTreeDecision;
+
+            return (
+                decision.type === CharacterPlannerStep.FEAT &&
+                featName === decision.name
+            );
+        }) as CharacterTreeDecision | null;
+    }
+
+    private getDualWieldFilter(): (weapon: IWeaponItem) => boolean {
+        if (this.getFeatByName('Dual Wielder')) {
+            return (weapon: IWeaponItem) => !weapon.cantDualWield;
+        }
+
+        return (weapon: IWeaponItem) => weapon.light && !weapon.cantDualWield;
+    }
+
+    getEquipmentSlotFilters(): Record<
+        number,
+        (item: IEquipmentItem) => boolean
+    > {
+        const dwFilter = this.getDualWieldFilter();
+        const canDwMelee = this.canDualWield();
+
+        return {
+            [EquipmentSlot.MeleeOffhand]: (item: IEquipmentItem) =>
+                item.type === EquipmentItemType.Shields ||
+                (canDwMelee && dwFilter(item as IWeaponItem)),
+            [EquipmentSlot.RangedOffhand]: (item) =>
+                dwFilter(item as IWeaponItem),
+        };
+    }
+
+    getEquipmentSlotDisableStatus(): Record<number, boolean> {
+        return {
+            [EquipmentSlot.MeleeOffhand]: !this.canUseOffhand(
+                EquipmentSlot.MeleeMainhand,
+            ),
+            [EquipmentSlot.RangedOffhand]: !this.canUseOffhand(
+                EquipmentSlot.RangedMainhand,
+            ),
+        };
     }
 
     // Import / Export ========================================================

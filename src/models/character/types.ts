@@ -39,6 +39,11 @@ export interface ICharacter {
     getEquipment(): CharacterEquipment;
     equipItem(slot: EquipmentSlot, item: IEquipmentItem): ICharacter;
     getCurrentClassData(): ICharacterOption[];
+    getEquipmentSlotFilters(): Record<
+        EquipmentSlot,
+        (item: IEquipmentItem) => boolean
+    >;
+    getEquipmentSlotDisableStatus(): Record<number, boolean>;
 }
 
 export interface CharacterClassLevelInfo {

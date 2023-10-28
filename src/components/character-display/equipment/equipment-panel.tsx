@@ -3,7 +3,6 @@ import React, { useCallback, useMemo } from 'react';
 import { Typography, Grid, Box } from '@mui/material';
 import styled from '@emotion/styled';
 import {
-    EquipmentItemType,
     EquipmentSlot,
     IEquipmentItem,
 } from 'planner-types/src/types/equipment-item';
@@ -61,25 +60,19 @@ export function EquipmentPanel({
         [character],
     );
 
-    const isSlotDisabled = useCallback(
-        (slot: EquipmentSlot): boolean => {
-            if (slot === EquipmentSlot.RangedOffhand) {
-                return (
-                    typeof items[EquipmentSlot.RangedMainhand] !==
-                        'undefined' &&
-                    items[EquipmentSlot.RangedMainhand].item.type !==
-                        EquipmentItemType['Hand Crossbows']
-                );
-            }
-
-            return false;
-        },
-        [items],
-    );
-
     const equipmentSlots = Object.keys(EquipmentSlot)
         .filter((key) => !Number.isNaN(Number(EquipmentSlot[key as any])))
         .map((key) => EquipmentSlot[key as keyof typeof EquipmentSlot]);
+
+    const slotFilters = useMemo(
+        () => character.getEquipmentSlotFilters(),
+        [character],
+    );
+
+    const disabledSlots = useMemo(
+        () => character.getEquipmentSlotDisableStatus(),
+        [character],
+    );
 
     return (
         <>
@@ -97,7 +90,8 @@ export function EquipmentPanel({
                                         onEquipItem(slot, item)
                                     }
                                     item={items[slot]?.item}
-                                    disabled={isSlotDisabled(slot)}
+                                    disabled={disabledSlots[slot]}
+                                    filter={slotFilters[slot]}
                                 />
                             </StyledGrid>
                         ))}
@@ -111,7 +105,8 @@ export function EquipmentPanel({
                                         onEquipItem(slot, item)
                                     }
                                     item={items[slot]?.item}
-                                    disabled={isSlotDisabled(slot)}
+                                    disabled={disabledSlots[slot]}
+                                    filter={slotFilters[slot]}
                                 />
                             </StyledGrid>
                         ))}
@@ -127,7 +122,8 @@ export function EquipmentPanel({
                                         onEquipItem(slot, item)
                                     }
                                     item={items[slot]?.item}
-                                    disabled={isSlotDisabled(slot)}
+                                    disabled={disabledSlots[slot]}
+                                    filter={slotFilters[slot]}
                                 />
                             </StyledGrid>
                         ))}
@@ -142,7 +138,8 @@ export function EquipmentPanel({
                                         onEquipItem(slot, item)
                                     }
                                     item={items[slot]?.item}
-                                    disabled={isSlotDisabled(slot)}
+                                    disabled={disabledSlots[slot]}
+                                    filter={slotFilters[slot]}
                                 />
                             </StyledGrid>
                         ))}

@@ -169,6 +169,10 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
                                 WeaponHandedness.versatile && (
                                 <Typography>Versatile</Typography>
                             )}
+                            {weapon.handedness ===
+                                WeaponHandedness['two-handed'] && (
+                                <Typography>Two-Handed</Typography>
+                            )}
                         </WeaponPropertiesBox>
                     )}
                 </Box>

@@ -41,12 +41,28 @@ const StyledCard = styled(Card, {
     width: 48px;
     height: 48px;
     position: relative;
-    cursor: pointer;
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
 
-    border: ${({ item }) => (item ? '1px solid' : 'none')};
-    border-color: ${({ color }) => color};
-    box-shadow: ${({ item, color }) => (item ? `0 0 2px ${color}` : 'none')};
+    border: ${({ item, disabled }) =>
+        item || disabled ? '1px solid' : 'none'};
+    border-color: ${({ color, disabled }) => (disabled ? '#111' : color)};
+    box-shadow: ${({ item, disabled, color }) =>
+        item || disabled ? `0 0 2px ${color}` : 'none'};
     opacity: ${({ disabled }) => (disabled ? '0.6' : '1.0')};
+
+    ${({ disabled }) =>
+        disabled &&
+        `
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, transparent 49.5%, #444 49.5%, #444 50.5%, transparent 50.5%);
+        }
+    `}
 `;
 
 const ItemIcon = styled(CardMedia)<CardMediaProps>`
@@ -62,6 +78,7 @@ interface EquipmentSlotCardProps {
     onEquipItem: (item: IEquipmentItem) => void;
     item?: IEquipmentItem;
     disabled?: boolean;
+    filter?: (item: IEquipmentItem) => boolean;
 }
 
 export function EquipmentSlotCard({
@@ -69,6 +86,7 @@ export function EquipmentSlotCard({
     onEquipItem,
     item,
     disabled = false,
+    filter,
 }: EquipmentSlotCardProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [items, setItems] = useState<IEquipmentItem[]>([]);
@@ -90,10 +108,13 @@ export function EquipmentSlotCard({
     };
 
     const filteredItems = useMemo(() => {
+        // Remove unequippable items (eg 2handers in the offhand, etc)
+        const prefilteredItems = filter ? items.filter(filter) : items;
+
         // Filter items when searchInput changes
         const lowercasedInput = searchInput.toLowerCase();
 
-        return items.filter(
+        return prefilteredItems.filter(
             (itemOption) =>
                 itemOption?.name?.toLowerCase().includes(lowercasedInput) ||
                 itemOption?.description
