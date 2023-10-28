@@ -1,4 +1,4 @@
-import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
+import { RecordCompressor } from 'planner-types/src/models/compressable-record/compressable-record';
 import { WeaveRouteBase } from './weave-route-base';
 import { CharacterClassOption } from '../../models/character/types';
 
@@ -10,6 +10,6 @@ export class WeaveClasses extends WeaveRouteBase {
     getClassesInfo = async (): Promise<CharacterClassOption[]> => {
         const data = await this.fetchFromApi('/');
 
-        return StaticReference.parseAllValues(data);
+        return RecordCompressor.parseAllValues(data);
     };
 }

@@ -45,3 +45,4 @@ export class CharacterTreeAction
 const typeCheck: ActionStubConstructor = CharacterTreeAction;
 
 compress = RecordCompressor.registerClass(CharacterTreeAction, 2);
+export const initCharacterTreeActionCompressor = () => compress;

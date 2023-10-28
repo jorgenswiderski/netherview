@@ -43,7 +43,7 @@ export class PendingDecision implements IPendingDecision, ICharacterChoice {
         this.id = PendingDecision.generateUuid(
             type,
             parent?.name,
-            (parent as any).type,
+            (parent as any)?.type,
         );
     }
 

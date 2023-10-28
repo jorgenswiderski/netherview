@@ -8,9 +8,11 @@ import { CharacterClassOption } from '../models/character/types';
 import { CharacterPlannerLoader } from '../components/character-planner/loader';
 import { initCharacterTreeActionEffectRef } from '../models/character/character-tree-node/character-tree-action-effect';
 import { initCharacterTreeSpellEffectRef } from '../models/character/character-tree-node/character-tree-spell-effect';
+import { initCharacterTreeActionCompressor } from '../models/character/character-tree-node/character-tree-action';
 
 initCharacterTreeActionEffectRef();
 initCharacterTreeSpellEffectRef();
+initCharacterTreeActionCompressor();
 
 const PageContainer = styled.div`
     display: flex;
