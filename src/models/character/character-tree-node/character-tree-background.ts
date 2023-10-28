@@ -3,6 +3,7 @@ import {
     StaticallyReferenceable,
 } from 'planner-types/src/models/static-reference/types';
 import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
+import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
 import { CharacterTreeDecision, CharacterTreeEffect } from './character-tree';
 import { CharacterBackgroundOption } from '../types';
 import { WeaveApi } from '../../../api/weave/weave';
@@ -22,6 +23,7 @@ export class CharacterTreeBackground
         const { grants, ...rest } = background;
 
         const option = {
+            type: CharacterPlannerStep.SET_BACKGROUND,
             ...rest,
         };
 
