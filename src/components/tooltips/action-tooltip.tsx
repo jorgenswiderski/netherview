@@ -142,6 +142,30 @@ export function ActionTooltip({ action, children }: ActionTooltipProps) {
                         />
                     )}
 
+                    {action.areaTurnStartDamage &&
+                        action.areaTurnStartDamageType && (
+                            <DamageText
+                                damages={[
+                                    [
+                                        action.areaTurnStartDamage,
+                                        action.areaTurnStartDamageType,
+                                    ],
+                                ]}
+                            />
+                        )}
+
+                    {action.areaTurnEndDamage &&
+                        action.areaTurnEndDamageType && (
+                            <DamageText
+                                damages={[
+                                    [
+                                        action.areaTurnEndDamage,
+                                        action.areaTurnEndDamageType,
+                                    ],
+                                ]}
+                            />
+                        )}
+
                     <Typography variant="body2">
                         {action.description}
                     </Typography>
