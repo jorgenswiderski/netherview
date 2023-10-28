@@ -13,10 +13,10 @@ import styled from '@emotion/styled';
 import { darken, useTheme } from '@mui/system';
 import { alpha } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
-import { DamageType } from 'planner-types/src/types/damage';
 import { ItemColors } from '../../models/items/types';
 import { Utils } from '../../models/utils';
 import { BaseTooltip } from './base-tooltip';
+import { DamageText } from '../damage-text';
 
 const GradientBox = styled(Box)<{ gradient: string }>`
     display: flex;
@@ -102,17 +102,13 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
                         {Utils.toProperCase(ItemRarity[item.rarity])}
                     </Typography>
                     {weapon && (
-                        <>
-                            <Typography>
-                                {weapon.damage} {DamageType[weapon.damageType]}
-                            </Typography>
-                            {weapon.extraDamage && (
-                                <Typography>+{weapon.extraDamage}</Typography>
-                            )}
-                            {weapon.extraDamage2 && (
-                                <Typography>+{weapon.extraDamage2}</Typography>
-                            )}
-                        </>
+                        <DamageText
+                            damages={[
+                                [weapon.damage, weapon.damageType],
+                                weapon.extraDamage,
+                                weapon.extraDamage2,
+                            ]}
+                        />
                     )}
                 </GradientBox>
             }

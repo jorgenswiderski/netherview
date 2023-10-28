@@ -9,10 +9,10 @@ import {
 } from 'planner-types/src/types/action';
 import styled from '@emotion/styled';
 import { AbilityScore } from 'planner-types/src/types/ability';
-import { DamageType } from 'planner-types/src/types/damage';
 import { BaseTooltip } from './base-tooltip';
 import { Utils } from '../../models/utils';
 import { WeaveApi } from '../../api/weave/weave';
+import { DamageText } from '../damage-text';
 
 const ConditionBox = styled(Box)`
     display: flex;
@@ -131,26 +131,15 @@ export function ActionTooltip({ action, children }: ActionTooltipProps) {
             quote={
                 <>
                     {action.damageType && (
-                        <>
-                            {action.damage && (
-                                <Typography variant="body1" ml={1}>
-                                    {`${action.damage} ${
-                                        DamageType[action.damageType]
-                                    }`}
-                                </Typography>
-                            )}
-
-                            {action.extraDamage && (
-                                <Typography variant="body1" ml={1}>
-                                    {`+${action.extraDamage} ${
-                                        DamageType[
-                                            action.extraDamageType ??
-                                                action.damageType
-                                        ]
-                                    }`}
-                                </Typography>
-                            )}
-                        </>
+                        <DamageText
+                            damages={[
+                                [action.damage, action.damageType],
+                                [
+                                    action.extraDamage,
+                                    action.extraDamageType ?? action.damageType,
+                                ],
+                            ]}
+                        />
                     )}
 
                     <Typography variant="body2">
