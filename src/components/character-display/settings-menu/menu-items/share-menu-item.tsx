@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import ShareIcon from '@mui/icons-material/Share';
+import SaveIcon from '@mui/icons-material/Save';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -8,12 +9,12 @@ import Button from '@mui/material/Button';
 import Input from '@mui/material/Input';
 import { Box, Paper, Typography } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import Snackbar from '@mui/material/Snackbar';
 import { WeaveApi } from '../../../../api/weave/weave';
 import { Character } from '../../../../models/character/character';
 import BaseMenuItem from '../base-menu-item';
 import { useCharacter } from '../../../../context/character-context/character-context';
 import { CONFIG } from '../../../../models/config';
+import { useNotification } from '../../../../context/notification-context/notification-context';
 
 interface ShareMenuItemProps {
     handleClose: () => void;
@@ -22,10 +23,11 @@ interface ShareMenuItemProps {
 export function ShareMenuItem({
     handleClose: handleCloseMenu,
 }: ShareMenuItemProps) {
-    const { character, setBuild } = useCharacter();
+    const { character, setBuild, build } = useCharacter();
+    const { showNotification } = useNotification();
+
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [sharedUrl, setSharedUrl] = useState('');
-    const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
@@ -33,10 +35,10 @@ export function ShareMenuItem({
 
     const handleCopyToClipboard = () => {
         navigator.clipboard.writeText(sharedUrl);
-        setIsSnackbarOpen(true);
+        showNotification('Link copied to clipboard!');
     };
 
-    const onClick = async () => {
+    const handleShareOrUpdate = async () => {
         if (!character.canExport()) {
             return;
         }
@@ -50,13 +52,37 @@ export function ShareMenuItem({
             character.spellData,
         );
 
-        const buildId = await WeaveApi.builds.create(encodedData, buildVersion);
-        setBuild({ id: buildId, encoded: encodedData, version: buildVersion });
+        try {
+            let buildId;
 
-        const url = `${CONFIG.BASE_URL}/share/${buildId}`;
-        setSharedUrl(url);
-        setIsDialogOpen(true);
-        handleCloseMenu();
+            if (build?.id) {
+                await WeaveApi.builds.update(
+                    build.id,
+                    encodedData,
+                    buildVersion,
+                );
+
+                buildId = build.id;
+                showNotification('Build updated successfully!');
+            } else {
+                buildId = await WeaveApi.builds.create(
+                    encodedData,
+                    buildVersion,
+                );
+
+                const url = `${CONFIG.BASE_URL}/share/${buildId}`;
+                setSharedUrl(url);
+                setIsDialogOpen(true);
+            }
+
+            setBuild({
+                id: buildId,
+                encoded: encodedData,
+                version: buildVersion,
+            });
+        } catch (err) {
+            showNotification('An unexpected error occurred');
+        }
     };
 
     const disabled = useMemo(() => !character.canExport(), [character]);
@@ -65,56 +91,56 @@ export function ShareMenuItem({
         <>
             <BaseMenuItem
                 handleClose={handleCloseMenu}
-                label="Share"
-                onClick={onClick}
+                label={build?.id ? 'Save' : 'Share'}
+                onClick={handleShareOrUpdate}
                 disabled={disabled}
-                icon={<ShareIcon />}
+                icon={build?.id ? <SaveIcon /> : <ShareIcon />}
             />
-            <Dialog open={isDialogOpen} onClose={handleCloseDialog} fullWidth>
-                <DialogTitle>Share your Build</DialogTitle>
-                <DialogContent sx={{ minWidth: 500, padding: 3 }}>
-                    <Paper elevation={2} sx={{ padding: '1rem' }}>
-                        <Typography variant="body2" sx={{ marginBottom: 2 }}>
-                            Use the link below to share your character build
-                            with others!
-                        </Typography>
-                        <Paper elevation={3} sx={{ marginBottom: 2 }}>
-                            <Input
-                                value={sharedUrl}
-                                fullWidth
-                                readOnly
-                                sx={{ fontSize: '0.875rem' }}
-                                onClick={handleCopyToClipboard}
-                            />
-                        </Paper>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <InfoIcon color="info" sx={{ marginRight: 1 }} />
-                            <Typography variant="body2">
-                                You can update the shared build at any time by
-                                selecting the &quot;Save&quot; option from the
-                                menu.
+
+            {isDialogOpen && (
+                <Dialog
+                    open={isDialogOpen}
+                    onClose={handleCloseDialog}
+                    fullWidth
+                >
+                    <DialogTitle>Share your Build</DialogTitle>
+                    <DialogContent sx={{ minWidth: 500, padding: 3 }}>
+                        <Paper elevation={2} sx={{ padding: '1rem' }}>
+                            <Typography
+                                variant="body2"
+                                sx={{ marginBottom: 2 }}
+                            >
+                                Use the link below to share your character build
+                                with others!
                             </Typography>
-                        </Box>
-                    </Paper>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCopyToClipboard}>Copy</Button>
-                    <Button onClick={handleCloseDialog}>Close</Button>
-                </DialogActions>
-
-                <Snackbar
-                    open={isSnackbarOpen}
-                    autoHideDuration={5000}
-                    onClose={(event, reason) => {
-                        if (reason === 'clickaway') {
-                            return;
-                        }
-
-                        setIsSnackbarOpen(false);
-                    }}
-                    message="Link copied to clipboard!"
-                />
-            </Dialog>
+                            <Paper elevation={3} sx={{ marginBottom: 2 }}>
+                                <Input
+                                    value={sharedUrl}
+                                    fullWidth
+                                    readOnly
+                                    sx={{ fontSize: '0.875rem' }}
+                                    onClick={handleCopyToClipboard}
+                                />
+                            </Paper>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <InfoIcon
+                                    color="info"
+                                    sx={{ marginRight: 1 }}
+                                />
+                                <Typography variant="body2">
+                                    You can update the shared build at any time
+                                    by selecting the &quot;Save&quot; option
+                                    from the menu.
+                                </Typography>
+                            </Box>
+                        </Paper>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCopyToClipboard}>Copy</Button>
+                        <Button onClick={handleCloseDialog}>Close</Button>
+                    </DialogActions>
+                </Dialog>
+            )}
         </>
     );
 }

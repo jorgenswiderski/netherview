@@ -17,8 +17,8 @@ function BaseMenuItem({
     icon,
 }: BaseMenuItemProps) {
     const handleClick = async () => {
-        await onClick();
         handleClose();
+        await onClick();
     };
 
     return (

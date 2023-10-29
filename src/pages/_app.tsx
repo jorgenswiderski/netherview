@@ -14,6 +14,7 @@ import { GameDataProvider } from '../context/game-data-context/game-data-context
 import { initCharacterTreeActionCompressor } from '../models/character/character-tree-node/character-tree-action';
 import { initCharacterTreeActionEffectRef } from '../models/character/character-tree-node/character-tree-action-effect';
 import { initCharacterTreeSpellEffectRef } from '../models/character/character-tree-node/character-tree-spell-effect';
+import { NotificationProvider } from '../context/notification-context/notification-context';
 
 initCharacterTreeActionEffectRef();
 initCharacterTreeSpellEffectRef();
@@ -24,7 +25,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ThemeProvider theme={theme}>
             <GameDataProvider>
                 <CharacterProvider>
-                    <Component {...pageProps} />
+                    <NotificationProvider>
+                        <Component {...pageProps} />
+                    </NotificationProvider>
                 </CharacterProvider>
             </GameDataProvider>
         </ThemeProvider>
