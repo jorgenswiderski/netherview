@@ -15,6 +15,7 @@ import BaseMenuItem from '../base-menu-item';
 import { useCharacter } from '../../../../context/character-context/character-context';
 import { CONFIG } from '../../../../models/config';
 import { useNotification } from '../../../../context/notification-context/notification-context';
+import { PACKAGE_VERSION } from '../../../../../version';
 
 interface ShareMenuItemProps {
     handleClose: () => void;
@@ -44,7 +45,6 @@ export function ShareMenuItem({
         }
 
         const encodedData = await character.export();
-        const buildVersion = '1.0.0'; // FIXME
 
         await Character.import(
             encodedData,
@@ -59,7 +59,7 @@ export function ShareMenuItem({
                 await WeaveApi.builds.update(
                     build.id,
                     encodedData,
-                    buildVersion,
+                    PACKAGE_VERSION,
                 );
 
                 buildId = build.id;
@@ -67,7 +67,7 @@ export function ShareMenuItem({
             } else {
                 buildId = await WeaveApi.builds.create(
                     encodedData,
-                    buildVersion,
+                    PACKAGE_VERSION,
                 );
 
                 const url = `${CONFIG.BASE_URL}/share/${buildId}`;
@@ -78,7 +78,7 @@ export function ShareMenuItem({
             setBuild({
                 id: buildId,
                 encoded: encodedData,
-                version: buildVersion,
+                version: PACKAGE_VERSION,
             });
         } catch (err) {
             showNotification('An unexpected error occurred');
