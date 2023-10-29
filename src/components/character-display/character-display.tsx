@@ -1,13 +1,12 @@
 import React, { useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Paper } from '@mui/material';
-import { Character } from '../../models/character/character';
 import AbilityScoresTable from './ability-scores';
 import { CharacterEffects } from './character-effects';
 import { CharacterHeader } from './character-header';
 import { EquipmentPanel } from './equipment/equipment-panel';
 import CharacterBackground from './character-background';
-import { ICharacter } from '../../models/character/types';
+import { useCharacter } from '../../context/character-context/character-context';
 
 const PaperContainer = styled(Paper)`
     display: flex;
@@ -64,15 +63,9 @@ const RightSection = styled.div`
     height: 100%;
 `;
 
-interface CharacterDisplayProps {
-    character: Character;
-    onCharacterChanged: (character: ICharacter) => void;
-}
+export default function CharacterDisplay() {
+    const { character } = useCharacter();
 
-export default function CharacterDisplay({
-    character,
-    onCharacterChanged,
-}: CharacterDisplayProps) {
     const abilityScores = useMemo(
         () => character.getTotalAbilityScores(),
         [character],
@@ -82,7 +75,7 @@ export default function CharacterDisplay({
 
     return (
         <PaperContainer>
-            <CharacterHeader character={character} />
+            <CharacterHeader />
 
             <ContentSection>
                 <LeftSection>
@@ -93,15 +86,12 @@ export default function CharacterDisplay({
                         <CharacterBackground background={background} />
                     )}
                     <StyledPaper elevation={2}>
-                        <EquipmentPanel
-                            character={character}
-                            onCharacterChanged={onCharacterChanged}
-                        />
+                        <EquipmentPanel />
                     </StyledPaper>
                 </LeftSection>
 
                 <RightSection>
-                    <CharacterEffects character={character} />
+                    <CharacterEffects />
                 </RightSection>
             </ContentSection>
         </PaperContainer>

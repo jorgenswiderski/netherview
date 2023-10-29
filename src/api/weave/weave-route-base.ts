@@ -1,5 +1,5 @@
 // weave-route-base.ts
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { CONFIG } from '../../models/config';
 
 type ItemWithId = { id: number };
@@ -7,23 +7,46 @@ type ItemWithId = { id: number };
 export class WeaveRouteBase {
     constructor(protected baseRoute: string) {}
 
-    async fetchFromApi(endpoint: string) {
+    async fetchFromApi(
+        endpoint: string,
+        config: AxiosRequestConfig = { method: 'GET' },
+    ) {
         try {
-            const response = await axios.get(
-                `${CONFIG.WEAVE.API_URL}${this.baseRoute}${endpoint}`,
-            );
+            const response = await axios({
+                url: `${CONFIG.WEAVE.API_URL}${this.baseRoute}${endpoint}`,
+                ...config,
+            });
 
             return response.data;
         } catch (error) {
-            // Check if the error is an Axios error
-            if (axios.isAxiosError(error) && error.response) {
+            if (axios.isAxiosError(error)) {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    throw new Error(
+                        `Failed to fetch from API. Status: ${
+                            error.response.status
+                        }, Data: ${JSON.stringify(error.response.data)}`,
+                    );
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    throw new Error(
+                        'The request was made but no response was received',
+                    );
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    throw new Error(
+                        `Error in setting up the request: ${error.message}`,
+                    );
+                }
+            } else {
+                // If the error is not an Axios error or any other unknown error
                 throw new Error(
-                    `Failed to fetch from API. Status: ${error.response.status}`,
+                    `Unknown error: ${
+                        error instanceof Error ? error.message : error
+                    }`,
                 );
             }
-
-            // If the error is not an Axios error or any other unknown error
-            throw error;
         }
     }
 

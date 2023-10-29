@@ -1,24 +1,11 @@
+// settings-menu.tsx
 import React, { useState } from 'react';
-import {
-    IconButton,
-    Menu,
-    MenuItem,
-    ListItemIcon,
-    ListItemText,
-} from '@mui/material';
+import { IconButton, Menu } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Character } from '../../../models/character/character';
-import { settingsMenuOptions } from './options';
+import { ShareMenuItem } from './menu-items/share-menu-item';
+import { ManageLevelsMenuItem } from './menu-items/manage-levels-menu-item';
 
-interface SettingsMenuProps {
-    character: Character;
-    updateCharacter: (character: Character) => void;
-}
-
-export default function SettingsMenu({
-    character,
-    updateCharacter,
-}: SettingsMenuProps) {
+export default function SettingsMenu() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -27,15 +14,6 @@ export default function SettingsMenu({
 
     const handleClose = () => {
         setAnchorEl(null);
-    };
-
-    const handleMenuItemClick = (label: string) => {
-        const newCharacter = settingsMenuOptions
-            .find((option) => option.label === label)!
-            .onClick(character);
-
-        updateCharacter(newCharacter);
-        handleClose();
     };
 
     return (
@@ -50,26 +28,8 @@ export default function SettingsMenu({
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {settingsMenuOptions
-                    .filter(
-                        (option) =>
-                            typeof option.hidden === 'undefined' ||
-                            !option.hidden(character),
-                    )
-                    .map((option) => (
-                        <MenuItem
-                            key={option.label}
-                            onClick={() => handleMenuItemClick(option.label)}
-                            disabled={
-                                option.disabled && option.disabled(character)
-                            }
-                        >
-                            <ListItemIcon>
-                                {/* You can add an icon here if you wish */}
-                            </ListItemIcon>
-                            <ListItemText primary={option.label} />
-                        </MenuItem>
-                    ))}
+                <ShareMenuItem handleClose={handleClose} />
+                <ManageLevelsMenuItem handleClose={handleClose} />
             </Menu>
         </>
     );

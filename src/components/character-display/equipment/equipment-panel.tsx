@@ -7,7 +7,7 @@ import {
     IEquipmentItem,
 } from 'planner-types/src/types/equipment-item';
 import { EquipmentSlotCard } from './equipment-slot';
-import { ICharacter } from '../../../models/character/types';
+import { useCharacter } from '../../../context/character-context/character-context';
 
 const MainContainer = styled(Box)`
     display: flex;
@@ -41,21 +41,15 @@ const StyledGrid = styled(Grid)`
     margin: 8px;
 `;
 
-interface EquipmentPanelProps {
-    character: ICharacter;
-    onCharacterChanged: (character: ICharacter) => void;
-}
+export function EquipmentPanel() {
+    const { character, setCharacter } = useCharacter();
 
-export function EquipmentPanel({
-    character,
-    onCharacterChanged,
-}: EquipmentPanelProps) {
     const items = useMemo(() => character.getEquipment(), [character]);
 
     const onEquipItem = useCallback(
         (slot: EquipmentSlot, item: IEquipmentItem) => {
             const newCharacter = character.equipItem(slot, item);
-            onCharacterChanged(newCharacter);
+            setCharacter(newCharacter);
         },
         [character],
     );

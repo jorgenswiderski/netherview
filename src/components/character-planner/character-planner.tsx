@@ -1,9 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { BeatLoader } from 'react-spinners';
 import styled from '@emotion/styled';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import { useRouter } from 'next/router';
-import { Box, Button, Paper, Typography, Alert } from '@mui/material';
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Paper,
+    Typography,
+} from '@mui/material';
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
@@ -13,9 +18,8 @@ import FeaturePicker from './feature-picker/feature-picker';
 import CharacterDisplay from '../character-display/character-display';
 import TreeVisualization from '../tree-visualization';
 import SettingsMenu from '../character-display/settings-menu/settings-menu';
-import { error } from '../../models/logger';
-import { CONFIG } from '../../models/config';
 import { LevelUp } from './level-up';
+import { useCharacter } from '../../context/character-context/character-context';
 
 const Container = styled(Box)`
     display: flex;
@@ -107,18 +111,12 @@ interface CharacterPlannerProps {
     character: Character;
 }
 
-export default function CharacterPlanner({
-    character: initialCharacter,
-}: CharacterPlannerProps) {
+export default function CharacterPlanner({ character }: CharacterPlannerProps) {
     const router = useRouter();
+    const { build, setCharacter } = useCharacter();
 
     const [isTreeVisible, setIsTreeVisible] = useState(false);
     const [loading] = useState(false);
-    const [exportOverflow, setExportOverflow] = useState<number | null>(null);
-
-    const [character, setCharacter] = useState<Character>(
-        () => initialCharacter,
-    );
 
     const nextDecision = useMemo(
         () => character.pendingDecisions[0],
@@ -170,39 +168,15 @@ export default function CharacterPlanner({
     }, [character]);
 
     useEffect(() => {
-        if (!CONFIG.EXPORT_ENABLED) {
-            return;
+        if (build?.id) {
+            router.push('/', `/share/${build.id}`, {
+                shallow: true,
+            });
         }
-
-        async function updateUrl() {
-            const exportStr = await character.export();
-
-            setExportOverflow(
-                exportStr.length > 2000 ? exportStr.length : null,
-            );
-
-            router.replace(
-                { pathname: router.pathname },
-                { pathname: `/b/${exportStr}` },
-                {
-                    shallow: true,
-                },
-            );
-        }
-
-        if (character.canExport()) {
-            updateUrl().catch(error);
-        } else if (character.pendingSteps.length > 0) {
-            setExportOverflow(null);
-
-            router.replace({ pathname: '/' }, undefined, { shallow: true });
-        }
-    }, [character]);
+    }, [build?.id]);
 
     const handleReset = () => {
-        setCharacter(
-            new Character(character.baseClassData, character.spellData),
-        );
+        router.reload();
     };
 
     const renderDecisionPanel = () => {
@@ -227,7 +201,18 @@ export default function CharacterPlanner({
             (character.pendingDecisions.length === 0 &&
                 character.pendingSteps.length)
         ) {
-            return <BeatLoader />;
+            return (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100vh',
+                    }}
+                >
+                    <CircularProgress />
+                </Box>
+            );
         }
 
         return (
@@ -257,23 +242,7 @@ export default function CharacterPlanner({
     return (
         <>
             <ButtonBox>
-                {exportOverflow !== null && (
-                    <Alert
-                        severity="warning"
-                        sx={{
-                            paddingLeft: '1rem',
-                            flex: 1,
-                            zIndex: 1200,
-                        }}
-                    >
-                        Export data is too large ({exportOverflow} characters).
-                        Some features might not work as expected.
-                    </Alert>
-                )}
-                <StyledSettingsMenu
-                    character={character}
-                    updateCharacter={setCharacter}
-                />
+                <StyledSettingsMenu />
                 <DevButton
                     variant="contained"
                     color="primary"
@@ -296,12 +265,7 @@ export default function CharacterPlanner({
                 <Container>
                     {character.root.children && // FIXME
                         character.root.children.length > 1 && (
-                            <CharacterDisplay
-                                character={character}
-                                onCharacterChanged={(char) =>
-                                    setCharacter(char as Character)
-                                }
-                            />
+                            <CharacterDisplay />
                         )}
 
                     <PlannerContainer>{renderDecisionPanel()}</PlannerContainer>

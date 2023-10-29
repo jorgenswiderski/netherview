@@ -1,18 +1,10 @@
 // index.tsx
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import { BeatLoader } from 'react-spinners';
-import { ISpell } from 'planner-types/src/types/action';
-import { WeaveApi } from '../api/weave/weave';
-import { CharacterClassOption } from '../models/character/types';
-import { CharacterPlannerLoader } from '../components/character-planner/loader';
-import { initCharacterTreeActionEffectRef } from '../models/character/character-tree-node/character-tree-action-effect';
-import { initCharacterTreeSpellEffectRef } from '../models/character/character-tree-node/character-tree-spell-effect';
-import { initCharacterTreeActionCompressor } from '../models/character/character-tree-node/character-tree-action';
-
-initCharacterTreeActionEffectRef();
-initCharacterTreeSpellEffectRef();
-initCharacterTreeActionCompressor();
+import { Box } from '@mui/material';
+import { useCharacter } from '../context/character-context/character-context';
+import CharacterPlanner from '../components/character-planner/character-planner';
 
 const PageContainer = styled.div`
     display: flex;
@@ -35,30 +27,28 @@ const PageContainer = styled.div`
     }
 `;
 
-interface HomePageProps {
-    importStr?: string;
-}
+const CenteredBox = styled(Box)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+`;
 
-export default function HomePage({ importStr }: HomePageProps) {
-    const [classData, setClassData] = useState<CharacterClassOption[] | null>();
-    const [spellData, setSpellData] = useState<ISpell[] | null>();
+export default function HomePage() {
+    const { character } = useCharacter();
 
-    useEffect(() => {
-        WeaveApi.classes.getClassesInfo().then((data) => setClassData(data));
-        WeaveApi.spells.get().then((data) => setSpellData(data));
-    }, []);
+    if (!character) {
+        return (
+            <CenteredBox>
+                <BeatLoader />
+            </CenteredBox>
+        );
+    }
 
     return (
         <PageContainer>
-            {!classData || !spellData ? (
-                <BeatLoader />
-            ) : (
-                <CharacterPlannerLoader
-                    classData={classData}
-                    spellData={spellData}
-                    importStr={importStr}
-                />
-            )}
+            <CharacterPlanner character={character} />
         </PageContainer>
     );
 }

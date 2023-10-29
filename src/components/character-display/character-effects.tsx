@@ -2,10 +2,10 @@ import React, { useMemo } from 'react';
 import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
 import styled from '@emotion/styled';
 import { Box } from '@mui/material';
-import { Character } from '../../models/character/character';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { CollapsibleSection } from './collapsible-section';
 import { CharacterTreeActionBaseEffect } from '../../models/character/character-tree-node/character-tree-action-base-effect';
+import { useCharacter } from '../../context/character-context/character-context';
 
 const ItemBox = styled(Box)`
     display: flex;
@@ -13,11 +13,9 @@ const ItemBox = styled(Box)`
     gap: 4px;
 `;
 
-interface CharacterEffectsProps {
-    character: Character;
-}
+export function CharacterEffects() {
+    const { character } = useCharacter();
 
-export function CharacterEffects({ character }: CharacterEffectsProps) {
     const spells: CharacterTreeActionBaseEffect[] = useMemo(() => {
         return character
             .getActions()

@@ -1,4 +1,5 @@
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
+import { SharedUtils } from 'planner-types/src/models/utils';
 import { WeaveApi } from '../api/weave/weave';
 
 type Difference = {
@@ -7,7 +8,7 @@ type Difference = {
     value2: any;
 };
 
-export class Utils {
+export class Utils extends SharedUtils {
     static textShadow = `text-shadow:
     -1px -1px 0px black,
     1px -1px 0px black,

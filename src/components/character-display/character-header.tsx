@@ -1,14 +1,12 @@
 import React, { useMemo } from 'react';
 import { Paper, Box, Typography } from '@mui/material';
-import { Character } from '../../models/character/character';
 import { CharacterClassInfo } from '../../models/character/types';
 import { WeaveApi } from '../../api/weave/weave';
+import { useCharacter } from '../../context/character-context/character-context';
 
-interface CharacterHeaderProps {
-    character: Character;
-}
+export function CharacterHeader() {
+    const { character } = useCharacter();
 
-export function CharacterHeader({ character }: CharacterHeaderProps) {
     const imageName = useMemo(() => {
         const classes = character.getClassInfo();
         const highestLevelClass = classes.sort(
