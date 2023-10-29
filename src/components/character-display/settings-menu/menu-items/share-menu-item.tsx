@@ -30,6 +30,12 @@ export function ShareMenuItem({
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [sharedUrl, setSharedUrl] = useState('');
 
+    const disabled = useMemo(() => !character.canExport(), [character]);
+
+    if (build?.id && !build.mayEdit) {
+        return null;
+    }
+
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
     };
@@ -79,13 +85,12 @@ export function ShareMenuItem({
                 id: buildId,
                 encoded: encodedData,
                 version: PACKAGE_VERSION,
+                mayEdit: true,
             });
         } catch (err) {
             showNotification('An unexpected error occurred');
         }
     };
-
-    const disabled = useMemo(() => !character.canExport(), [character]);
 
     return (
         <>
