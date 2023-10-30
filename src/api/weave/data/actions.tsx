@@ -1,5 +1,5 @@
 // actions.tsx
-import { IAction } from 'planner-types/src/types/action';
+import { IAction } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { WeaveRouteBase } from '../weave-route-base';
 
 export class WeaveActions extends WeaveRouteBase {

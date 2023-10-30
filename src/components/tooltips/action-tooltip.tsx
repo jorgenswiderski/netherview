@@ -6,9 +6,9 @@ import {
     ActionSchool,
     ActionResource,
     IActionBase,
-} from 'planner-types/src/types/action';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import styled from '@emotion/styled';
-import { AbilityScore } from 'planner-types/src/types/ability';
+import { AbilityScore } from '@jorgenswiderski/tomekeeper-shared/dist/types/ability';
 import { BaseTooltip } from './base-tooltip';
 import { Utils } from '../../models/utils';
 import { DamageText } from '../damage-text';

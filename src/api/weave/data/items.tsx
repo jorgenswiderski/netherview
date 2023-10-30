@@ -2,7 +2,7 @@ import {
     EquipmentSlot,
     IEquipmentItem,
     equipmentSlotTypes,
-} from 'planner-types/src/types/equipment-item';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import { WeaveRouteBase } from '../weave-route-base';
 
 export class WeaveItems extends WeaveRouteBase {

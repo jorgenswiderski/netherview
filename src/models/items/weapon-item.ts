@@ -4,10 +4,10 @@ import {
     WeaponHandedness,
     WeaponRange,
     WeaponRangeType,
-} from 'planner-types/src/types/equipment-item';
-import { DamageType } from 'planner-types/src/types/damage';
-import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
-import { StaticReferenceHandle } from 'planner-types/src/models/static-reference/types';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
+import { DamageType } from '@jorgenswiderski/tomekeeper-shared/dist/types/damage';
+import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
+import { StaticReferenceHandle } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
 import { EquipmentItem } from './equipment-item';
 import { WeaveApi } from '../../api/weave/weave';
 

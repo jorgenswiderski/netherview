@@ -1,10 +1,10 @@
-import { EquipmentSlot } from 'planner-types/src/types/equipment-item';
-import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
-import { RecordCompressor } from 'planner-types/src/models/compressable-record/compressable-record';
+import { EquipmentSlot } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
+import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
+import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/compressable-record';
 import {
     CompressableRecordHandle,
     CompressableRecord,
-} from 'planner-types/src/models/compressable-record/types';
+} from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/types';
 import { CharacterTreeDecision, CharacterTreeEffect } from './character-tree';
 import { ICharacterTreeEquipmentItem } from '../../items/types';
 import { EquipmentItem } from '../../items/equipment-item';

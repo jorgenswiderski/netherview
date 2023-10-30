@@ -16,7 +16,7 @@ import {
     EquipmentSlot,
     IEquipmentItem,
     ItemRarity,
-} from 'planner-types/src/types/equipment-item';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import { BeatLoader } from 'react-spinners';
 import { WeaveApi } from '../../../api/weave/weave';
 import { error } from '../../../models/logger';

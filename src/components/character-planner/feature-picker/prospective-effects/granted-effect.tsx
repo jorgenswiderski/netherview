@@ -3,7 +3,7 @@ import {
     GrantableEffect,
     GrantableEffectType,
     IActionEffect,
-} from 'planner-types/src/types/grantable-effect';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import EffectBase from './effect-base';
 import { GrantedEffectTooltip } from '../../../tooltips/granted-effect-tooltip';
 import { WeaveImages } from '../../../../api/weave/weave-images';

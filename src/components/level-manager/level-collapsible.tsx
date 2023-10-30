@@ -1,6 +1,6 @@
 // level-collapsible.tsx
 import React from 'react';
-import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
+import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import styled from '@emotion/styled';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import BuildIcon from '@mui/icons-material/Build';

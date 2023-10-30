@@ -1,8 +1,8 @@
 import pako from 'pako';
 import baseX from 'base-x';
-import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
-import { RecordCompressor } from 'planner-types/src/models/compressable-record/compressable-record';
-import { CONFIG } from 'planner-types/src/models/config';
+import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
+import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/compressable-record';
+import { CONFIG } from '@jorgenswiderski/tomekeeper-shared/dist/models/config';
 import { CharacterTreeRoot } from './character/character-tree-node/character-tree';
 import { ICharacterTreeRoot } from './character/character-tree-node/types';
 import { Utils } from './utils';

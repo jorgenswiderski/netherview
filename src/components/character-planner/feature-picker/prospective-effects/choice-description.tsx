@@ -1,5 +1,5 @@
 import React from 'react';
-import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
+import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import EffectBase from './effect-base';
 import { CharacterPlannerStepDescriptions } from '../types';

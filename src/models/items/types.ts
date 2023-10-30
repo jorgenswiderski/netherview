@@ -2,7 +2,7 @@ import {
     EquipmentSlot,
     IEquipmentItem,
     ItemRarity,
-} from 'planner-types/src/types/equipment-item';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import { CharacterTreeDecision } from '../character/character-tree-node/character-tree';
 
 export interface ICharacterTreeEquipmentItem extends CharacterTreeDecision {

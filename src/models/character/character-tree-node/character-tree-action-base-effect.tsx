@@ -2,8 +2,8 @@ import {
     ActionEffectType,
     GrantableEffectType,
     IActionEffect,
-} from 'planner-types/src/types/grantable-effect';
-import { IActionBase } from 'planner-types/src/types/action';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { IActionBase } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { CharacterTreeEffect } from './character-tree';
 
 export class CharacterTreeActionBaseEffect

@@ -1,9 +1,9 @@
 import {
     StaticReferenceHandle,
     StaticallyReferenceable,
-} from 'planner-types/src/models/static-reference/types';
-import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
-import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
+} from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
+import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
+import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { CharacterTreeDecision, CharacterTreeEffect } from './character-tree';
 import { CharacterBackgroundOption } from '../types';
 import { WeaveApi } from '../../../api/weave/weave';

@@ -6,7 +6,7 @@ import React, {
     useRef,
 } from 'react';
 import styled from '@emotion/styled';
-import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
     Card,
     CardActionArea,
@@ -16,7 +16,7 @@ import {
     Typography,
     CardMedia,
 } from '@mui/material';
-import { ISpell } from 'planner-types/src/types/action';
+import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { ICharacter } from '../../models/character/types';
 import { Utils } from '../../models/utils';
 import { ActionTooltip } from '../tooltips/action-tooltip';

@@ -2,7 +2,7 @@ import {
     CharacterPlannerStep,
     ICharacterChoice,
     ICharacterOption,
-} from 'planner-types/src/types/character-feature-customization-option';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import CryptoJS from 'crypto-js';
 import {
     CharacterDecisionInfo,

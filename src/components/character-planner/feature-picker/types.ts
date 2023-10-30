@@ -1,4 +1,4 @@
-import { CharacterPlannerStep } from 'planner-types/src/types/character-feature-customization-option';
+import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 
 export const CharacterPlannerStepDescriptions: Map<
     CharacterPlannerStep,

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
+import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import styled from '@emotion/styled';
 import { Box } from '@mui/material';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';

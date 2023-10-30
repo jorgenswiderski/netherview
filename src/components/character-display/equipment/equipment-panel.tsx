@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 import {
     EquipmentSlot,
     IEquipmentItem,
-} from 'planner-types/src/types/equipment-item';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import { EquipmentSlotCard } from './equipment-slot';
 import { useCharacter } from '../../../context/character-context/character-context';
 

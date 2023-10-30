@@ -1,13 +1,13 @@
 import {
     CharacterPlannerStep,
     ICharacterOption,
-} from 'planner-types/src/types/character-feature-customization-option';
-import { IActionBase } from 'planner-types/src/types/action';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
+import { IActionBase } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import {
     ActionEffectType,
     GrantableEffectType,
     IActionEffect,
-} from 'planner-types/src/types/grantable-effect';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { CharacterTreeDecision } from './character-tree';
 import { ICharacterTreeAction } from './types';
 import { CharacterTreeActionBaseEffect } from './character-tree-action-base-effect';

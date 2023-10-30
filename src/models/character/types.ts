@@ -1,10 +1,10 @@
-import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
-import { ISpell } from 'planner-types/src/types/action';
-import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
+import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
+import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
+import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import {
     EquipmentSlot,
     IEquipmentItem,
-} from 'planner-types/src/types/equipment-item';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import { CharacterClassProgression } from '../../api/weave/types';
 import { CharacterTreeDecision } from './character-tree-node/character-tree';
 import { CharacterEquipment } from '../items/types';

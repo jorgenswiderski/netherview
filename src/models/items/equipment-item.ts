@@ -3,13 +3,13 @@ import {
     EquipmentItemType,
     IEquipmentItem,
     ItemRarity,
-} from 'planner-types/src/types/equipment-item';
-import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
-import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
+import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
 import {
     StaticReferenceHandle,
     StaticallyReferenceable,
-} from 'planner-types/src/models/static-reference/types';
+} from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
 import { WeaveApi } from '../../api/weave/weave';
 
 let ref: {

@@ -1,4 +1,4 @@
-import { Build } from 'planner-types/src/types/builds';
+import { Build } from '@jorgenswiderski/tomekeeper-shared/dist/types/builds';
 import { ReactNode, createContext } from 'react';
 import { Character } from '../../models/character/character';
 

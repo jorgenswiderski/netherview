@@ -2,11 +2,11 @@
 
 import React, { useState, useMemo } from 'react';
 import { Box, Typography, Select, MenuItem } from '@mui/material';
-import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
     GrantableEffectType,
     CharacteristicType,
-} from 'planner-types/src/types/grantable-effect';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import AbilitiesUI from './abilities-ui';
 import { AbilityScores } from '../../../models/character/types';
 import { AbilitiesBonusType, AbilitiesCostMode } from './types';

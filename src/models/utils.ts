@@ -1,5 +1,5 @@
-import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
-import { SharedUtils } from 'planner-types/src/models/utils';
+import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
+import { SharedUtils } from '@jorgenswiderski/tomekeeper-shared/dist/models/utils';
 import { WeaveImages } from '../api/weave/weave-images';
 import { error } from './logger';
 

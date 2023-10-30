@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import {
     ICharacterChoice,
     ICharacterOption,
-} from 'planner-types/src/types/character-feature-customization-option';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import styled from '@emotion/styled';
-import { GrantableEffect } from 'planner-types/src/types/grantable-effect';
+import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { Box, Typography } from '@mui/material';
 import GrantedEffect from './granted-effect';
 import ChoiceDescription from './choice-description';

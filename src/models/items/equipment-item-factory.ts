@@ -3,7 +3,7 @@ import {
     IEquipmentItem,
     IWeaponItem,
     equipmentSlotTypes,
-} from 'planner-types/src/types/equipment-item';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import { EquipmentItem } from './equipment-item';
 import { WeaponItem } from './weapon-item';
 

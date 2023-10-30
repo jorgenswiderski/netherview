@@ -1,5 +1,5 @@
 import { ReactNode, createContext } from 'react';
-import { ISpell } from 'planner-types/src/types/action';
+import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { CharacterClassOption } from '../../models/character/types';
 
 export interface GameDataContextType {

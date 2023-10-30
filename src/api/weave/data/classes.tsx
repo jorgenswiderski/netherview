@@ -1,4 +1,4 @@
-import { RecordCompressor } from 'planner-types/src/models/compressable-record/compressable-record';
+import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/compressable-record';
 import { WeaveRouteBase } from '../weave-route-base';
 import { CharacterClassOption } from '../../../models/character/types';
 

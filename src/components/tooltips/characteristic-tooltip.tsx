@@ -1,7 +1,7 @@
 // action-tooltip.tsx
 import React from 'react';
 import { Typography } from '@mui/material';
-import { Characteristic } from 'planner-types/src/types/grantable-effect';
+import { Characteristic } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { BaseTooltip } from './base-tooltip';
 
 interface CharacteristicTooltipProps {

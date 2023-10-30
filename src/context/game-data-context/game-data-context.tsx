@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { ISpell } from 'planner-types/src/types/action';
+import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import {
     GameDataContext,
     GameDataContextType,

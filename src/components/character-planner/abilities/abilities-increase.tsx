@@ -1,11 +1,11 @@
 // abilities-point-buy.tsx
 
 import React from 'react';
-import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
     GrantableEffectType,
     CharacteristicType,
-} from 'planner-types/src/types/grantable-effect';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import AbilitiesUI from './abilities-ui';
 import { AbilityScores } from '../../../models/character/types';
 import { AbilitiesCostMode } from './types';

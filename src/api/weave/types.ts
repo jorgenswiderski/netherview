@@ -1,4 +1,4 @@
-import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
+import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 
 export interface CharacterClassProgressionLevel {
     Level: number;

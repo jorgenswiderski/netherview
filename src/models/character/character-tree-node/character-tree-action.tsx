@@ -1,11 +1,11 @@
-import { IAction } from 'planner-types/src/types/action';
-import { ActionEffectType } from 'planner-types/src/types/grantable-effect';
-import { ActionStubConstructor } from 'planner-types/src/models/static-reference/stubs';
+import { IAction } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
+import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { ActionStubConstructor } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/stubs';
 import {
     CompressableRecord,
     CompressableRecordHandle,
-} from 'planner-types/src/models/compressable-record/types';
-import { RecordCompressor } from 'planner-types/src/models/compressable-record/compressable-record';
+} from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/types';
+import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/compressable-record';
 import { CharacterTreeActionBase } from './character-tree-action-base';
 import { WeaveApi } from '../../../api/weave/weave';
 

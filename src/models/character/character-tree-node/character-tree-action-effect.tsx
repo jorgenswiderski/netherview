@@ -1,14 +1,14 @@
 import {
     StaticReferenceHandle,
     StaticallyReferenceable,
-} from 'planner-types/src/models/static-reference/types';
-import { StaticReference } from 'planner-types/src/models/static-reference/static-reference';
+} from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
+import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
 import {
     ActionEffectType,
     GrantableEffectType,
     IActionEffect,
-} from 'planner-types/src/types/grantable-effect';
-import { ActionEffectStubConstructor } from 'planner-types/src/models/static-reference/stubs';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { ActionEffectStubConstructor } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/stubs';
 import { CharacterTreeActionBaseEffect } from './character-tree-action-base-effect';
 import { WeaveApi } from '../../../api/weave/weave';
 

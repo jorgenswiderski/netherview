@@ -3,7 +3,7 @@ import {
     ICharacterOption,
     CharacterPlannerStep,
     ICharacterChoice,
-} from 'planner-types/src/types/character-feature-customization-option';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
     Characteristic,
     GrantableEffect,
@@ -11,15 +11,15 @@ import {
     GrantableEffectType,
     Proficiency,
     IActionEffect,
-} from 'planner-types/src/types/grantable-effect';
-import { ISpell } from 'planner-types/src/types/action';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import {
     EquipmentItemType,
     EquipmentSlot,
     IEquipmentItem,
     IWeaponItem,
     WeaponHandedness,
-} from 'planner-types/src/types/equipment-item';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import assert from 'assert';
 import {
     AbilityScores,

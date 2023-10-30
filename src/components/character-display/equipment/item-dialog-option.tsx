@@ -10,7 +10,7 @@ import {
     CardProps,
     Typography,
 } from '@mui/material';
-import { IEquipmentItem } from 'planner-types/src/types/equipment-item';
+import { IEquipmentItem } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import ShieldIcon from '@mui/icons-material/Shield';
 import LazyLoad from 'react-lazyload';
 import { ItemTooltip } from '../../tooltips/item-tooltip';

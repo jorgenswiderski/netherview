@@ -1,5 +1,8 @@
 import { Typography } from '@mui/material';
-import { DamageType, damageTypeColor } from 'planner-types/src/types/damage';
+import {
+    DamageType,
+    damageTypeColor,
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/damage';
 import React, { useMemo } from 'react';
 
 export function DamageText({

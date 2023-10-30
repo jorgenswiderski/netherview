@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState, useEffect } from 'react';
 import { CircularProgress, Box } from '@mui/material'; // Import CircularProgress for loading spinner
-import { Build } from 'planner-types/src/types/builds';
+import { Build } from '@jorgenswiderski/tomekeeper-shared/dist/types/builds';
 import {
     CharacterProviderProps,
     CharacterContext,

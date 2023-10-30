@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import {
     CharacterPlannerStep,
     ICharacterOption,
-} from 'planner-types/src/types/character-feature-customization-option';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { IconButton, Box, DialogContentText } from '@mui/material';
 import ClassCollapsible from './class-collapsible';

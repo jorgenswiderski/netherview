@@ -8,7 +8,7 @@ import {
     ItemRarity,
     WeaponHandedness,
     equipmentSlotTypes,
-} from 'planner-types/src/types/equipment-item';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import styled from '@emotion/styled';
 import { darken, useTheme } from '@mui/system';
 import { alpha } from '@mui/material/styles';

@@ -3,11 +3,11 @@
 import {
     CharacterPlannerStep,
     ICharacterOption,
-} from 'planner-types/src/types/character-feature-customization-option';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
     GrantableEffect,
     GrantableEffectType,
-} from 'planner-types/src/types/grantable-effect';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import {
     CharacterTreeNodeType,
     ICharacterTreeDecision,

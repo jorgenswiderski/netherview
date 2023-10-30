@@ -1,4 +1,7 @@
-import { Build, BuildId } from 'planner-types/src/types/builds';
+import {
+    Build,
+    BuildId,
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/builds';
 import { WeaveRouteBase } from './weave-route-base';
 
 export class WeaveBuilds extends WeaveRouteBase {

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Tooltip } from '@mui/material';
-import { IActionBase } from 'planner-types/src/types/action';
+import { IActionBase } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import {
     Characteristic,
     GrantableEffect,
     GrantableEffectType,
     IActionEffect,
-} from 'planner-types/src/types/grantable-effect';
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { ActionTooltip } from './action-tooltip';
 import { CharacteristicTooltip } from './characteristic-tooltip';
 
