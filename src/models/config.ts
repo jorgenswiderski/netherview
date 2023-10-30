@@ -10,4 +10,15 @@ export const CONFIG = {
         API_URL: process.env.NEXT_PUBLIC_WEAVE_API_URL,
         BASE_IMAGE_URL: process.env.NEXT_PUBLIC_WEAVE_BASE_IMAGE_URL,
     },
+    GOOGLE_ANALYTICS: {
+        ID: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
+    },
+    HOTJAR: {
+        SITE_ID: process.env.NEXT_PUBLIC_HOTJAR_SITE_ID
+            ? parseInt(process.env.NEXT_PUBLIC_HOTJAR_SITE_ID, 10)
+            : undefined,
+        VERSION: process.env.NEXT_PUBLIC_HOTJAR_VERSION
+            ? parseInt(process.env.NEXT_PUBLIC_HOTJAR_VERSION, 10)
+            : undefined,
+    },
 };
