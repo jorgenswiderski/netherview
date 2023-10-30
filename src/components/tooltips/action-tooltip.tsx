@@ -11,8 +11,8 @@ import styled from '@emotion/styled';
 import { AbilityScore } from 'planner-types/src/types/ability';
 import { BaseTooltip } from './base-tooltip';
 import { Utils } from '../../models/utils';
-import { WeaveApi } from '../../api/weave/weave';
 import { DamageText } from '../damage-text';
+import { WeaveImages } from '../../api/weave/weave-images';
 
 const ConditionBox = styled(Box)`
     display: flex;
@@ -106,7 +106,10 @@ export function ActionTooltip({ action, children }: ActionTooltipProps) {
     ) {
         return (
             <ConditionBox>
-                <ConditionIcon src={WeaveApi.getImagePath(image)} alt={name} />
+                <ConditionIcon
+                    src={WeaveImages.getPath(image, 32)}
+                    alt={name}
+                />
                 <Typography variant="body2">
                     {duration > 0
                         ? `${name}: ${duration} turn${duration > 1 ? 's' : ''}`

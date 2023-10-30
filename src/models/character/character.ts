@@ -214,6 +214,8 @@ export class Character implements ICharacter {
             return;
         }
 
+        const pd: PendingDecision[] = [];
+
         choices.forEach((choice) => {
             const pending = new PendingDecision(parent, choice);
 
@@ -233,8 +235,10 @@ export class Character implements ICharacter {
                 return;
             }
 
-            this.pendingDecisions.unshift(pending);
+            pd.push(pending);
         });
+
+        this.pendingDecisions.unshift(...pd);
     }
 
     private static restrictSubclassFeatures(

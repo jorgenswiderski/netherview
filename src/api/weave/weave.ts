@@ -1,4 +1,3 @@
-import { CONFIG } from '../../models/config';
 import { WeaveBuilds } from './builds';
 import { WeaveActions } from './data/actions';
 import { WeaveBackgrounds } from './data/backgrounds';
@@ -17,7 +16,4 @@ export class WeaveApi {
     static spells = new WeaveSpells();
 
     static builds = new WeaveBuilds();
-
-    static getImagePath = (imageName: string): string =>
-        `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}`;
 }

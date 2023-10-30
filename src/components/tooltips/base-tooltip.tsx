@@ -3,7 +3,7 @@ import React from 'react';
 import { Box, Tooltip, TooltipProps } from '@mui/material';
 import styled from '@emotion/styled';
 import { darken } from '@mui/system';
-import { WeaveApi } from '../../api/weave/weave';
+import { WeaveImages } from '../../api/weave/weave-images';
 
 const MainBox = styled(Box)`
     position: relative;
@@ -113,7 +113,10 @@ export function BaseTooltip({
                     {quote && <QuoteBox>{quote}</QuoteBox>}
                     {footer && <FooterBox>{footer}</FooterBox>}
                     {image && (
-                        <Icon src={WeaveApi.getImagePath(image)} alt={name} />
+                        <Icon
+                            src={WeaveImages.getPath(image, 120)}
+                            alt={name}
+                        />
                     )}
                 </MainBox>
             }

@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, {
+    useState,
+    useMemo,
+    useCallback,
+    useEffect,
+    useRef,
+} from 'react';
 import styled from '@emotion/styled';
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import {
@@ -14,7 +20,7 @@ import { ISpell } from 'planner-types/src/types/action';
 import { ICharacter } from '../../models/character/types';
 import { Utils } from '../../models/utils';
 import { ActionTooltip } from '../tooltips/action-tooltip';
-import { WeaveApi } from '../../api/weave/weave';
+import { WeaveImages } from '../../api/weave/weave-images';
 
 const Container = styled.div`
     display: flex;
@@ -93,14 +99,19 @@ interface SpellCardProps {
 }
 
 function SpellCard({ selected, spell, onClick }: SpellCardProps) {
+    const imageContainerRef = useRef<HTMLButtonElement>(null);
+
     return (
         <ActionTooltip action={spell}>
             <StyledCard elevation={3} selected={selected}>
-                <ActionArea onClick={spell && onClick}>
+                <ActionArea onClick={spell && onClick} ref={imageContainerRef}>
                     {spell?.image && (
                         <CardMedia
                             component="img"
-                            image={WeaveApi.getImagePath(spell.image)}
+                            image={WeaveImages.getPath(
+                                spell.image,
+                                imageContainerRef,
+                            )}
                         />
                     )}
                 </ActionArea>

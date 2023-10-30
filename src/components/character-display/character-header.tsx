@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Paper, Box, Typography } from '@mui/material';
 import { CharacterClassInfo } from '../../models/character/types';
-import { WeaveApi } from '../../api/weave/weave';
 import { useCharacter } from '../../context/character-context/character-context';
+import { WeaveImages } from '../../api/weave/weave-images';
 
 export function CharacterHeader() {
     const { character } = useCharacter();
@@ -56,7 +56,7 @@ export function CharacterHeader() {
                             sx={{ width: '88px', flexShrink: 0 }}
                         >
                             <img
-                                src={WeaveApi.getImagePath(imageName)}
+                                src={WeaveImages.getPath(imageName, 88)}
                                 alt="Character Class"
                                 style={{
                                     height: '100%',

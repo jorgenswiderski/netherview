@@ -1,6 +1,7 @@
 import { ICharacterOption } from 'planner-types/src/types/character-feature-customization-option';
 import { SharedUtils } from 'planner-types/src/models/utils';
-import { WeaveApi } from '../api/weave/weave';
+import { WeaveImages } from '../api/weave/weave-images';
+import { error } from './logger';
 
 type Difference = {
     path: string;
@@ -60,14 +61,25 @@ export class Utils extends SharedUtils {
             return;
         }
 
-        const imagesToPreload = options
+        // Preload the main images first
+        const optionImages = options
+            .map((option) => option.image)
+            .filter(Boolean) as string[];
+
+        optionImages.forEach((image) => {
+            WeaveImages.preloadImage(image).catch(error);
+        });
+
+        // Then the effect images
+        const fxImages = options
             .flatMap((option) => [
-                option.image,
                 ...(option.grants ? option.grants.map((fx) => fx.image) : []),
             ])
             .filter(Boolean) as string[]; // Filters out null or undefined values
 
-        Utils.preloadImages(imagesToPreload.map(WeaveApi.getImagePath));
+        fxImages.forEach((image) => {
+            WeaveImages.preloadImage(image).catch(error);
+        });
     }
 
     static isNonEmptyArray(a?: any[] | null): boolean {
