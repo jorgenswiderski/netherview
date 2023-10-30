@@ -15,7 +15,7 @@
         "type-check": "tsc --noEmit --skipLibCheck --jsx react",
         "check": "npm run lint-fix && npm run type-check",
         "version-file": "ts-node scripts/create-version-file.ts",
-        "preinstall": "echo \"@jorgenswiderski:registry=https://npm.pkg.github.com/\\n//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}\" > .npmrc"
+        "preinstall": "echo \"@jorgenswiderski:registry=https://npm.pkg.github.com/\n//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}\" > .npmrc"
     },
     "author": "Jorgen Swiderski",
     "license": "MIT",
