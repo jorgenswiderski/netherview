@@ -14,7 +14,8 @@
         "start": "npm run version-file && next start",
         "type-check": "tsc --noEmit --skipLibCheck --jsx react",
         "check": "npm run lint-fix && npm run type-check",
-        "version-file": "ts-node scripts/create-version-file.ts"
+        "version-file": "ts-node scripts/create-version-file.ts",
+        "preinstall": "echo \"@jorgenswiderski:registry=https://npm.pkg.github.com/\\n//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}\" > .npmrc"
     },
     "author": "Jorgen Swiderski",
     "license": "MIT",
@@ -56,6 +57,7 @@
         "@emotion/styled": "^11.11.0",
         "@fontsource/roboto": "^5.0.8",
         "@hotjar/browser": "^1.0.9",
+        "@jorgenswiderski/tomekeeper-shared": "^1.0.1",
         "@mui/icons-material": "^5.14.13",
         "@mui/material": "^5.14.12",
         "@sentry/nextjs": "^7.76.0",
