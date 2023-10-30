@@ -12,6 +12,7 @@ import Link from 'next/link';
 import styled from '@emotion/styled';
 import BaseMenuItem from '../base-menu-item';
 import { CONFIG } from '../../../../models/config';
+import { PACKAGE_VERSION } from '../../../../../version';
 
 const StyledLink = styled(Link)`
     color: lightblue;
@@ -46,6 +47,10 @@ export function AboutMenuItem({ handleClose }: AboutMenuItemProps) {
                 <DialogTitle>About {CONFIG.APP_NAME}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
+                        <span style={{ fontWeight: 700 }}>Version:</span>{' '}
+                        {PACKAGE_VERSION}
+                    </DialogContentText>
+                    <DialogContentText mt={2}>
                         Have questions, comments, or a bug report? Join the
                         discord:{' '}
                         <StyledLink
