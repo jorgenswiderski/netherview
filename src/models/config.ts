@@ -3,6 +3,7 @@ import { CONFIG as SharedConfig } from 'planner-types/src/models/config';
 export const CONFIG = {
     ...SharedConfig,
 
+    APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     EXPORT_ENABLED: process.env.NEXT_PUBLIC_EXPORT_ENABLED === 'true',
     WEAVE: {
