@@ -6,3 +6,5 @@ package
 .next
 *.tsbuildinfo
 *.eslintcache
+# Sentry Config File
+.sentryclirc
