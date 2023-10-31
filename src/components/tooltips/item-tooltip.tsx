@@ -61,18 +61,14 @@ interface ItemTooltipProps {
 export function ItemTooltip({ item, children }: ItemTooltipProps) {
     const theme = useTheme();
 
-    if (!item) {
-        return children;
-    }
-
-    const rarityColor = useMemo(() => ItemColors[item.rarity], [item.rarity]);
-
-    if (!rarityColor) {
-        return children;
-    }
+    const rarityColor = useMemo(
+        () => (item?.rarity ? ItemColors[item?.rarity] : null),
+        [item?.rarity],
+    );
 
     const weapon = useMemo(() => {
         if (
+            item?.type &&
             [
                 ...equipmentSlotTypes[EquipmentSlot.MeleeMainhand],
                 ...equipmentSlotTypes[EquipmentSlot.RangedMainhand],
@@ -83,6 +79,14 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
 
         return undefined;
     }, [item]);
+
+    if (!item) {
+        return children;
+    }
+
+    if (!rarityColor) {
+        return children;
+    }
 
     const backgroundGradient = `linear-gradient(0deg, rgba(40,40,40,0.5), ${alpha(
         rarityColor,
