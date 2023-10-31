@@ -17,7 +17,7 @@ import { initCharacterTreeActionEffectRef } from '../models/character/character-
 import { initCharacterTreeSpellEffectRef } from '../models/character/character-tree-node/character-tree-spell-effect';
 import { NotificationProvider } from '../context/notification-context/notification-context';
 import * as analytics from '../models/google-analytics';
-import '../models/hotjar';
+import { initHotjar } from '../models/hotjar';
 
 initCharacterTreeActionEffectRef();
 initCharacterTreeSpellEffectRef();
@@ -27,6 +27,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     const router = useRouter();
 
     useEffect(() => {
+        initHotjar();
+
         // Initialize Google Analytics
         analytics.initGA();
 
