@@ -8,5 +8,3 @@ package
 *.eslintcache
 .sentryclirc
 .npmrc
-*.webp
-*.png
