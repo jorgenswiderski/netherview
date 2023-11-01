@@ -6,6 +6,10 @@ export function initHotjar(): void {
     const hotjarVersion = CONFIG.HOTJAR.VERSION;
 
     if (!siteId || !hotjarVersion) {
+        if (CONFIG.IS_DEV) {
+            return;
+        }
+
         throw new Error('Failed to intialize hotjar');
     }
 

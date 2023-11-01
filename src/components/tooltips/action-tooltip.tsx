@@ -12,7 +12,6 @@ import { AbilityScore } from '@jorgenswiderski/tomekeeper-shared/dist/types/abil
 import { BaseTooltip } from './base-tooltip';
 import { Utils } from '../../models/utils';
 import { DamageText } from '../damage-text';
-import { WeaveImages } from '../../api/weave/weave-images';
 
 const ConditionBox = styled(Box)`
     display: flex;
@@ -107,7 +106,7 @@ export function ActionTooltip({ action, children }: ActionTooltipProps) {
         return (
             <ConditionBox>
                 <ConditionIcon
-                    src={WeaveImages.getPath(image, 32)}
+                    src={Utils.getMediaWikiImagePath(image)}
                     alt={name}
                 />
                 <Typography variant="body2">

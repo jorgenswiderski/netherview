@@ -1,7 +1,5 @@
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { SharedUtils } from '@jorgenswiderski/tomekeeper-shared/dist/models/utils';
-import { WeaveImages } from '../api/weave/weave-images';
-import { error } from './logger';
 
 type Difference = {
     path: string;
@@ -56,30 +54,27 @@ export class Utils extends SharedUtils {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     static preloadOptionImages(options?: ICharacterOption[]): void {
-        if (!options) {
-            return;
-        }
-
-        // Preload the main images first
-        const optionImages = options
-            .map((option) => option.image)
-            .filter(Boolean) as string[];
-
-        optionImages.forEach((image) => {
-            WeaveImages.preloadImage(image).catch(error);
-        });
-
-        // Then the effect images
-        const fxImages = options
-            .flatMap((option) => [
-                ...(option.grants ? option.grants.map((fx) => fx.image) : []),
-            ])
-            .filter(Boolean) as string[]; // Filters out null or undefined values
-
-        fxImages.forEach((image) => {
-            WeaveImages.preloadImage(image).catch(error);
-        });
+        // if (!options) {
+        //     return;
+        // }
+        // // Preload the main images first
+        // const optionImages = options
+        //     .map((option) => option.image)
+        //     .filter(Boolean) as string[];
+        // optionImages.forEach((image) => {
+        //     WeaveImages.preloadImage(image).catch(error);
+        // });
+        // // Then the effect images
+        // const fxImages = options
+        //     .flatMap((option) => [
+        //         ...(option.grants ? option.grants.map((fx) => fx.image) : []),
+        //     ])
+        //     .filter(Boolean) as string[]; // Filters out null or undefined values
+        // fxImages.forEach((image) => {
+        //     WeaveImages.preloadImage(image).catch(error);
+        // });
     }
 
     static isNonEmptyArray(a?: any[] | null): boolean {

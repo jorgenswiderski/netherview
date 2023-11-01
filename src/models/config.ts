@@ -3,6 +3,7 @@ import { CONFIG as SharedConfig } from '@jorgenswiderski/tomekeeper-shared/dist/
 export const CONFIG = {
     ...SharedConfig,
 
+    IS_DEV: process.env.NEXT_PUBLIC_ENVIRONMENT === 'dev',
     APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     EXPORT_ENABLED: process.env.NEXT_PUBLIC_EXPORT_ENABLED === 'true',

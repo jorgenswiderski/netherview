@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Paper, Box, Typography } from '@mui/material';
 import { CharacterClassInfo } from '../../models/character/types';
 import { useCharacter } from '../../context/character-context/character-context';
-import { WeaveImages } from '../../api/weave/weave-images';
+import { Utils } from '../../models/utils';
 
 export function CharacterHeader() {
     const { character } = useCharacter();
@@ -56,7 +56,7 @@ export function CharacterHeader() {
                             sx={{ width: '88px', flexShrink: 0 }}
                         >
                             <img
-                                src={WeaveImages.getPath(imageName, 88)}
+                                src={Utils.getMediaWikiImagePath(imageName)}
                                 alt="Character Class"
                                 style={{
                                     height: '100%',

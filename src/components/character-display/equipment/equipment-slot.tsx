@@ -1,5 +1,5 @@
 // equipment-slot.tsx
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
     CardContent,
     Card,
@@ -23,7 +23,7 @@ import { error } from '../../../models/logger';
 import { ItemDialogOption } from './item-dialog-option';
 import { ItemTooltip } from '../../tooltips/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
-import { WeaveImages } from '../../../api/weave/weave-images';
+import { Utils } from '../../../models/utils';
 
 const StyledDialog = styled(Dialog)``;
 
@@ -132,8 +132,6 @@ export function EquipmentSlotCard({
         );
     }, [filteredItems]);
 
-    const imageContainerRef = useRef<HTMLDivElement>(null);
-
     return (
         <>
             <ItemTooltip item={item}>
@@ -142,14 +140,10 @@ export function EquipmentSlotCard({
                     color={ItemColors[item?.rarity ?? ItemRarity.NONE]}
                     item={item}
                     disabled={disabled}
-                    ref={imageContainerRef}
                 >
                     {item && (
                         <ItemIcon
-                            image={WeaveImages.getPath(
-                                item.image,
-                                imageContainerRef,
-                            )}
+                            image={Utils.getMediaWikiImagePath(item.image)}
                             component="img"
                         />
                     )}

@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import { Paper, Typography } from '@mui/material';
 import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
-import { WeaveImages } from '../../api/weave/weave-images';
+import { Utils } from '../../models/utils';
 
 interface CharacterBackgroundProps {
     background: ICharacterTreeDecision;
@@ -26,20 +26,11 @@ const BackgroundImage = styled.div<{ src: string }>`
 export default function CharacterBackground({
     background,
 }: CharacterBackgroundProps) {
-    const imageContainerRef = useRef<HTMLDivElement>(null);
-
     return (
-        <Paper
-            elevation={2}
-            style={{ padding: '1rem', position: 'relative' }}
-            ref={imageContainerRef}
-        >
+        <Paper elevation={2} style={{ padding: '1rem', position: 'relative' }}>
             {background.image && (
                 <BackgroundImage
-                    src={WeaveImages.getPath(
-                        background.image,
-                        imageContainerRef,
-                    )}
+                    src={Utils.getMediaWikiImagePath(background.image)}
                 />
             )}
             <Typography

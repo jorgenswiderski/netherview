@@ -6,7 +6,7 @@ import {
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import EffectBase from './effect-base';
 import { GrantedEffectTooltip } from '../../../tooltips/granted-effect-tooltip';
-import { WeaveImages } from '../../../../api/weave/weave-images';
+import { Utils } from '../../../../models/utils';
 
 interface GrantedEffectProps {
     effect: GrantableEffect;
@@ -30,7 +30,7 @@ export default function GrantedEffect({
             path = effect.image;
         }
 
-        return path ? WeaveImages.getPath(path, 24) : path;
+        return path ? Utils.getMediaWikiImagePath(path) : path;
     }, [effect]);
 
     return (

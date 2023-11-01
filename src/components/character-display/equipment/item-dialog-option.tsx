@@ -15,7 +15,7 @@ import ShieldIcon from '@mui/icons-material/Shield';
 import LazyLoad from 'react-lazyload';
 import { ItemTooltip } from '../../tooltips/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
-import { WeaveImages } from '../../../api/weave/weave-images';
+import { Utils } from '../../../models/utils';
 
 const ItemContainer = styled(Card)`
     display: flex;
@@ -73,7 +73,7 @@ export function ItemDialogOption({ item, ...props }: ItemDialogOptionProps) {
                 <LazyLoad height={80} offset={600} once overflow>
                     <CardIcon
                         component="img"
-                        src={WeaveImages.getPath(item.image, 80)}
+                        src={Utils.getMediaWikiImagePath(item.image)}
                         color={color}
                     />
                 </LazyLoad>

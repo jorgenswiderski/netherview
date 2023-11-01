@@ -3,7 +3,7 @@ import React from 'react';
 import { Box, Tooltip, TooltipProps } from '@mui/material';
 import styled from '@emotion/styled';
 import { darken } from '@mui/system';
-import { WeaveImages } from '../../api/weave/weave-images';
+import { Utils } from '../../models/utils';
 
 const MainBox = styled(Box)`
     position: relative;
@@ -114,7 +114,7 @@ export function BaseTooltip({
                     {footer && <FooterBox>{footer}</FooterBox>}
                     {image && (
                         <Icon
-                            src={WeaveImages.getPath(image, 120)}
+                            src={Utils.getMediaWikiImagePath(image)}
                             alt={name}
                         />
                     )}

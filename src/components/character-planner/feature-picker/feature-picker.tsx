@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
@@ -7,7 +7,6 @@ import styled from '@emotion/styled';
 import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
 import ProspectiveEffects from './prospective-effects/prospective-effects';
-import { WeaveImages } from '../../../api/weave/weave-images';
 
 enum LayoutType {
     SPARSE,
@@ -143,8 +142,6 @@ export default function FeaturePicker({
         }
     }, [selectedOption]);
 
-    const imageContainerRef = useRef<HTMLButtonElement>(null);
-
     const renderCardMedia = (props: CardMediaPropsExtended) => {
         const { layout, ...restProps } = props;
 
@@ -189,14 +186,12 @@ export default function FeaturePicker({
                                 <ActionArea
                                     onClick={() => setSelectedOption(option)}
                                     layout={layoutType}
-                                    ref={imageContainerRef}
                                 >
                                     {option.image &&
                                         renderCardMedia({
                                             component: 'img',
-                                            image: WeaveImages.getPath(
+                                            image: Utils.getMediaWikiImagePath(
                                                 option.image,
-                                                276,
                                             ),
                                             layout: layoutType,
                                         })}

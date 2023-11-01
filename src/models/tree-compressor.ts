@@ -2,11 +2,11 @@ import pako from 'pako';
 import baseX from 'base-x';
 import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
 import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/compressable-record';
-import { CONFIG } from '@jorgenswiderski/tomekeeper-shared/dist/models/config';
 import { CharacterTreeRoot } from './character/character-tree-node/character-tree';
 import { ICharacterTreeRoot } from './character/character-tree-node/types';
 import { Utils } from './utils';
 import { debug, error } from './logger';
+import { CONFIG } from './config';
 
 const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const base62 = baseX(BASE62);
