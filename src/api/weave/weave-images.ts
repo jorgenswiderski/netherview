@@ -53,7 +53,7 @@ class WeaveImage extends WeaveRouteBase {
 
         if (cache?.width && cache.width >= width) {
             if (cache.preload) {
-                return `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?preload=true`;
+                return `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?p=1`;
             }
 
             width = cache.width;
@@ -61,11 +61,11 @@ class WeaveImage extends WeaveRouteBase {
             this.imageCache[imageName] = { width, preload: false };
         }
 
-        return `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?width=${width}`;
+        return `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?w=${width}`;
     }
 
     async preloadImage(imageName: string): Promise<void> {
-        const url = `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?preload=true`;
+        const url = `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?p=1`;
 
         try {
             const response = await axios({
@@ -105,7 +105,7 @@ class WeaveImage extends WeaveRouteBase {
 
     async updateImageSize(imageName: string, width: number): Promise<void> {
         try {
-            await this.fetchFromApi(`/updateSize/${imageName}`, {
+            await this.fetchFromApi(`/resize/${imageName}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
