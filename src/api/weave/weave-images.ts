@@ -53,11 +53,16 @@ class WeaveImage extends WeaveRouteBase {
 
         if (cache?.width && cache.width >= width) {
             if (cache.preload) {
-                return `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?p=1`;
+                return `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?p=post`;
             }
 
             width = cache.width;
         } else {
+            if (cache?.width && cache.preload) {
+                // Image was preloaded at the wrong size, tell the server
+                this.updateImageSize(imageName, width).catch(error);
+            }
+
             this.imageCache[imageName] = { width, preload: false };
         }
 
@@ -65,22 +70,26 @@ class WeaveImage extends WeaveRouteBase {
     }
 
     async preloadImage(imageName: string): Promise<void> {
-        const url = `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?p=1`;
+        const url = `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?p=pre`;
 
         try {
+            // Make "images/preload" response to the server to get the remote URL and the "unknown size" header.
+            // Set needsSizeUpdate accordingly, and preload the image with the Image class
+
             const response = await axios({
                 url,
             });
 
             if (response.status >= 200 && response.status < 300) {
+                const { remote, isUnknownSize } = response.data as {
+                    remote: string;
+                    isUnknownSize: boolean;
+                };
+
                 const img = new Image();
 
                 img.onload = () => {
-                    // Check for a custom header to decide if we need to update the image size later
-                    const sizeUnknown =
-                        response.headers?.['x-unknown-size'] === 'true';
-
-                    if (sizeUnknown) {
+                    if (isUnknownSize) {
                         this.needsSizeUpdate[imageName] = true;
                     }
 
@@ -94,7 +103,7 @@ class WeaveImage extends WeaveRouteBase {
                     }
                 };
 
-                img.src = url;
+                img.src = remote;
             } else {
                 log(`Failed to preload image ${imageName}`);
             }
