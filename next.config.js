@@ -10,6 +10,10 @@ module.exports = {
             use: [options.defaultLoaders.babel, { loader: 'ts-loader' }],
         });
 
+        // Use to disable optimization if debug breakpoints aren't getting bound correctly
+        // config.optimization.minimize = false; // Disable code minimization
+        // config.optimization.usedExports = false; // Disable tree shaking
+
         return config;
     },
 };

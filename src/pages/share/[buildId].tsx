@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 // import { keyframes } from '@emotion/react';
+import { Build } from '@jorgenswiderski/tomekeeper-shared/dist/types/builds';
 import { Utils } from '../../models/utils';
 import { WeaveApi } from '../../api/weave/weave';
 import { error } from '../../models/logger';
@@ -56,10 +57,21 @@ export default function BuildPage() {
         }
 
         async function fetchImportStr(): Promise<void> {
-            try {
-                const build = await WeaveApi.builds.get(buildId);
-                setBuild(build);
+            let build: Build;
 
+            try {
+                build = await WeaveApi.builds.get(buildId);
+                setBuild(build);
+            } catch (err) {
+                error(err);
+                onError('Could not find the specified build.');
+                setIsLoading(false);
+                setTimeout(() => router.push('/'), 5000);
+
+                return;
+            }
+
+            try {
                 const character = await Character.import(
                     build.encoded,
                     classData!,
@@ -70,7 +82,11 @@ export default function BuildPage() {
                 router.push('/', `/share/${buildId}`, { shallow: true });
             } catch (err) {
                 error(err);
-                onError('Could not find the specified build.');
+
+                onError(
+                    'An error occurred while trying to load the specified build.',
+                );
+
                 setIsLoading(false);
                 setTimeout(() => router.push('/'), 5000);
             }
