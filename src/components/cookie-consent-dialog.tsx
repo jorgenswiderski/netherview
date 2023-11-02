@@ -23,17 +23,21 @@ const options: { description: string; value: 'true' | 'false' }[] = [
 ];
 
 interface CookieConsentDialogProps {
+    open?: boolean;
     onComplete: () => void;
 }
 
-export function CookieConsentDialog({ onComplete }: CookieConsentDialogProps) {
+export function CookieConsentDialog({
+    open = true,
+    onComplete,
+}: CookieConsentDialogProps) {
     const setAllowCookies = (value: 'true' | 'false'): void => {
         localStorage.setItem('nonNecessaryCookies', value);
         onComplete();
     };
 
     return (
-        <Dialog open>
+        <Dialog open={open}>
             <DialogTitle>Cookie Consent</DialogTitle>
             <DialogContent>
                 <Typography paragraph>Choose an option:</Typography>
