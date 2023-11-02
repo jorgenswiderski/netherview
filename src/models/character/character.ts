@@ -95,6 +95,7 @@ export class Character implements ICharacter {
 
         const step = this.pendingSteps.shift()!;
         const info = CharacterDecisionInfo[step];
+
         const choices = info?.getChoices
             ? await info.getChoices(this)
             : [{ type: step, options: await info.getOptions!(this) }];
@@ -227,6 +228,7 @@ export class Character implements ICharacter {
                         option,
                         pending.id,
                     );
+
                     parent.addChild(decision);
                     Character.grantEffects(decision);
                     this.queueSubchoices(decision);
@@ -367,6 +369,7 @@ export class Character implements ICharacter {
         data: ICharacterOption[],
     ): ICharacterOption[] {
         const levelInfo = this.getClassInfo();
+
         const keys: (keyof CharacterClassProgressionLevel)[] = [
             'Spells Known',
             'Cantrips Known',
@@ -379,6 +382,7 @@ export class Character implements ICharacter {
 
             const currentLevelData =
                 level > 0 && this.getClassProgression(cls.name, level);
+
             const nextLevelData = this.getClassProgression(cls.name, level + 1);
 
             if (level >= Character.MAX_LEVEL) {
@@ -416,6 +420,7 @@ export class Character implements ICharacter {
                             : nextLevelData['Spell Slots'].findLastIndex(
                                   (spellCount) => spellCount && spellCount > 0,
                               );
+
                     const spellsKnown = this.getKnownSpells(
                         CharacterPlannerStep.LEARN_SPELLS,
                     ).map((effect) => effect.name);
@@ -627,6 +632,7 @@ export class Character implements ICharacter {
         const targetIndex = parent.children!.findIndex(
             (node) => node === target,
         );
+
         parent.children!.splice(targetIndex, 1);
 
         // Trigger a level up in the removed class

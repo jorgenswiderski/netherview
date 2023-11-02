@@ -133,6 +133,7 @@ export class CharacterTreeNode implements ICharacterTreeNode {
                     (child) =>
                         [child, depth + 1] as [ICharacterTreeNode, number],
                 );
+
                 nextQueue.push(...childPairs);
             }
         });
@@ -195,6 +196,7 @@ export class CharacterTreeNode implements ICharacterTreeNode {
                     (child) =>
                         [child, depth + 1] as [ICharacterTreeNode, number],
                 );
+
                 nextStack.push(...childPairs);
             }
         });

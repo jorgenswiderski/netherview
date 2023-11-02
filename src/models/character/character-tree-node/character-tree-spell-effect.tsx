@@ -27,6 +27,7 @@ export class CharacterTreeSpellEffect
 
     static async fromId(id: number): Promise<CharacterTreeSpellEffect> {
         const actionData = await WeaveApi.spells.getById(id);
+
         const actionEffect: IActionEffect = {
             type: GrantableEffectType.ACTION,
             subtype: ActionEffectType.SPELL_ACTION,

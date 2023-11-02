@@ -172,6 +172,7 @@ export default function FeaturePicker({
               };
 
     const showDescription = typeof selectedOption?.description === 'string';
+
     const showEffects =
         (selectedOption?.grants && selectedOption?.grants?.length > 0) ||
         (selectedOption?.choices && selectedOption?.choices?.length > 0);

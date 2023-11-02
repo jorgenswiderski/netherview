@@ -36,6 +36,7 @@ export function CharacterEffects() {
         () => character.getCharacteristics(),
         [character],
     );
+
     const proficiencies = useMemo(
         () => character.getProficiencies(),
         [character],

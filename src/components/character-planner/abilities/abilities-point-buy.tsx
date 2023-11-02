@@ -33,6 +33,7 @@ export default function AbilitiesPointBuy({
     const [bonusTwo, setBonusTwo] = useState<keyof AbilityScores | null>(
         'Dexterity',
     );
+
     const [bonusOne, setBonusOne] = useState<keyof AbilityScores | null>(
         'Strength',
     );

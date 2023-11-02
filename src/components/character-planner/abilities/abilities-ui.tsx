@@ -113,6 +113,7 @@ export default function AbilitiesUI({
 
     const canIncrease = (ability: keyof AbilityScores) => {
         const score = currentAbilities[ability];
+
         const cost =
             score >= 13 && costMode === AbilitiesCostMode.INCREMENTAL ? 2 : 1;
 
@@ -195,6 +196,7 @@ export default function AbilitiesUI({
                         {Object.keys(currentAbilities).map((abilityString) => {
                             const ability: keyof AbilityScores =
                                 abilityString as keyof AbilityScores;
+
                             const score = currentAbilities[ability];
 
                             return (

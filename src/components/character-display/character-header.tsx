@@ -9,6 +9,7 @@ export function CharacterHeader() {
 
     const imageName = useMemo(() => {
         const classes = character.getClassInfo();
+
         const highestLevelClass = classes.sort(
             (a, b) => b.levels.length - a.levels.length,
         )[0];

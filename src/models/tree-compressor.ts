@@ -10,6 +10,7 @@ import { CONFIG } from './config';
 
 const BASE64 =
     '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-=';
+
 export const base64 = baseX(BASE64);
 
 type JSONValue = string | number | boolean | null | JSONArray | JSONObject;
