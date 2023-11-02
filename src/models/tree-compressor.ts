@@ -8,8 +8,9 @@ import { Utils } from './utils';
 import { debug, error } from './logger';
 import { CONFIG } from './config';
 
-const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-export const base62 = baseX(BASE62);
+const BASE64 =
+    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-=';
+export const base64 = baseX(BASE64);
 
 type JSONValue = string | number | boolean | null | JSONArray | JSONObject;
 
@@ -29,13 +30,21 @@ export class TreeCompressor {
         originalData: any,
         compressedData: ArrayBuffer,
     ): number {
-        const encodedOrig = base62.encode(
-            Buffer.from(JSON.stringify(originalData)),
+        const encodedOrig = Buffer.from(JSON.stringify(originalData)).toString(
+            'base64',
         );
+
         const compressedSize = compressedData.byteLength;
         const compressionRate = (1 - compressedSize / encodedOrig.length) * 100;
 
         return compressionRate;
+    }
+
+    static getNumberAsBase64(n: number): string {
+        const buffer = Buffer.alloc(4);
+        buffer.writeUInt32BE(n);
+
+        return buffer.toString('base64');
     }
 
     static internStrings(
@@ -95,7 +104,7 @@ export class TreeCompressor {
             let id = '';
 
             do {
-                id = base62.encode([idCount]);
+                id = base64.encode([idCount]);
                 idCount += 1;
             } while (usedIdentifiers.has(id));
 
@@ -123,6 +132,7 @@ export class TreeCompressor {
                         option === InternOption.KEYS && stringMap.has(key)
                             ? stringMap.get(key)!
                             : key;
+
                     const newValue = internStringsInObj(value);
                     newObj[newKey] = newValue;
                 }
@@ -169,6 +179,7 @@ export class TreeCompressor {
                         option === InternOption.KEYS && reverseMap.has(key)
                             ? reverseMap.get(key)!
                             : key;
+
                     const newValue = reverseInternInObj(value);
                     newObj[newKey] = newValue;
                 }
@@ -190,32 +201,37 @@ export class TreeCompressor {
         return reverseInternInObj(data) as JSONObject;
     }
 
-    static arrayBufferToBase62(buffer: ArrayBuffer): string {
-        // Convert ArrayBuffer to Buffer for base-x compatibility
-        const buf = Buffer.from(buffer);
+    // static arrayBufferToBase62(buffer: ArrayBuffer): string {
+    //     // Convert ArrayBuffer to Buffer for base-x compatibility
+    //     const buf = Buffer.from(buffer);
 
-        return base62.encode(buf);
-    }
+    //     return base62.encode(buf);
+    // }
 
-    static base62ToArrayBuffer(base62String: string): ArrayBuffer {
-        const buffer = base62.decode(base62String);
+    // static base62ToArrayBuffer(base62String: string): ArrayBuffer {
+    //     const buffer = base62.decode(base62String);
 
-        // Convert Buffer back to ArrayBuffer
-        return buffer.buffer.slice(
-            buffer.byteOffset,
-            buffer.byteOffset + buffer.byteLength,
-        );
-    }
+    //     // Convert Buffer back to ArrayBuffer
+    //     return buffer.buffer.slice(
+    //         buffer.byteOffset,
+    //         buffer.byteOffset + buffer.byteLength,
+    //     );
+    // }
 
-    static async deflate(data: CharacterTreeRoot): Promise<string> {
+    static async deflate(
+        data: CharacterTreeRoot,
+        validate: boolean = CONFIG.IS_DEV,
+    ): Promise<string> {
         const startTime = Date.now();
 
         // const compressed = await this.compressJson(data);
         const copy = JSON.parse(JSON.stringify(data));
+
         const internedValues = TreeCompressor.internStrings(
             copy,
             InternOption.VALUES,
         );
+
         const internedKeys = TreeCompressor.internStrings(
             internedValues.value,
             InternOption.KEYS,
@@ -229,13 +245,9 @@ export class TreeCompressor {
 
         // log(interned);
 
-        const compressed = pako.deflate(
-            JSON.stringify(interned),
-            {
-                to: ArrayBuffer,
-            } as any, // Cast to any because typing seems to be wrong
-        );
-        const encoded = TreeCompressor.arrayBufferToBase62(compressed);
+        const inputBytes = new TextEncoder().encode(JSON.stringify(interned));
+        const compressed = pako.deflate(inputBytes);
+        const encoded = Buffer.from(compressed).toString('base64');
 
         debug(
             `Reduced size of data by ${this.calculateCompressionRate(
@@ -247,7 +259,7 @@ export class TreeCompressor {
         debug(`Final encoded string length: ${encoded.length}`);
         debug(`Deflation took ${(Date.now() - startTime).toFixed(0)} ms.`);
 
-        if (CONFIG.IS_DEV) {
+        if (validate) {
             const inf = await this.inflate(encoded);
 
             if (!Utils.compareObjects(data, inf)) {
@@ -262,19 +274,22 @@ export class TreeCompressor {
     static async inflate(compressed: string): Promise<ICharacterTreeRoot> {
         const startTime = Date.now();
 
-        const decoded = TreeCompressor.base62ToArrayBuffer(compressed);
-        const decompressed = pako.inflate(decoded, { to: 'string' });
+        const decoded = Buffer.from(compressed, 'base64');
+        const inflated = pako.inflate(decoded);
+        const decompressed = new TextDecoder().decode(inflated);
 
         const {
             o: interned,
             v: valueMap,
             k: keyMap,
         } = JSON.parse(decompressed);
+
         const reversedKeys = TreeCompressor.reverseInternStrings(
             interned,
             keyMap,
             InternOption.KEYS,
         );
+
         const reversedValues = TreeCompressor.reverseInternStrings(
             reversedKeys,
             valueMap,

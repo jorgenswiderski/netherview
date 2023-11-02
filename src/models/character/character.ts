@@ -1167,8 +1167,8 @@ export class Character implements ICharacter {
         );
     }
 
-    async export(): Promise<string> {
-        return encodeURIComponent(await TreeCompressor.deflate(this.root));
+    async export(validate?: boolean): Promise<string> {
+        return TreeCompressor.deflate(this.root, validate);
     }
 
     private static transformToClassTree(

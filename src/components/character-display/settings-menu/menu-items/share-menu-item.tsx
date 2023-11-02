@@ -10,7 +10,6 @@ import Input from '@mui/material/Input';
 import { Box, Paper, Typography } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { WeaveApi } from '../../../../api/weave/weave';
-import { Character } from '../../../../models/character/character';
 import BaseMenuItem from '../base-menu-item';
 import { useCharacter } from '../../../../context/character-context/character-context';
 import { CONFIG } from '../../../../models/config';
@@ -50,13 +49,7 @@ export function ShareMenuItem({
             return;
         }
 
-        const encodedData = await character.export();
-
-        await Character.import(
-            encodedData,
-            character.baseClassData,
-            character.spellData,
-        );
+        const encodedData = await character.export(true);
 
         try {
             let buildId;
