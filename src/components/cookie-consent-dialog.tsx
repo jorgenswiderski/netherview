@@ -24,11 +24,13 @@ const options: { description: string; value: 'true' | 'false' }[] = [
 
 interface CookieConsentDialogProps {
     open?: boolean;
+    onboarding?: boolean;
     onComplete: () => void;
 }
 
 export function CookieConsentDialog({
     open = true,
+    onboarding = false,
     onComplete,
 }: CookieConsentDialogProps) {
     const setAllowCookies = (value: 'true' | 'false'): void => {
@@ -41,7 +43,7 @@ export function CookieConsentDialog({
             <DialogTitle>Cookie Consent</DialogTitle>
             <DialogContent>
                 <Typography paragraph>Choose an option:</Typography>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} mb={2}>
                     {options.map(({ description, value }) => (
                         <Grid item xs={12} key={value}>
                             <Card variant="outlined">
@@ -56,6 +58,11 @@ export function CookieConsentDialog({
                         </Grid>
                     ))}
                 </Grid>
+                {onboarding && (
+                    <Typography>
+                        You can change this later in app settings.
+                    </Typography>
+                )}
             </DialogContent>
         </Dialog>
     );

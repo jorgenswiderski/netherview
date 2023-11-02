@@ -91,7 +91,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     }
 
     if (state === DialogStates.COOKIES) {
-        return <CookieConsentDialog onComplete={updateState} />;
+        return <CookieConsentDialog onComplete={updateState} onboarding />;
     }
 
     return (
