@@ -1,23 +1,41 @@
 import ReactGA from 'react-ga';
 import { CONFIG } from './config';
 
-let initialized = false;
+declare global {
+    interface Window {
+        [key: string]: any;
+    }
+}
 
-export const initGA = (): void => {
-    if (!CONFIG.GOOGLE_ANALYTICS.ID) {
-        return;
+export class GoogleAnalytics {
+    static enabled = false;
+
+    static init(): void {
+        if (!CONFIG.GOOGLE_ANALYTICS.ID) {
+            return;
+        }
+
+        ReactGA.initialize(CONFIG.GOOGLE_ANALYTICS.ID);
+        this.enabled = true;
     }
 
-    ReactGA.initialize(CONFIG.GOOGLE_ANALYTICS.ID);
-    initialized = true;
-};
+    static logPageView(): void {
+        if (!this.enabled) {
+            return;
+        }
 
-export const logPageView = (): void => {
-    if (!initialized) {
-        return;
+        const page = window.location.pathname;
+        ReactGA.set({ page });
+        ReactGA.pageview(page);
     }
 
-    const page = window.location.pathname;
-    ReactGA.set({ page });
-    ReactGA.pageview(page);
-};
+    static enable() {
+        this.enabled = true;
+        window[`ga-disable-${CONFIG.GOOGLE_ANALYTICS.ID}`] = !this.enabled;
+    }
+
+    static disable() {
+        this.enabled = false;
+        window[`ga-disable-${CONFIG.GOOGLE_ANALYTICS.ID}`] = !this.enabled;
+    }
+}

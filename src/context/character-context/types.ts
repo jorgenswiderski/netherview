@@ -1,5 +1,5 @@
 import { Build } from '@jorgenswiderski/tomekeeper-shared/dist/types/builds';
-import { ReactNode, createContext } from 'react';
+import { createContext } from 'react';
 import { Character } from '../../models/character/character';
 
 export interface CharacterContextType {
@@ -12,7 +12,3 @@ export interface CharacterContextType {
 export const CharacterContext = createContext<CharacterContextType | undefined>(
     undefined,
 );
-
-export interface CharacterProviderProps {
-    children: ReactNode;
-}

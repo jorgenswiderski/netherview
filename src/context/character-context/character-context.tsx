@@ -1,13 +1,19 @@
-import React, { useContext, useMemo, useState, useEffect } from 'react';
-import { CircularProgress, Box } from '@mui/material'; // Import CircularProgress for loading spinner
+import React, {
+    useContext,
+    useMemo,
+    useState,
+    useEffect,
+    ReactNode,
+} from 'react';
+import { CircularProgress, Box } from '@mui/material';
 import { Build } from '@jorgenswiderski/tomekeeper-shared/dist/types/builds';
-import {
-    CharacterProviderProps,
-    CharacterContext,
-    CharacterContextType,
-} from './types';
+import { CharacterContext, CharacterContextType } from './types';
 import { useGameData } from '../game-data-context/game-data-context';
 import { Character } from '../../models/character/character';
+
+interface CharacterProviderProps {
+    children: ReactNode;
+}
 
 export function CharacterProvider({ children }: CharacterProviderProps) {
     const { classData, spellData } = useGameData();

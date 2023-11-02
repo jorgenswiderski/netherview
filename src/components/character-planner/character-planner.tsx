@@ -259,6 +259,7 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
                     Reset
                 </DevButton>
             </ButtonBox>
+
             {isTreeVisible ? (
                 <TreeVisualizationOverlay data={character.root} />
             ) : (

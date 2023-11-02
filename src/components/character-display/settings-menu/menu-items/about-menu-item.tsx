@@ -49,16 +49,18 @@ export function AboutMenuItem({ handleClose }: AboutMenuItemProps) {
                             <Typography variant="h6" gutterBottom>
                                 Contact & Support
                             </Typography>
-                            <Typography variant="body1" paragraph>
-                                Have questions, comments, or found a bug? Join
-                                the discord:{' '}
-                                <Link
-                                    href="https://discord.gg/fakelink"
-                                    target="_blank"
-                                >
-                                    discord.gg/fakelink
-                                </Link>
-                            </Typography>
+                            {CONFIG.DISCORD_LINK && (
+                                <Typography variant="body1" paragraph>
+                                    Have questions, comments, or found a bug?
+                                    Join the discord:{' '}
+                                    <Link
+                                        href={CONFIG.DISCORD_LINK}
+                                        target="_blank"
+                                    >
+                                        {CONFIG.DISCORD_LINK}
+                                    </Link>
+                                </Typography>
+                            )}
                         </CardContent>
                     </Card>
 

@@ -22,4 +22,5 @@ export const CONFIG = {
             ? parseInt(process.env.NEXT_PUBLIC_HOTJAR_VERSION, 10)
             : undefined,
     },
+    DISCORD_LINK: process.env.NEXT_PUBLIC_DISCORD_LINK,
 };

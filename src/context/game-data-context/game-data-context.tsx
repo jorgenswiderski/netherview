@@ -1,12 +1,18 @@
-import React, { useContext, useEffect, useState, useMemo } from 'react';
+import React, {
+    useContext,
+    useEffect,
+    useState,
+    useMemo,
+    ReactNode,
+} from 'react';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
-import {
-    GameDataContext,
-    GameDataContextType,
-    GameDataProviderProps,
-} from './types';
+import { GameDataContext, GameDataContextType } from './types';
 import { WeaveApi } from '../../api/weave/weave';
 import { CharacterClassOption } from '../../models/character/types';
+
+interface GameDataProviderProps {
+    children: ReactNode;
+}
 
 export function GameDataProvider({ children }: GameDataProviderProps) {
     const [classData, setClassData] = useState<CharacterClassOption[]>();
