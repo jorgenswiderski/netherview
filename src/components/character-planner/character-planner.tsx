@@ -86,13 +86,6 @@ const PlannerContainer = styled(PaperContainer)`
     position: relative;
 `;
 
-const PlannerHeader = styled(Paper)`
-    width: 100%;
-    text-align: center;
-    padding: 1rem;
-    box-sizing: border-box;
-`;
-
 const TreeVisualizationOverlay = styled(TreeVisualization)`
     position: absolute;
     top: 50%;
@@ -197,27 +190,20 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
             );
         }
 
-        return (
-            <>
-                <PlannerHeader elevation={2}>
-                    <Typography variant="h4">
-                        {nextDecisionInfo.title}
-                    </Typography>
-                </PlannerHeader>
-                {nextDecisionInfo.render ? (
-                    nextDecisionInfo.render({
-                        onDecision: handleDecision,
-                        decision: nextDecision,
-                        character,
-                    })
-                ) : (
-                    <FeaturePicker
-                        onDecision={handleDecision}
-                        decision={nextDecision}
-                        {...nextDecisionInfo.extraFeaturePickerArgs}
-                    />
-                )}
-            </>
+        return nextDecisionInfo.render ? (
+            nextDecisionInfo.render({
+                title: nextDecisionInfo.title,
+                onDecision: handleDecision,
+                decision: nextDecision,
+                character,
+            })
+        ) : (
+            <FeaturePicker
+                title={nextDecisionInfo.title}
+                onDecision={handleDecision}
+                decision={nextDecision}
+                {...nextDecisionInfo.extraFeaturePickerArgs}
+            />
         );
     };
 

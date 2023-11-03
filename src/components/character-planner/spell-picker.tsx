@@ -10,7 +10,6 @@ import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/
 import {
     Card,
     CardActionArea,
-    Button,
     Paper,
     Box,
     Typography,
@@ -21,6 +20,7 @@ import { ICharacter } from '../../models/character/types';
 import { Utils } from '../../models/utils';
 import { ActionTooltip } from '../tooltips/action-tooltip';
 import { WeaveImages } from '../../api/weave/weave-images';
+import { PlannerHeader } from './planner-header/planner-header';
 
 const Container = styled.div`
     display: flex;
@@ -42,18 +42,6 @@ const StyledCard = styled(Card)<{ selected: boolean }>`
 const ActionArea = styled(CardActionArea)`
     position: relative;
     height: 100%;
-`;
-
-const ButtonContainer = styled.div`
-    text-align: center;
-    margin: 10px 0 0;
-    width: 100%;
-`;
-
-const NextButton = styled(Button)`
-    @media (max-width: 600px) {
-        width: 100%;
-    }
 `;
 
 const RowOuterBox = styled(Paper)`
@@ -130,12 +118,14 @@ function SpellCard({ selected, spell, onClick }: SpellCardProps) {
 
 // using 'any' here to resolve cyclic dependency with character-states.tsx
 interface SpellPickerProps {
+    title: string;
     onDecision: (decision: any, value: ICharacterOption[]) => void;
     decision: any;
     character: ICharacter;
 }
 
 export default function SpellPicker({
+    title,
     onDecision,
     decision,
     character,
@@ -204,6 +194,12 @@ export default function SpellPicker({
 
     return (
         <>
+            <PlannerHeader
+                title={title}
+                onButtonClick={handleConfirm}
+                buttonDisabled={selectedSpells.length !== numSpells}
+            />
+
             <Container>
                 <SelectedBoxPaper elevation={2}>
                     <Typography>
@@ -244,18 +240,6 @@ export default function SpellPicker({
                     </RowOuterBox>
                 ))}
             </Container>
-
-            <ButtonContainer>
-                <NextButton
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleConfirm()}
-                    disabled={selectedSpells.length !== numSpells}
-                    fullWidth
-                >
-                    Next
-                </NextButton>
-            </ButtonContainer>
         </>
     );
 }

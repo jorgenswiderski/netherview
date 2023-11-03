@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
-import { Box, Button, Card, CardActionArea, Grid, Paper } from '@mui/material';
+import { Box, Card, CardActionArea, Grid, Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
 import ProspectiveEffects from './prospective-effects/prospective-effects';
 import { WeaveImages } from '../../../api/weave/weave-images';
+import { PlannerHeader } from '../planner-header/planner-header';
 
 enum LayoutType {
     SPARSE,
@@ -17,7 +18,7 @@ enum LayoutType {
 const MainBox = styled(Box)`
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex: 1;
     height: 100%;
     width: 100%;
@@ -107,13 +108,8 @@ const DescriptionPaper = styled(Paper)`
     width: 100%;
 `;
 
-const ButtonContainer = styled.div`
-    text-align: center;
-    margin: 10px 0 0;
-    width: 100%;
-`;
-
 interface FeaturePickerProps {
+    title: string;
     decision: IPendingDecision;
     onDecision: (decision: IPendingDecision, choice: ICharacterOption) => void;
     negate?: boolean;
@@ -122,6 +118,7 @@ interface FeaturePickerProps {
 type CardMediaPropsExtended = CardMediaProps & { layout: LayoutType };
 
 export default function FeaturePicker({
+    title,
     decision,
     onDecision,
     negate,
@@ -179,7 +176,15 @@ export default function FeaturePicker({
 
     return (
         <MainBox>
-            <Box style={{ flex: 1, overflowY: 'auto', width: '100%' }}>
+            <PlannerHeader
+                title={title}
+                onButtonClick={() =>
+                    selectedOption && onDecision(decision, selectedOption)
+                }
+                buttonDisabled={!selectedOption}
+            />
+
+            <Box style={{ overflowY: 'auto', width: '100%' }}>
                 <StyledGridContainer container>
                     {options.map((option) => (
                         <StyledGrid item {...gridSize} key={option.name}>
@@ -231,20 +236,6 @@ export default function FeaturePicker({
                     )}
                 </DescriptionPaper>
             )}
-
-            <ButtonContainer>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() =>
-                        selectedOption && onDecision(decision, selectedOption)
-                    }
-                    disabled={!selectedOption}
-                    fullWidth
-                >
-                    Next
-                </Button>
-            </ButtonContainer>
         </MainBox>
     );
 }
