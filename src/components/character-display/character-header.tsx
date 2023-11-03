@@ -5,8 +5,9 @@ import { CharacterClassInfo } from '../../models/character/types';
 import { useCharacter } from '../../context/character-context/character-context';
 import { WeaveImages } from '../../api/weave/weave-images';
 import SettingsMenu from './settings-menu/settings-menu';
+import { ShareButton } from './share-button';
 
-const StyledSettingsMenu = styled(SettingsMenu)`
+const ButtonBox = styled(Box)`
     position: absolute;
     right: 0.75rem;
     top: 0.75rem;
@@ -58,7 +59,10 @@ export function CharacterHeader() {
         <Paper elevation={2} style={{ padding: '1rem', position: 'relative' }}>
             <Box display="flex" flexDirection="column">
                 <Box display="flex" alignItems="stretch">
-                    <StyledSettingsMenu />
+                    <ButtonBox>
+                        <ShareButton />
+                        <SettingsMenu />
+                    </ButtonBox>
                     {imageName && (
                         <Box
                             position="relative"
