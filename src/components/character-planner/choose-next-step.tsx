@@ -77,14 +77,7 @@ export function ChooseNextStep() {
                             visible(character),
                     )
                     .map(({ label, onClick }) => (
-                        <Grid
-                            item
-                            xs={12}
-                            sm={6}
-                            md={6}
-                            lg={6}
-                            sx={{ flex: 1 }}
-                        >
+                        <Grid item xs={12} sm={6} sx={{ flex: 1 }}>
                             <Card
                                 key={label}
                                 elevation={2}
