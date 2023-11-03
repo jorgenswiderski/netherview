@@ -68,14 +68,14 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
             router.events.on(
                 'routeChangeComplete',
-                GoogleAnalytics.logPageView,
+                GoogleAnalytics.logPageView.bind(GoogleAnalytics),
             );
 
             // eslint-disable-next-line consistent-return
             return () => {
                 router.events.off(
                     'routeChangeComplete',
-                    GoogleAnalytics.logPageView,
+                    GoogleAnalytics.logPageView.bind(GoogleAnalytics),
                 );
             };
             // eslint-disable-next-line no-else-return
