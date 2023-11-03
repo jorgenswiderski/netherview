@@ -21,7 +21,7 @@ export class CharacterTreeAction
         public action: IAction,
         choiceId: string,
     ) {
-        super(action, ActionEffectType.SPELL_ACTION, choiceId);
+        super(action, ActionEffectType.CLASS_ACTION, choiceId);
         this.choiceId = choiceId;
     }
 

@@ -103,6 +103,8 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         [settings, updateState],
     ) as UserSettings;
 
+    useEffect(() => updateState(), []);
+
     if (state === DialogStates.WELCOME) {
         return <WelcomeDialog onComplete={updateState} />;
     }
