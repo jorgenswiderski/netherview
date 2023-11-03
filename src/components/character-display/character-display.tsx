@@ -72,11 +72,6 @@ const LeftSection = styled(LeftRightBase)`
     }
 `;
 
-const StyledPaper = styled(Paper)`
-    padding: 1rem;
-    flex: 1;
-`;
-
 const RightSection = styled(LeftRightBase)`
     // flex-wrap: wrap;
 `;
@@ -103,9 +98,7 @@ export default function CharacterDisplay() {
                     {background && (
                         <CharacterBackground background={background} />
                     )}
-                    <StyledPaper elevation={2}>
-                        <EquipmentPanel />
-                    </StyledPaper>
+                    <EquipmentPanel />
                 </LeftSection>
 
                 <RightSection>

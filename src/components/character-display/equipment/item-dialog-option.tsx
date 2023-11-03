@@ -44,6 +44,11 @@ const CardIcon = styled(CardMedia)<
     border: 2px solid;
     border-color: ${(props) => props.color};
     box-shadow: 0 0 6px ${(props) => props.color};
+
+    @media (max-width: 768px) {
+        width: 60px;
+        height: 60px;
+    }
 `;
 
 const AcLabel = styled(Typography)`
@@ -51,6 +56,12 @@ const AcLabel = styled(Typography)`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+`;
+
+const ItemLabel = styled(Typography)`
+    @media (max-width: 768px) {
+        font-size: 1rem;
+    }
 `;
 
 const HeaderBox = styled(Box)`
@@ -92,9 +103,9 @@ export function ItemDialogOption({ item, ...props }: ItemDialogOptionProps) {
                                 </AcLabel>
                             </Box>
                         )}
-                        <Typography variant="h6" color={color}>
+                        <ItemLabel variant="h6" color={color}>
                             {item.name}
-                        </Typography>
+                        </ItemLabel>
                     </HeaderBox>
                     <Subheader />
                 </ItemDetails>
