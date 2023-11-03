@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { IconButton, Menu } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { ManageLevelsMenuItem } from './menu-items/manage-levels-menu-item';
 import { AboutMenuItem } from './menu-items/about-menu-item';
 import { SettingsMenuItem } from './menu-items/settings-menu-item';
 import { AppSettingsDialog } from '../../app-settings-dialog';
@@ -31,7 +30,6 @@ export default function SettingsMenu({ ...props }) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <ManageLevelsMenuItem handleClose={handleClose} />
                 <SettingsMenuItem
                     handleClose={() => {
                         setShowAppSettings(true);

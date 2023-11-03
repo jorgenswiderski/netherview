@@ -17,7 +17,7 @@ import {
 import FeaturePicker from './feature-picker/feature-picker';
 import CharacterDisplay from '../character-display/character-display';
 import TreeVisualization from '../tree-visualization';
-import { LevelUp } from './level-up';
+import { ChooseNextStep } from './choose-next-step';
 import { useCharacter } from '../../context/character-context/character-context';
 import { useSettings } from '../../context/user-settings-context/user-settings-context';
 
@@ -157,11 +157,6 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
         [character],
     );
 
-    const levelUpCharacter = useCallback(() => {
-        const newCharacter = character.levelUp();
-        setCharacter(newCharacter);
-    }, [character]);
-
     useEffect(() => {
         if (build?.id) {
             router.push('/', `/share/${build.id}`, {
@@ -176,11 +171,7 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
 
     const renderDecisionPanel = () => {
         if (!nextDecision) {
-            if (character.canLevel()) {
-                return <LevelUp onClick={levelUpCharacter} />;
-            }
-
-            return null;
+            return <ChooseNextStep />;
         }
 
         if (!nextDecisionInfo) {

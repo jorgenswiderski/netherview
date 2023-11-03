@@ -27,8 +27,8 @@ export function ShareButton() {
     const tooltipText = useMemo(() => {
         if (disabled) {
             return `Can't ${
-                build?.id ? 'share' : 'save'
-            } build while editing the character in the right panel`;
+                build?.id ? 'save' : 'share'
+            } build while levelling up`;
         }
 
         return build?.id ? 'Update shared build' : 'Share';
