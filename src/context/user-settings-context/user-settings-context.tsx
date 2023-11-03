@@ -1,4 +1,10 @@
-import React, { useContext, useState, ReactNode, useEffect } from 'react';
+import React, {
+    useContext,
+    useState,
+    ReactNode,
+    useEffect,
+    useMemo,
+} from 'react';
 import { useRouter } from 'next/router';
 import { SettingsContext, SettingsContextType, UserSettings } from './types';
 import { WelcomeDialog } from '../../components/welcome-dialog';
@@ -6,6 +12,7 @@ import { CookieConsentDialog } from '../../components/cookie-consent-dialog';
 import { HotjarService } from '../../models/hotjar';
 import { GoogleAnalytics } from '../../models/google-analytics';
 import { SentryService } from '../../models/sentry-service';
+import { CONFIG } from '../../models/config';
 
 enum DialogStates {
     WELCOME,
@@ -37,16 +44,18 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     };
 
     const [state, setState] = useState<DialogStates>(getState);
+
     const [settings, setSettings] = useState<Partial<UserSettings>>();
 
     // eslint-disable-next-line consistent-return
     useEffect(() => {
+        if (CONFIG.IS_DEV) {
+            return;
+        }
+
         if (settings?.allowNonNecessaryCookies) {
             HotjarService.enable();
-
-            // if (!CONFIG.IS_DEV) {
             SentryService.enable();
-            // }
 
             // Initialize Google Analytics
             const mustLog = !GoogleAnalytics.enabled;
@@ -62,6 +71,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
                 GoogleAnalytics.logPageView,
             );
 
+            // eslint-disable-next-line consistent-return
             return () => {
                 router.events.off(
                     'routeChangeComplete',
@@ -83,8 +93,15 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
             allowNonNecessaryCookies:
                 localStorage.getItem('nonNecessaryCookies') === 'true',
             welcomed: localStorage.getItem('welcomed') === 'true',
+            debugMode:
+                CONFIG.IS_DEV || localStorage.getItem('debugMode') === 'true',
         });
     };
+
+    const contextValue = useMemo(
+        () => ({ ...settings, updateSettingsState: updateState }),
+        [settings, updateState],
+    ) as UserSettings;
 
     if (state === DialogStates.WELCOME) {
         return <WelcomeDialog onComplete={updateState} />;
@@ -95,7 +112,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     }
 
     return (
-        <SettingsContext.Provider value={settings as UserSettings}>
+        <SettingsContext.Provider value={contextValue}>
             {children}
         </SettingsContext.Provider>
     );

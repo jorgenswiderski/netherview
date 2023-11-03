@@ -20,6 +20,7 @@ import TreeVisualization from '../tree-visualization';
 import SettingsMenu from '../character-display/settings-menu/settings-menu';
 import { LevelUp } from './level-up';
 import { useCharacter } from '../../context/character-context/character-context';
+import { useSettings } from '../../context/user-settings-context/user-settings-context';
 
 const Container = styled(Box)`
     display: flex;
@@ -40,7 +41,7 @@ const Container = styled(Box)`
     }
 `;
 
-const ButtonBox = styled(Box)`
+const DebugBar = styled(Box)`
     position: absolute;
     top: 10px;
     right: 10px;
@@ -114,6 +115,7 @@ interface CharacterPlannerProps {
 export default function CharacterPlanner({ character }: CharacterPlannerProps) {
     const router = useRouter();
     const { build, setCharacter } = useCharacter();
+    const { debugMode } = useSettings();
 
     const [isTreeVisible, setIsTreeVisible] = useState(false);
     const [loading] = useState(false);
@@ -241,24 +243,26 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
 
     return (
         <>
-            <ButtonBox>
-                <StyledSettingsMenu />
-                <DevButton
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setIsTreeVisible(!isTreeVisible)}
-                >
-                    Toggle Tree
-                </DevButton>
+            {debugMode && (
+                <DebugBar>
+                    <StyledSettingsMenu />
+                    <DevButton
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setIsTreeVisible(!isTreeVisible)}
+                    >
+                        Toggle Tree
+                    </DevButton>
 
-                <DevButton
-                    variant="contained"
-                    color="primary"
-                    onClick={handleReset}
-                >
-                    Reset
-                </DevButton>
-            </ButtonBox>
+                    <DevButton
+                        variant="contained"
+                        color="primary"
+                        onClick={handleReset}
+                    >
+                        Reset
+                    </DevButton>
+                </DebugBar>
+            )}
 
             {isTreeVisible ? (
                 <TreeVisualizationOverlay data={character.root} />
