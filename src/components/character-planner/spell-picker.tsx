@@ -90,6 +90,14 @@ const SelectedBoxPaper = styled(Paper)`
 
 const RowLabel = styled(Typography)`
     ${Utils.textShadow}
+
+    width: 2rem;
+    padding: 0 1.5rem;
+    text-align: center;
+
+    @media (max-width: 768px) {
+        padding: 0 0.5rem;
+    }
 `;
 
 interface SpellCardProps {
@@ -222,16 +230,7 @@ export default function SpellPicker({
                 {spellsByLevel.map((levelSpells, idx) => (
                     // eslint-disable-next-line react/no-array-index-key
                     <RowOuterBox key={idx} elevation={2}>
-                        <RowLabel
-                            variant="h5"
-                            style={{
-                                width: '2rem',
-                                padding: '0 1.5rem',
-                                textAlign: 'center',
-                            }}
-                        >
-                            {romanNumerals[idx]}
-                        </RowLabel>
+                        <RowLabel variant="h5">{romanNumerals[idx]}</RowLabel>
                         <RowInnerBox>
                             {levelSpells.map((spell) => (
                                 <SpellCard

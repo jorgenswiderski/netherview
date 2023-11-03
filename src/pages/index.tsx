@@ -19,6 +19,7 @@ const PageContainer = styled.div`
     overflow-y: auto;
 
     @media (max-width: 768px) {
+        height: auto;
         padding: 20px; // Reduced padding for mobile devices
     }
 

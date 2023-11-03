@@ -1,19 +1,30 @@
 // equipment-panel.tsx
 import React, { useCallback, useMemo } from 'react';
-import { Typography, Grid, Box } from '@mui/material';
+import { Typography, Grid, Box, useMediaQuery, Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import {
     EquipmentSlot,
     IEquipmentItem,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
+import { useTheme } from '@mui/material/styles';
 import { EquipmentSlotCard } from './equipment-slot';
 import { useCharacter } from '../../../context/character-context/character-context';
+
+const StyledPaper = styled(Paper)`
+    padding: 1rem;
+    flex: 1;
+`;
 
 const MainContainer = styled(Box)`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    @media (max-width: 768px) {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
 `;
 
 const TopContainer = styled(Box)`
@@ -39,10 +50,16 @@ const WeaponContainer = styled(Box)`
 
 const StyledGrid = styled(Grid)`
     margin: 8px;
+
+    @media (max-width: 768px) {
+        margin: 0;
+    }
 `;
 
 export function EquipmentPanel() {
     const { character, setCharacter } = useCharacter();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const items = useMemo(() => character.getEquipment(), [character]);
 
@@ -68,78 +85,63 @@ export function EquipmentPanel() {
         [character],
     );
 
+    const renderEquipmentSlot = (slot: EquipmentSlot) => {
+        return (
+            <StyledGrid item key={slot}>
+                <EquipmentSlotCard
+                    slot={slot}
+                    onEquipItem={(item: IEquipmentItem) =>
+                        onEquipItem(slot, item)
+                    }
+                    item={items[slot]?.item}
+                    disabled={disabledSlots[slot]}
+                    filter={slotFilters[slot]}
+                />
+            </StyledGrid>
+        );
+    };
+
     return (
-        <>
+        <StyledPaper elevation={2}>
             <Typography variant="h6" align="left" gutterBottom>
                 Equipped Items:
             </Typography>
             <MainContainer>
-                <TopContainer>
-                    <Column>
-                        {equipmentSlots.slice(0, 4).map((slot) => (
-                            <StyledGrid item key={slot}>
-                                <EquipmentSlotCard
-                                    slot={slot}
-                                    onEquipItem={(item: IEquipmentItem) =>
-                                        onEquipItem(slot, item)
-                                    }
-                                    item={items[slot]?.item}
-                                    disabled={disabledSlots[slot]}
-                                    filter={slotFilters[slot]}
-                                />
-                            </StyledGrid>
-                        ))}
-                    </Column>
-                    <Column>
-                        {equipmentSlots.slice(4, 8).map((slot) => (
-                            <StyledGrid item key={slot}>
-                                <EquipmentSlotCard
-                                    slot={slot}
-                                    onEquipItem={(item: IEquipmentItem) =>
-                                        onEquipItem(slot, item)
-                                    }
-                                    item={items[slot]?.item}
-                                    disabled={disabledSlots[slot]}
-                                    filter={slotFilters[slot]}
-                                />
-                            </StyledGrid>
-                        ))}
-                    </Column>
-                </TopContainer>
-                <BottomContainer>
-                    <WeaponContainer>
-                        {equipmentSlots.slice(8, 10).map((slot) => (
-                            <StyledGrid item key={slot}>
-                                <EquipmentSlotCard
-                                    slot={slot}
-                                    onEquipItem={(item: IEquipmentItem) =>
-                                        onEquipItem(slot, item)
-                                    }
-                                    item={items[slot]?.item}
-                                    disabled={disabledSlots[slot]}
-                                    filter={slotFilters[slot]}
-                                />
-                            </StyledGrid>
-                        ))}
-                    </WeaponContainer>
+                {!isMobile && (
+                    <>
+                        <TopContainer>
+                            <Column>
+                                {equipmentSlots
+                                    .slice(0, 4)
+                                    .map(renderEquipmentSlot)}
+                            </Column>
+                            <Column>
+                                {equipmentSlots
+                                    .slice(4, 8)
+                                    .map(renderEquipmentSlot)}
+                            </Column>
+                        </TopContainer>
+                        <BottomContainer>
+                            <WeaponContainer>
+                                {equipmentSlots
+                                    .slice(8, 10)
+                                    .map(renderEquipmentSlot)}
+                            </WeaponContainer>
 
-                    <WeaponContainer>
-                        {equipmentSlots.slice(10, 12).map((slot) => (
-                            <StyledGrid item key={slot}>
-                                <EquipmentSlotCard
-                                    slot={slot}
-                                    onEquipItem={(item: IEquipmentItem) =>
-                                        onEquipItem(slot, item)
-                                    }
-                                    item={items[slot]?.item}
-                                    disabled={disabledSlots[slot]}
-                                    filter={slotFilters[slot]}
-                                />
-                            </StyledGrid>
-                        ))}
-                    </WeaponContainer>
-                </BottomContainer>
+                            <WeaponContainer>
+                                {equipmentSlots
+                                    .slice(10, 12)
+                                    .map(renderEquipmentSlot)}
+                            </WeaponContainer>
+                        </BottomContainer>
+                    </>
+                )}
+                {isMobile && (
+                    <Grid container spacing={1}>
+                        {equipmentSlots.map(renderEquipmentSlot)}
+                    </Grid>
+                )}
             </MainContainer>
-        </>
+        </StyledPaper>
     );
 }
