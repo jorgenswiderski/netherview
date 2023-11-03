@@ -8,7 +8,9 @@ import {
     CircularProgress,
     Paper,
     Typography,
+    useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
@@ -99,6 +101,8 @@ interface CharacterPlannerProps {
 }
 
 export default function CharacterPlanner({ character }: CharacterPlannerProps) {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const router = useRouter();
     const { build, setCharacter } = useCharacter();
     const { debugMode } = useSettings();
@@ -158,8 +162,12 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
         }
     }, [build?.id]);
 
-    const renderDecisionPanel = () => {
+    const decisionPanel = useMemo(() => {
         if (!nextDecision) {
+            if (isMobile) {
+                return null;
+            }
+
             return <ChooseNextStep />;
         }
 
@@ -205,7 +213,7 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
                 {...nextDecisionInfo.extraFeaturePickerArgs}
             />
         );
-    };
+    }, [character, nextDecision, nextDecisionInfo]);
 
     return (
         <>
@@ -230,7 +238,9 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
                             <CharacterDisplay />
                         )}
 
-                    <PlannerContainer>{renderDecisionPanel()}</PlannerContainer>
+                    {decisionPanel && (
+                        <PlannerContainer>{decisionPanel}</PlannerContainer>
+                    )}
                 </Container>
             )}
         </>

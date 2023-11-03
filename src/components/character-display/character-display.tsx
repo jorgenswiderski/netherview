@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
 import styled from '@emotion/styled';
-import { Paper } from '@mui/material';
+import { Paper, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import AbilityScoresTable from './ability-scores';
 import { CharacterEffects } from './character-effects';
 import { CharacterHeader } from './character-header';
 import { EquipmentPanel } from './equipment/equipment-panel';
 import CharacterBackground from './character-background';
 import { useCharacter } from '../../context/character-context/character-context';
+import { ChooseNextStep } from '../character-planner/choose-next-step';
 
 const PaperContainer = styled(Paper)`
     display: flex;
@@ -77,6 +79,8 @@ const RightSection = styled(LeftRightBase)`
 `;
 
 export default function CharacterDisplay() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { character } = useCharacter();
 
     const abilityScores = useMemo(
@@ -89,6 +93,7 @@ export default function CharacterDisplay() {
     return (
         <PaperContainer>
             <CharacterHeader />
+            {isMobile && !character.getNextDecision() && <ChooseNextStep />}
 
             <ContentSection>
                 <LeftSection>
