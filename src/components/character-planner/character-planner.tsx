@@ -165,10 +165,6 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
         }
     }, [build?.id]);
 
-    const handleReset = () => {
-        router.reload();
-    };
-
     const renderDecisionPanel = () => {
         if (!nextDecision) {
             return <ChooseNextStep />;
@@ -235,14 +231,6 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
                         onClick={() => setIsTreeVisible(!isTreeVisible)}
                     >
                         Toggle Tree
-                    </DevButton>
-
-                    <DevButton
-                        variant="contained"
-                        color="primary"
-                        onClick={handleReset}
-                    >
-                        Reset
                     </DevButton>
                 </DebugBar>
             )}
