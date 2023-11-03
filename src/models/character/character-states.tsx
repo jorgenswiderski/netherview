@@ -18,6 +18,7 @@ import LevelManager from '../../components/level-manager/level-manager';
 import { CharacterTreeBackground } from './character-tree-node/character-tree-background';
 
 export interface CharacterWidgetProps {
+    title: string;
     onDecision: (
         decision: IPendingDecision,
         value: ICharacterOption | ICharacterOption[],

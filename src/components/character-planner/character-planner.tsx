@@ -8,7 +8,9 @@ import {
     CircularProgress,
     Paper,
     Typography,
+    useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
@@ -17,7 +19,7 @@ import {
 import FeaturePicker from './feature-picker/feature-picker';
 import CharacterDisplay from '../character-display/character-display';
 import TreeVisualization from '../tree-visualization';
-import { LevelUp } from './level-up';
+import { ChooseNextStep } from './choose-next-step';
 import { useCharacter } from '../../context/character-context/character-context';
 import { useSettings } from '../../context/user-settings-context/user-settings-context';
 
@@ -86,13 +88,6 @@ const PlannerContainer = styled(PaperContainer)`
     position: relative;
 `;
 
-const PlannerHeader = styled(Paper)`
-    width: 100%;
-    text-align: center;
-    padding: 1rem;
-    box-sizing: border-box;
-`;
-
 const TreeVisualizationOverlay = styled(TreeVisualization)`
     position: absolute;
     top: 50%;
@@ -106,6 +101,8 @@ interface CharacterPlannerProps {
 }
 
 export default function CharacterPlanner({ character }: CharacterPlannerProps) {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const router = useRouter();
     const { build, setCharacter } = useCharacter();
     const { debugMode } = useSettings();
@@ -157,11 +154,6 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
         [character],
     );
 
-    const levelUpCharacter = useCallback(() => {
-        const newCharacter = character.levelUp();
-        setCharacter(newCharacter);
-    }, [character]);
-
     useEffect(() => {
         if (build?.id) {
             router.push('/', `/share/${build.id}`, {
@@ -170,17 +162,13 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
         }
     }, [build?.id]);
 
-    const handleReset = () => {
-        router.reload();
-    };
-
-    const renderDecisionPanel = () => {
+    const decisionPanel = useMemo(() => {
         if (!nextDecision) {
-            if (character.canLevel()) {
-                return <LevelUp onClick={levelUpCharacter} />;
+            if (isMobile) {
+                return null;
             }
 
-            return null;
+            return <ChooseNextStep />;
         }
 
         if (!nextDecisionInfo) {
@@ -210,29 +198,22 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
             );
         }
 
-        return (
-            <>
-                <PlannerHeader elevation={2}>
-                    <Typography variant="h4">
-                        {nextDecisionInfo.title}
-                    </Typography>
-                </PlannerHeader>
-                {nextDecisionInfo.render ? (
-                    nextDecisionInfo.render({
-                        onDecision: handleDecision,
-                        decision: nextDecision,
-                        character,
-                    })
-                ) : (
-                    <FeaturePicker
-                        onDecision={handleDecision}
-                        decision={nextDecision}
-                        {...nextDecisionInfo.extraFeaturePickerArgs}
-                    />
-                )}
-            </>
+        return nextDecisionInfo.render ? (
+            nextDecisionInfo.render({
+                title: nextDecisionInfo.title,
+                onDecision: handleDecision,
+                decision: nextDecision,
+                character,
+            })
+        ) : (
+            <FeaturePicker
+                title={nextDecisionInfo.title}
+                onDecision={handleDecision}
+                decision={nextDecision}
+                {...nextDecisionInfo.extraFeaturePickerArgs}
+            />
         );
-    };
+    }, [character, nextDecision, nextDecisionInfo]);
 
     return (
         <>
@@ -244,14 +225,6 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
                         onClick={() => setIsTreeVisible(!isTreeVisible)}
                     >
                         Toggle Tree
-                    </DevButton>
-
-                    <DevButton
-                        variant="contained"
-                        color="primary"
-                        onClick={handleReset}
-                    >
-                        Reset
                     </DevButton>
                 </DebugBar>
             )}
@@ -265,7 +238,9 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
                             <CharacterDisplay />
                         )}
 
-                    <PlannerContainer>{renderDecisionPanel()}</PlannerContainer>
+                    {decisionPanel && (
+                        <PlannerContainer>{decisionPanel}</PlannerContainer>
+                    )}
                 </Container>
             )}
         </>

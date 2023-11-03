@@ -13,11 +13,13 @@ import { AbilitiesBonusType, AbilitiesCostMode } from './types';
 
 // using 'any' here to resolve cyclic dependency with character-states.tsx
 interface CharacterWidgetProps {
+    title: string;
     onDecision: (decision: any, value: ICharacterOption) => void;
     decision: any;
 }
 
 export default function AbilitiesPointBuy({
+    title,
     onDecision,
     decision,
 }: CharacterWidgetProps) {
@@ -82,6 +84,7 @@ export default function AbilitiesPointBuy({
 
     return (
         <AbilitiesUI
+            title={title}
             costMode={AbilitiesCostMode.INCREMENTAL}
             onDecision={handleConfirm}
             bonuses={bonuses}

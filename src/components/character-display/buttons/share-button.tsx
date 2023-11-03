@@ -7,22 +7,15 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import Input from '@mui/material/Input';
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { WeaveApi } from '../../../../api/weave/weave';
-import BaseMenuItem from '../base-menu-item';
-import { useCharacter } from '../../../../context/character-context/character-context';
-import { CONFIG } from '../../../../models/config';
-import { useNotification } from '../../../../context/notification-context/notification-context';
-import { PACKAGE_VERSION } from '../../../../../version';
+import { WeaveApi } from '../../../api/weave/weave';
+import { useCharacter } from '../../../context/character-context/character-context';
+import { CONFIG } from '../../../models/config';
+import { useNotification } from '../../../context/notification-context/notification-context';
+import { PACKAGE_VERSION } from '../../../../version';
 
-interface ShareMenuItemProps {
-    handleClose: () => void;
-}
-
-export function ShareMenuItem({
-    handleClose: handleCloseMenu,
-}: ShareMenuItemProps) {
+export function ShareButton() {
     const { character, setBuild, build } = useCharacter();
     const { showNotification } = useNotification();
 
@@ -30,6 +23,16 @@ export function ShareMenuItem({
     const [sharedUrl, setSharedUrl] = useState('');
 
     const disabled = useMemo(() => !character.canExport(), [character]);
+
+    const tooltipText = useMemo(() => {
+        if (disabled) {
+            return `Can't ${
+                build?.id ? 'save' : 'share'
+            } build while levelling up`;
+        }
+
+        return build?.id ? 'Update shared build' : 'Share';
+    }, [build?.id, disabled]);
 
     if (build?.id && !build.mayEdit) {
         return null;
@@ -45,13 +48,13 @@ export function ShareMenuItem({
     };
 
     const handleShareOrUpdate = async () => {
-        if (!character.canExport()) {
-            return;
-        }
-
-        const encodedData = await character.export(true);
-
         try {
+            if (!character.canExport()) {
+                return;
+            }
+
+            const encodedData = await character.export(true);
+
             let buildId;
 
             if (build?.id) {
@@ -62,7 +65,7 @@ export function ShareMenuItem({
                 );
 
                 buildId = build.id;
-                showNotification('Build updated successfully!');
+                showNotification('Shared build updated successfully!');
             } else {
                 buildId = await WeaveApi.builds.create(
                     encodedData,
@@ -87,13 +90,17 @@ export function ShareMenuItem({
 
     return (
         <>
-            <BaseMenuItem
-                handleClose={handleCloseMenu}
-                label={build?.id ? 'Save' : 'Share'}
-                onClick={handleShareOrUpdate}
-                disabled={disabled}
-                icon={build?.id ? <SaveIcon /> : <ShareIcon />}
-            />
+            <Tooltip title={tooltipText}>
+                {/* Wrap in span so tooltip doesn't get disabled */}
+                <span>
+                    <IconButton
+                        onClick={handleShareOrUpdate}
+                        disabled={disabled}
+                    >
+                        {build?.id ? <SaveIcon /> : <ShareIcon />}
+                    </IconButton>
+                </span>
+            </Tooltip>
 
             {isDialogOpen && (
                 <Dialog
@@ -127,8 +134,7 @@ export function ShareMenuItem({
                                 />
                                 <Typography variant="body2">
                                     You can update the shared build at any time
-                                    by selecting the &quot;Save&quot; option
-                                    from the menu.
+                                    by clicking the &quot;Save&quot; button.
                                 </Typography>
                             </Box>
                         </Paper>

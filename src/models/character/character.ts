@@ -1169,7 +1169,11 @@ export class Character implements ICharacter {
 
     canExport(): boolean {
         return (
-            this.pendingDecisions.length === 0 && this.pendingSteps.length === 0
+            this.pendingSteps.length === 0 &&
+            (this.pendingDecisions.length === 0 ||
+                (this.pendingDecisions.length === 1 &&
+                    this.pendingDecisions[0].type ===
+                        CharacterPlannerStep.MANAGE_LEVELS))
         );
     }
 

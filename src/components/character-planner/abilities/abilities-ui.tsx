@@ -11,6 +11,7 @@ import {
 import styled from '@emotion/styled';
 import { AbilityScores } from '../../../models/character/types';
 import { AbilitiesBonusType, AbilitiesCostMode } from './types';
+import { PlannerHeader } from '../planner-header/planner-header';
 
 const MainBox = styled(Box)`
     display: flex;
@@ -24,10 +25,6 @@ const MainBox = styled(Box)`
     height: 100%;
     width: 100%;
     overflow: hidden;
-`;
-
-const ButtonBox = styled(Box)`
-    width: 100%;
 `;
 
 function Dot({
@@ -58,6 +55,7 @@ function Dot({
 }
 
 interface AbilitiesUIProps {
+    title: string;
     baseAbilities?: AbilityScores;
     abilities?: AbilityScores;
     pointsAvailable?: number;
@@ -71,6 +69,7 @@ interface AbilitiesUIProps {
 }
 
 export default function AbilitiesUI({
+    title,
     baseAbilities = {
         Strength: 8,
         Dexterity: 8,
@@ -186,6 +185,12 @@ export default function AbilitiesUI({
 
     return (
         <MainBox>
+            <PlannerHeader
+                title={title}
+                onButtonClick={handleConfirm}
+                buttonDisabled={!isButtonEnabled}
+            />
+
             <Box style={{ flex: 1, overflow: 'hidden' }}>
                 <Typography variant="h6">
                     Points Used: {pointsSpent} / {pointsAvailable}
@@ -288,18 +293,6 @@ export default function AbilitiesUI({
 
                 {children}
             </Box>
-
-            <ButtonBox>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleConfirm}
-                    disabled={!isButtonEnabled}
-                    fullWidth
-                >
-                    Next
-                </Button>
-            </ButtonBox>
         </MainBox>
     );
 }
