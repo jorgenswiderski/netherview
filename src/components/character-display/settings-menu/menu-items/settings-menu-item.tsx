@@ -18,7 +18,7 @@ export function SettingsMenuItem({ handleClose }: SettingsMenuItemProps) {
     return (
         <BaseMenuItem
             handleClose={handleClose}
-            label="App Settings"
+            label="App settings"
             onClick={onClick}
             icon={<SettingsIcon />}
         />

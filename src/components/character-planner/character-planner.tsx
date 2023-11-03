@@ -17,7 +17,6 @@ import {
 import FeaturePicker from './feature-picker/feature-picker';
 import CharacterDisplay from '../character-display/character-display';
 import TreeVisualization from '../tree-visualization';
-import SettingsMenu from '../character-display/settings-menu/settings-menu';
 import { LevelUp } from './level-up';
 import { useCharacter } from '../../context/character-context/character-context';
 import { useSettings } from '../../context/user-settings-context/user-settings-context';
@@ -100,12 +99,6 @@ const TreeVisualizationOverlay = styled(TreeVisualization)`
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10; // Ensures it's above other content
-`;
-
-const StyledSettingsMenu = styled(SettingsMenu)`
-    position: absolute;
-    top: 10px;
-    right: 10px;
 `;
 
 interface CharacterPlannerProps {
@@ -245,7 +238,6 @@ export default function CharacterPlanner({ character }: CharacterPlannerProps) {
         <>
             {debugMode && (
                 <DebugBar>
-                    <StyledSettingsMenu />
                     <DevButton
                         variant="contained"
                         color="primary"

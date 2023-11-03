@@ -1,8 +1,16 @@
 import React, { useMemo } from 'react';
 import { Paper, Box, Typography } from '@mui/material';
+import styled from '@emotion/styled';
 import { CharacterClassInfo } from '../../models/character/types';
 import { useCharacter } from '../../context/character-context/character-context';
 import { WeaveImages } from '../../api/weave/weave-images';
+import SettingsMenu from './settings-menu/settings-menu';
+
+const StyledSettingsMenu = styled(SettingsMenu)`
+    position: absolute;
+    right: 0.75rem;
+    top: 0.75rem;
+`;
 
 export function CharacterHeader() {
     const { character } = useCharacter();
@@ -47,9 +55,10 @@ export function CharacterHeader() {
     const subrace = useMemo(() => character.getSubrace(), [character]);
 
     return (
-        <Paper elevation={2} style={{ padding: '1rem' }}>
+        <Paper elevation={2} style={{ padding: '1rem', position: 'relative' }}>
             <Box display="flex" flexDirection="column">
                 <Box display="flex" alignItems="stretch">
+                    <StyledSettingsMenu />
                     {imageName && (
                         <Box
                             position="relative"
