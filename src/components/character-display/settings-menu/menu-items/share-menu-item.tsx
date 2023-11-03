@@ -45,13 +45,13 @@ export function ShareMenuItem({
     };
 
     const handleShareOrUpdate = async () => {
-        if (!character.canExport()) {
-            return;
-        }
-
-        const encodedData = await character.export(true);
-
         try {
+            if (!character.canExport()) {
+                return;
+            }
+
+            const encodedData = await character.export(true);
+
             let buildId;
 
             if (build?.id) {
