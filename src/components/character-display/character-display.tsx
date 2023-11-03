@@ -21,8 +21,10 @@ const PaperContainer = styled(Paper)`
     overflow-y: hidden;
 
     @media (max-width: 768px) {
+        min-width: unset;
         width: 100%;
         box-sizing: border-box;
+        overflow-y: unset;
     }
 `;
 
@@ -35,16 +37,39 @@ const ContentSection = styled.div`
     gap: 1rem;
     flex: 1;
     overflow-y: hidden;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        box-sizing: border-box;
+        flex-direction: column;
+        overflow-y: unset;
+    }
 `;
 
-const LeftSection = styled.div`
+const LeftRightBase = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    max-width: 333px;
+
     height: 100%;
     overflow-y: auto;
+
     flex: 1;
+
+    @media (max-width: 768px) {
+        align-items: stretch;
+        overflow-y: unset;
+    }
+`;
+
+const LeftSection = styled(LeftRightBase)`
+    max-width: 333px;
+
+    @media (max-width: 768px) {
+        max-width: unset;
+        width: 100%;
+        box-sizing: border-box;
+    }
 `;
 
 const StyledPaper = styled(Paper)`
@@ -52,15 +77,8 @@ const StyledPaper = styled(Paper)`
     flex: 1;
 `;
 
-const RightSection = styled.div`
-    flex: 1;
-    overflow-y: auto;
-
-    display: flex;
-    flex-direction: column;
+const RightSection = styled(LeftRightBase)`
     // flex-wrap: wrap;
-    gap: 1rem;
-    height: 100%;
 `;
 
 export default function CharacterDisplay() {
