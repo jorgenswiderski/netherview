@@ -35,7 +35,7 @@ export class EquipmentItem implements IEquipmentItem, StaticallyReferenceable {
     uid?: string;
     effects: GrantableEffect[];
     source?: string;
-    notes: string[];
+    // notes: string[];
     id: number;
 
     constructor(item: IEquipmentItem) {
@@ -56,7 +56,7 @@ export class EquipmentItem implements IEquipmentItem, StaticallyReferenceable {
         this.uid = item.uid;
         this.effects = item.effects;
         this.source = item.source;
-        this.notes = item.notes;
+        // this.notes = item.notes;
         this.id = item.id;
 
         ref.pool.set(this.id, this);
