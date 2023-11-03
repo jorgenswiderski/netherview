@@ -5,7 +5,8 @@ import { CharacterClassInfo } from '../../models/character/types';
 import { useCharacter } from '../../context/character-context/character-context';
 import { WeaveImages } from '../../api/weave/weave-images';
 import SettingsMenu from './settings-menu/settings-menu';
-import { ShareButton } from './share-button';
+import { ShareButton } from './buttons/share-button';
+import { ResetButton } from './buttons/reset-button';
 
 const ButtonBox = styled(Box)`
     position: absolute;
@@ -60,6 +61,7 @@ export function CharacterHeader() {
             <Box display="flex" flexDirection="column">
                 <Box display="flex" alignItems="stretch">
                     <ButtonBox>
+                        <ResetButton />
                         <ShareButton />
                         <SettingsMenu />
                     </ButtonBox>

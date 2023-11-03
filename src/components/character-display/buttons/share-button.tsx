@@ -9,11 +9,11 @@ import Button from '@mui/material/Button';
 import Input from '@mui/material/Input';
 import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { WeaveApi } from '../../api/weave/weave';
-import { useCharacter } from '../../context/character-context/character-context';
-import { CONFIG } from '../../models/config';
-import { useNotification } from '../../context/notification-context/notification-context';
-import { PACKAGE_VERSION } from '../../../version';
+import { WeaveApi } from '../../../api/weave/weave';
+import { useCharacter } from '../../../context/character-context/character-context';
+import { CONFIG } from '../../../models/config';
+import { useNotification } from '../../../context/notification-context/notification-context';
+import { PACKAGE_VERSION } from '../../../../version';
 
 export function ShareButton() {
     const { character, setBuild, build } = useCharacter();
