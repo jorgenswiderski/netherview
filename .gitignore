@@ -8,3 +8,4 @@ package
 *.eslintcache
 .sentryclirc
 .npmrc
+public/media-wiki-assets/**/*
