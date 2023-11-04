@@ -50,22 +50,26 @@ export default function ClassCollapsible({
                         title={
                             isMainClass
                                 ? `Grants the proficiencies of a 1st-level ${info.class.name}`
-                                : `Set as the primary class, granting all the proficiences of a 1st-level ${info.class.name}`
+                                : `Set as the primary class, granting all the proficiencies of a 1st-level ${info.class.name}`
                         }
                         PopperProps={{ style: { pointerEvents: 'none' } }}
                     >
-                        <IconButton
-                            onClick={(event) => {
-                                event.stopPropagation();
-                                onFavorite(info);
-                            }}
-                        >
-                            {isMainClass ? (
-                                <StarIcon />
-                            ) : (
-                                <StarOutlineIcon color="disabled" />
-                            )}
-                        </IconButton>
+                        {/* Wrap in span to allow tooltip even when button is disabled */}
+                        <span>
+                            <IconButton
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    onFavorite(info);
+                                }}
+                                disabled={isMainClass}
+                            >
+                                {isMainClass ? (
+                                    <StarIcon />
+                                ) : (
+                                    <StarOutlineIcon color="disabled" />
+                                )}
+                            </IconButton>
+                        </span>
                     </Tooltip>
                     <Tooltip
                         title={`Remove all levels of ${info.class.name}`}
