@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
     Card,
     CardActionArea,
@@ -9,15 +9,28 @@ import {
     DialogContent,
     Grid,
 } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import { CONFIG } from '../models/config';
 
-const options: { description: string; value: 'true' | 'false' }[] = [
+const options: { description: ReactNode; value: 'true' | 'false' }[] = [
     {
-        description: `Allow tracking cookies for purposes related exclusively to improving ${CONFIG.APP_NAME}.`,
+        description: (
+            <>
+                <CheckIcon />
+                {`Yes, allow telemetry and cookies for purposes related
+                exclusively to improving ${CONFIG.APP_NAME}.`}
+            </>
+        ),
         value: 'true',
     },
     {
-        description: `Allow only strictly necessary cookies for using ${CONFIG.APP_NAME}.`,
+        description: (
+            <>
+                <CloseIcon />
+                {`Allow only strictly necessary cookies for using ${CONFIG.APP_NAME}.`}
+            </>
+        ),
         value: 'false',
     },
 ];
@@ -51,7 +64,15 @@ export function CookieConsentDialog({
                                     onClick={() => setAllowCookies(value)}
                                 >
                                     <CardContent>
-                                        <Typography>{description}</Typography>
+                                        <Typography
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '1rem',
+                                            }}
+                                        >
+                                            {description}
+                                        </Typography>
                                     </CardContent>
                                 </CardActionArea>
                             </Card>

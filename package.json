@@ -1,6 +1,6 @@
 {
     "name": "netherview",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "A character planner for Baldur's Gate 3",
     "main": "src/pages/_app.tsx",
     "scripts": {
@@ -60,7 +60,7 @@
         "@jorgenswiderski/tomekeeper-shared": "^1.0.11",
         "@mui/icons-material": "^5.14.13",
         "@mui/material": "^5.14.12",
-        "@sentry/nextjs": "^7.76.0",
+        "@sentry/nextjs": "^7.77.0",
         "axios": "^1.5.1",
         "base-x": "^4.0.0",
         "crypto-js": "^4.2.0",
