@@ -12,7 +12,7 @@ import { Character } from '../../../models/character/character';
 
 export function ResetButton() {
     const router = useRouter();
-    const { character, setCharacter } = useCharacter();
+    const { character, setCharacter, setBuild } = useCharacter();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -25,6 +25,7 @@ export function ResetButton() {
             new Character(character.baseClassData, character.spellData),
         );
 
+        setBuild(undefined);
         setIsDialogOpen(false);
         router.push('/', '/', { shallow: true });
     }, [character]);
