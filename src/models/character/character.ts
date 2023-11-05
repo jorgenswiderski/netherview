@@ -50,6 +50,7 @@ import { EquipmentItemFactory } from '../items/equipment-item-factory';
 import { CharacterTreeSpell } from './character-tree-node/character-tree-spell';
 import { TreeCompressor } from '../tree-compressor';
 import { WeaponItem } from '../items/weapon-item';
+import { error } from '../logger';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
@@ -453,10 +454,34 @@ export class Character implements ICharacter {
                     CharacterPlannerStep.LEVEL_UP,
                 );
 
+                if (spells.length === 0) {
+                    error(
+                        `Character had no valid candidates to add to the option pool when learning ${
+                            step === CharacterPlannerStep.LEARN_CANTRIPS
+                                ? 'cantrips'
+                                : 'spells'
+                        }`,
+                    );
+
+                    return [];
+                }
+
+                if (spells.length < netChoices) {
+                    error(
+                        `Warning: Character had fewer valid candidates than choices when learning ${
+                            step === CharacterPlannerStep.LEARN_CANTRIPS
+                                ? 'cantrips'
+                                : 'spells'
+                        }`,
+                    );
+
+                    return [];
+                }
+
                 return [
                     {
                         type: step,
-                        count: netChoices,
+                        count: Math.min(netChoices, spells.length),
                         options: spells.map(
                             (spell) => new CharacterTreeSpell(spell, choiceId),
                         ),
