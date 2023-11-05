@@ -185,6 +185,7 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
                     {item.price && <Typography>{item.price}g</Typography>}
                 </WeightPriceBox>
             }
+            touchBehavior="longPress"
         >
             {children}
         </BaseTooltip>

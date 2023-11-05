@@ -1,19 +1,12 @@
 import React, { ReactNode, useCallback } from 'react';
-import {
-    Box,
-    Typography,
-    Card,
-    CardActionArea,
-    Grid,
-    useMediaQuery,
-} from '@mui/material';
+import { Box, Typography, Card, CardActionArea, Grid } from '@mui/material';
 import styled from '@emotion/styled';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import EditIcon from '@mui/icons-material/Edit';
-import { useTheme } from '@mui/material/styles';
 import { useCharacter } from '../../context/character-context/character-context';
 import { Character } from '../../models/character/character';
 import { PlannerStepTitle } from './planner-header/planner-step-title';
+import { useResponsive } from '../../hooks/use-responsive';
 
 const StyledGridContainer = styled(Grid)`
     flex: 1;
@@ -67,8 +60,7 @@ interface StepInfo {
 }
 
 function NextStepGrid({ options }: { options: StepInfo[] }) {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { isMobile } = useResponsive();
     const { character } = useCharacter();
 
     return (
@@ -102,8 +94,7 @@ function NextStepGrid({ options }: { options: StepInfo[] }) {
 }
 
 export function ChooseNextStep() {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { isMobile } = useResponsive();
     const { character, setCharacter } = useCharacter();
 
     const levelUpCharacter = useCallback(() => {

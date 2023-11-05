@@ -1,14 +1,14 @@
 // equipment-panel.tsx
 import React, { useCallback, useMemo } from 'react';
-import { Typography, Grid, Box, useMediaQuery, Paper } from '@mui/material';
+import { Typography, Grid, Box, Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import {
     EquipmentSlot,
     IEquipmentItem,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
-import { useTheme } from '@mui/material/styles';
 import { EquipmentSlotCard } from './equipment-slot';
 import { useCharacter } from '../../../context/character-context/character-context';
+import { useResponsive } from '../../../hooks/use-responsive';
 
 const StyledPaper = styled(Paper)`
     padding: 1rem;
@@ -58,8 +58,7 @@ const StyledGrid = styled(Grid)`
 
 export function EquipmentPanel() {
     const { character, setCharacter } = useCharacter();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { isMobile } = useResponsive();
 
     const items = useMemo(() => character.getEquipment(), [character]);
 

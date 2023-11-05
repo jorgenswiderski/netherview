@@ -1,9 +1,11 @@
 // base-tooltip.tsx
-import React from 'react';
-import { Box, Tooltip, TooltipProps } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, ClickAwayListener, Tooltip, TooltipProps } from '@mui/material';
 import styled from '@emotion/styled';
 import { darken } from '@mui/system';
 import { WeaveImages } from '../../api/weave/weave-images';
+import { useResponsive } from '../../hooks/use-responsive';
+import { log } from '../../models/logger';
 
 const MainBox = styled(Box)`
     position: relative;
@@ -53,6 +55,7 @@ interface BaseTooltipProps extends Omit<TooltipProps, 'title'> {
     image?: string;
     name: string;
     children: React.ReactElement;
+    touchBehavior?: 'tap' | 'longPress' /* | 'modal' */ | 'none';
 }
 
 export function BaseTooltip({
@@ -63,65 +66,149 @@ export function BaseTooltip({
     image,
     name,
     children,
+    touchBehavior = 'tap',
     ...props
 }: BaseTooltipProps) {
+    const { isTouch } = useResponsive();
+
+    // eslint-disable-next-line no-param-reassign
+    touchBehavior = isTouch ? touchBehavior : 'none';
+
+    const [open, setOpen] = useState(false);
+
+    const [longPressActive, setLongPressActive] =
+        useState<NodeJS.Timeout | null>();
+
+    const longPressDelay = 300; // ms
+
+    const handleTooltipClose = () => setOpen(false);
+    const handleTooltipOpen = () => setOpen(true);
+    const handleTap = () => touchBehavior === 'tap' && handleTooltipOpen();
+
+    const handleLongPressStart = () => {
+        setLongPressActive(
+            setTimeout(() => {
+                setLongPressActive(null);
+                handleTooltipOpen();
+                log('show');
+            }, longPressDelay),
+        );
+    };
+
+    const handleLongPressEnd: React.TouchEventHandler<HTMLDivElement> = (
+        event,
+    ) => {
+        // Prevent context menu from appearing
+        event.preventDefault();
+
+        if (longPressActive) {
+            clearTimeout(longPressActive);
+            setLongPressActive(null);
+        }
+    };
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setOpen(false);
+        };
+
+        document.addEventListener('scroll', handleScroll, true);
+
+        return () => {
+            document.removeEventListener('scroll', handleScroll, true);
+        };
+    }, []);
+
     return (
-        <Tooltip
-            {...props}
-            PopperProps={{
-                sx: {
-                    '.MuiTooltip-tooltip': {
-                        padding: 0,
-                        borderRadius: '0.4rem',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
-                        overflow: 'hidden',
-                        minWidth: 'min(400px, 90vw)',
-                        // minHeight: '120px',
-                    },
-                },
-                style: {
-                    pointerEvents: 'none',
-                },
-                modifiers: [
-                    {
-                        name: 'flip',
-                        options: {
-                            fallbackPlacements: [
-                                'top',
-                                'right',
-                                'bottom',
-                                'left',
-                            ],
+        <ClickAwayListener onClickAway={handleTooltipClose}>
+            <Tooltip
+                {...props}
+                PopperProps={{
+                    sx: {
+                        '.MuiTooltip-tooltip': {
+                            padding: 0,
+                            borderRadius: '0.4rem',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+                            overflow: 'hidden',
+                            minWidth: 'min(400px, 90vw)',
+                            // minHeight: '120px',
                         },
                     },
-                    {
-                        name: 'preventOverflow',
-                        options: {
-                            altAxis: true,
-                            tether: true,
-                            tetherOffset: () => 20,
-                            boundary: 'viewport',
-                        },
+                    style: {
+                        pointerEvents: 'none',
                     },
-                ],
-                ...props.PopperProps,
-            }}
-            title={
-                <MainBox>
-                    {header && <HeaderBox>{header}</HeaderBox>}
-                    {body && <BodyBox>{body}</BodyBox>}
-                    {quote && <QuoteBox>{quote}</QuoteBox>}
-                    {footer && <FooterBox>{footer}</FooterBox>}
-                    {image && (
-                        <Icon
-                            src={WeaveImages.getPath(image, 120)}
-                            alt={name}
-                        />
-                    )}
-                </MainBox>
-            }
-        >
-            {children}
-        </Tooltip>
+                    modifiers: [
+                        {
+                            name: 'flip',
+                            options: {
+                                fallbackPlacements: [
+                                    'top',
+                                    'right',
+                                    'bottom',
+                                    'left',
+                                ],
+                            },
+                        },
+                        {
+                            name: 'preventOverflow',
+                            options: {
+                                altAxis: true,
+                                tether: true,
+                                tetherOffset: () => 20,
+                                boundary: 'viewport',
+                            },
+                        },
+                    ],
+                    ...props.PopperProps,
+                }}
+                title={
+                    <MainBox>
+                        {header && <HeaderBox>{header}</HeaderBox>}
+                        {body && <BodyBox>{body}</BodyBox>}
+                        {quote && <QuoteBox>{quote}</QuoteBox>}
+                        {footer && <FooterBox>{footer}</FooterBox>}
+                        {image && (
+                            <Icon
+                                src={WeaveImages.getPath(image, 120)}
+                                alt={name}
+                            />
+                        )}
+                    </MainBox>
+                }
+                /* Mobile event handling */
+                open={open}
+                onClose={handleTooltipClose}
+                disableFocusListener={isTouch}
+                disableHoverListener={isTouch}
+                disableTouchListener={isTouch}
+            >
+                {/* Use an inner div to allow for more custom control over the tooltip visibility state */}
+                <div
+                    onClick={handleTap}
+                    onKeyDown={(event) => {
+                        // Keyboard accessibilty
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            handleTooltipOpen();
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onMouseEnter={() => !isTouch && setOpen(true)}
+                    onMouseLeave={() => !isTouch && setOpen(false)}
+                    onTouchStart={
+                        touchBehavior === 'longPress'
+                            ? handleLongPressStart
+                            : undefined
+                    }
+                    onTouchEnd={
+                        touchBehavior === 'longPress'
+                            ? handleLongPressEnd
+                            : undefined
+                    }
+                >
+                    {children}
+                </div>
+            </Tooltip>
+        </ClickAwayListener>
     );
 }

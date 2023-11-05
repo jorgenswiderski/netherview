@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Paper, Typography, useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Paper, Typography } from '@mui/material';
+import { useResponsive } from '../../../hooks/use-responsive';
 
 const StyledPaper = styled(Paper)`
     width: 100%;
@@ -20,8 +20,7 @@ interface PlannerStepTitleProps {
 }
 
 export function PlannerStepTitle({ title }: PlannerStepTitleProps) {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { isMobile } = useResponsive();
 
     return (
         <StyledPaper elevation={2}>
