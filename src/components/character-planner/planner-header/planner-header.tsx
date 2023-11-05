@@ -1,8 +1,7 @@
 import React from 'react';
-import { useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { PlannerNextButton } from './planner-next-button';
 import { PlannerStepTitle } from './planner-step-title';
+import { useResponsive } from '../../../hooks/use-responsive';
 
 interface PlannerHeaderProps {
     title: string;
@@ -17,8 +16,7 @@ export function PlannerHeader({
     onButtonClick,
     buttonDisabled,
 }: PlannerHeaderProps) {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { isMobile } = useResponsive();
 
     return (
         <>

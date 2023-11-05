@@ -8,9 +8,7 @@ import {
     CircularProgress,
     Paper,
     Typography,
-    useMediaQuery,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
@@ -22,6 +20,7 @@ import TreeVisualization from '../tree-visualization';
 import { ChooseNextStep } from './choose-next-step';
 import { useCharacter } from '../../context/character-context/character-context';
 import { useSettings } from '../../context/user-settings-context/user-settings-context';
+import { useResponsive } from '../../hooks/use-responsive';
 
 const Container = styled(Box)`
     display: flex;
@@ -101,8 +100,7 @@ interface CharacterPlannerProps {
 }
 
 export default function CharacterPlanner({ character }: CharacterPlannerProps) {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { isMobile } = useResponsive();
     const router = useRouter();
     const { build, setCharacter } = useCharacter();
     const { debugMode } = useSettings();
