@@ -346,8 +346,14 @@ export class Character implements ICharacter {
                     return choice;
                 }) as ICharacterChoice[];
 
-            const grants = cls.progression[level].Features.flatMap(
-                (feature) => feature.grants,
+            // Some Features may already be TreeNodes due to RecordCompressor
+            const grants = cls.progression[level].Features.flatMap((feature) =>
+                feature instanceof CharacterTreeDecision
+                    ? (feature.children?.filter(
+                          (child) =>
+                              child.nodeType === CharacterTreeNodeType.EFFECT,
+                      ) as GrantableEffect[])
+                    : feature.grants,
             ).filter(Boolean) as unknown as GrantableEffect[];
 
             const { progression, ...rest } = cls;

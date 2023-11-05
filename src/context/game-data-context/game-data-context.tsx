@@ -19,6 +19,7 @@ export function GameDataProvider({ children }: GameDataProviderProps) {
     const [spellData, setSpellData] = useState<ISpell[]>();
 
     useEffect(() => {
+        // FIXME
         WeaveApi.classes.getClassesInfo().then(setClassData);
         WeaveApi.spells.get().then(setSpellData);
     }, []);
