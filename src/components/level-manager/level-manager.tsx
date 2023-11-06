@@ -16,6 +16,7 @@ import { ICharacterTreeDecision } from '../../models/character/character-tree-no
 import { CharacterClassInfoToggled } from './types';
 import ConfirmDialog from './confirm-dialog';
 import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
+import { PlannerStepTitle } from '../character-planner/planner-header/planner-step-title';
 
 const BackIconButton = styled(IconButton)`
     position: absolute;
@@ -197,6 +198,8 @@ export default function LevelManager({
 
     return (
         <>
+            <PlannerStepTitle title="Revise Levels" />
+
             <BackIconButton onClick={onBack}>
                 <KeyboardBackspaceIcon />
             </BackIconButton>
