@@ -3,7 +3,10 @@ import {
     GrantableEffectType,
     IActionEffect,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import { IActionBase } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
+import {
+    IAction,
+    IActionBase,
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { CharacterTreeEffect } from './character-tree';
 
 export class CharacterTreeActionBaseEffect
@@ -15,11 +18,19 @@ export class CharacterTreeActionBaseEffect
     subtype: ActionEffectType;
     id: number;
 
-    constructor(effect: IActionEffect) {
+    constructor(action: IAction, subtype: ActionEffectType) {
+        const effect: IActionEffect = {
+            type: GrantableEffectType.ACTION,
+            subtype,
+            action,
+            name: action.name,
+            id: action.id,
+        };
+
         super(effect);
 
-        this.action = effect.action;
-        this.subtype = effect.subtype;
-        this.id = effect.id;
+        this.action = action;
+        this.subtype = subtype;
+        this.id = action.id;
     }
 }

@@ -3,12 +3,9 @@ import {
     StaticallyReferenceable,
 } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
 import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
-import {
-    ActionEffectType,
-    GrantableEffectType,
-    IActionEffect,
-} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { ActionEffectStubConstructor } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/stubs';
+import { IAction } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { CharacterTreeActionBaseEffect } from './character-tree-action-base-effect';
 import { WeaveApi } from '../../../api/weave/weave';
 
@@ -21,22 +18,18 @@ export class CharacterTreeActionEffect
     extends CharacterTreeActionBaseEffect
     implements StaticallyReferenceable
 {
+    constructor(action: IAction) {
+        super(action, ActionEffectType.CLASS_ACTION);
+    }
+
     toJSON(): StaticReferenceHandle {
         return ref.create(this.id);
     }
 
     static async fromId(id: number): Promise<CharacterTreeActionEffect> {
-        const actionData = await WeaveApi.actions.getById(id);
+        const action = await WeaveApi.actions.getById(id);
 
-        const actionEffect: IActionEffect = {
-            type: GrantableEffectType.ACTION,
-            subtype: ActionEffectType.CLASS_ACTION,
-            action: actionData,
-            name: actionData.name,
-            id: actionData.id,
-        };
-
-        return new CharacterTreeActionEffect(actionEffect);
+        return new CharacterTreeActionEffect(action);
     }
 }
 
