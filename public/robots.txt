@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /debug
+Sitemap: https://tomekeeper.vercel.app/api/sitemap.xml
