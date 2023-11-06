@@ -1,6 +1,6 @@
 {
     "name": "netherview",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "description": "A character planner for Baldur's Gate 3",
     "main": "src/pages/_app.tsx",
     "scripts": {
@@ -72,6 +72,7 @@
         "react-dom": "^18.2.0",
         "react-ga": "^3.3.1",
         "react-lazyload": "github:twobin/react-lazyload",
-        "react-spinners": "^0.13.8"
+        "react-spinners": "^0.13.8",
+        "sitemap": "^7.1.1"
     }
 }

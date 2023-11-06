@@ -9,3 +9,4 @@ package
 .sentryclirc
 .npmrc
 public/media-wiki-assets/**/*
+version.ts

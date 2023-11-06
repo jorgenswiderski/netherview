@@ -20,18 +20,24 @@ module.exports = {
             },
         },
         {
-            files: ['*.jsx', '*.tsx'],
-            rules: {
-                'import/no-default-export': 'off', // Default export is necessary for react
-            },
-        },
-        {
             files: ['next.config.js'],
             rules: {
                 'import/no-unresolved': 'off',
                 'import/no-extraneous-dependencies': 'off',
                 'import/order': 'off',
                 'import/no-self-import': 'off',
+            },
+        },
+        {
+            files: ['*.jsx', '*.tsx'],
+            rules: {
+                'import/no-default-export': 'warn',
+            },
+        },
+        {
+            files: ['**/pages/**/*.{js,jsx,ts,tsx}'],
+            rules: {
+                'import/no-default-export': 'off',
             },
         },
     ],
