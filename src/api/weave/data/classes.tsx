@@ -1,4 +1,4 @@
-import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/compressable-record';
+import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
 import { WeaveRouteBase } from '../weave-route-base';
 import { CharacterClassOption } from '../../../models/character/types';
 
@@ -9,7 +9,8 @@ export class WeaveClasses extends WeaveRouteBase {
 
     getClassesInfo = async (): Promise<CharacterClassOption[]> => {
         const data = await this.fetchFromApi('/');
+        const parsed = await StaticReference.parseAllValues(data);
 
-        return RecordCompressor.parseAllValues(data);
+        return parsed;
     };
 }

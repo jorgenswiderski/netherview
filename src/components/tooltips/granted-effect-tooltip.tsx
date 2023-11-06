@@ -38,7 +38,7 @@ export function GrantedEffectTooltip({
 
     safeAssert(
         effect.type === GrantableEffectType.PROFICIENCY,
-        `Granted effect should have a valid type (${effect.type})`,
+        `Granted effect (${effect.name}) should have a valid type (${effect.type})`,
     );
 
     return <Tooltip title={effect.description}>{children}</Tooltip>;
