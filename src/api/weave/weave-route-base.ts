@@ -1,8 +1,14 @@
 // weave-route-base.ts
 import axios, { AxiosRequestConfig } from 'axios';
+import axiosRetry from 'axios-retry';
 import { CONFIG } from '../../models/config';
 
 type ItemWithId = { id: number };
+
+axiosRetry(axios, {
+    retries: 3,
+    retryDelay: axiosRetry.exponentialDelay,
+});
 
 export class WeaveRouteBase {
     constructor(protected baseRoute: string) {}
@@ -59,14 +65,20 @@ export class WeaveRouteBase {
         if (!this.cache) {
             this.cache = fetchFunction();
 
-            this.cacheMap = new Promise((resolve) => {
-                const map = new Map<number, ItemWithId>();
+            // Assign both promises before awaiting
+            let mapResolver;
 
-                this.cache!.then((data) => {
-                    data.forEach((item) => map.set(item.id, item));
-                    resolve(map);
-                });
+            this.cacheMap = new Promise((resolve) => {
+                mapResolver = resolve;
             });
+
+            const map = new Map<number, ItemWithId>();
+            // Need to await the function here, because the alternative is
+            // promise chaining inside the map promise executor, which would
+            // either mean unhandled rejection or not propagating
+            // the error to the caller
+            (await this.cache).forEach((item) => map.set(item.id, item));
+            mapResolver!(map);
         }
 
         return this.cache;
