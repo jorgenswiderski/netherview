@@ -7,9 +7,9 @@ import {
     GrantableEffectType,
     IActionEffect,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import assert from 'assert';
 import { ActionTooltip } from './action-tooltip';
 import { CharacteristicTooltip } from './characteristic-tooltip';
+import { safeAssert } from '../../models/utils';
 
 export function GrantedEffectTooltip({
     effect,
@@ -36,7 +36,10 @@ export function GrantedEffectTooltip({
         );
     }
 
-    assert(effect.type === GrantableEffectType.PROFICIENCY);
+    safeAssert(
+        effect.type === GrantableEffectType.PROFICIENCY,
+        `Granted effect should have a valid type (${effect.type})`,
+    );
 
     return <Tooltip title={effect.description}>{children}</Tooltip>;
 }

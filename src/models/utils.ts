@@ -1,7 +1,9 @@
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { SharedUtils } from '@jorgenswiderski/tomekeeper-shared/dist/models/utils';
+import assert from 'assert';
 import { WeaveImages } from '../api/weave/weave-images';
 import { error } from './logger';
+import { CONFIG } from './config';
 
 type Difference = {
     path: string;
@@ -171,4 +173,18 @@ export class Utils extends SharedUtils {
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         });
     }
+
+    static safeAssert(statement: unknown, message?: string | Error) {
+        try {
+            assert(statement, message);
+        } catch (err) {
+            if (CONFIG.IS_DEV) {
+                throw err;
+            }
+
+            error(err);
+        }
+    }
 }
+
+export const { safeAssert } = Utils;

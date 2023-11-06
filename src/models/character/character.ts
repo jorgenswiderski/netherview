@@ -51,6 +51,7 @@ import { CharacterTreeSpell } from './character-tree-node/character-tree-spell';
 import { TreeCompressor } from '../tree-compressor';
 import { WeaponItem } from '../items/weapon-item';
 import { error } from '../logger';
+import { safeAssert } from '../utils';
 
 export class Character implements ICharacter {
     static MAX_LEVEL = 12;
@@ -222,7 +223,10 @@ export class Character implements ICharacter {
             const pending = new PendingDecision(parent, choice);
 
             if (choice.forcedOptions) {
-                assert(choice.forcedOptions.length === (choice.count ?? 1));
+                safeAssert(
+                    choice.forcedOptions.length === (choice.count ?? 1),
+                    `Number of forced options (${choice.forcedOptions.length}) should equal choice count (${choice.count})`,
+                );
 
                 choice.forcedOptions.forEach((option) => {
                     const decision = new CharacterTreeDecision(
@@ -678,7 +682,10 @@ export class Character implements ICharacter {
             return;
         }
 
-        assert(typeof this.replayNodes === 'undefined');
+        assert(
+            typeof this.replayNodes === 'undefined',
+            'Replay should not already be in progress',
+        );
 
         this.replayNodes = subsequentLevels;
     }
