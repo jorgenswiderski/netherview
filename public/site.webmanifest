@@ -1,21 +1,21 @@
 {
-  "name": "Tomekeeper - Baldur's Gate III Character Planner",
-  "short_name": "Tomekeeper",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "description": "An interactive character planner for Baldur's Gate III.",
-  "icons": [
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "theme_color": "#000000"
+    "name": "Tomekeeper - Baldur's Gate III Character Planner",
+    "short_name": "Tomekeeper",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "description": "An interactive character planner for Baldur's Gate III.",
+    "icons": [
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#000000"
 }
