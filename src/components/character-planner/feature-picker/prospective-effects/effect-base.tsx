@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { Paper, Typography } from '@mui/material';
-import ImageWithFallback from '../../image-with-fallback';
+import { ImageWithFallback } from '../../image-with-fallback';
 
 const StyledPaper = styled(Paper)`
     display: flex;
@@ -18,7 +18,7 @@ interface EffectBaseProps {
     style?: React.CSSProperties;
 }
 
-export default function EffectBase({
+export function EffectBase({
     image,
     label,
     elevation,

@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { CharacterClassInfo } from '../../models/character/types';
 import { useCharacter } from '../../context/character-context/character-context';
 import { WeaveImages } from '../../api/weave/weave-images';
-import SettingsMenu from './settings-menu/settings-menu';
+import { SettingsMenu } from './settings-menu/settings-menu';
 import { ShareButton } from './buttons/share-button';
 import { ResetButton } from './buttons/reset-button';
 

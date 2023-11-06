@@ -11,7 +11,7 @@ interface ImageWithFallbackProps {
     // Add any other img props if necessary
 }
 
-export default function ImageWithFallback({
+export function ImageWithFallback({
     src,
     fallback,
     placeholder,

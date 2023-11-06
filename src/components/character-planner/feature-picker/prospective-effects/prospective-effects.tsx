@@ -6,8 +6,8 @@ import {
 import styled from '@emotion/styled';
 import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { Box, Typography } from '@mui/material';
-import GrantedEffect from './granted-effect';
-import ChoiceDescription from './choice-description';
+import { GrantedEffect } from './granted-effect';
+import { ChoiceDescription } from './choice-description';
 
 const EffectsContainer = styled(Box)`
     display: flex;
@@ -32,10 +32,7 @@ interface ProspectiveEffectsProps {
     text: string;
 }
 
-export default function ProspectiveEffects({
-    options,
-    text,
-}: ProspectiveEffectsProps) {
+export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
     const getEffectsFromOption = (
         option: ICharacterOption,
     ): GrantableEffect[] => {

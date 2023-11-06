@@ -124,7 +124,7 @@ interface SpellPickerProps {
     character: ICharacter;
 }
 
-export default function SpellPicker({
+export function SpellPicker({
     title,
     onDecision,
     decision,

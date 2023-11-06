@@ -6,7 +6,7 @@ import { Box, Card, CardActionArea, Grid, Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
-import ProspectiveEffects from './prospective-effects/prospective-effects';
+import { ProspectiveEffects } from './prospective-effects/prospective-effects';
 import { WeaveImages } from '../../../api/weave/weave-images';
 import { PlannerHeader } from '../planner-header/planner-header';
 
@@ -117,7 +117,7 @@ interface FeaturePickerProps {
 
 type CardMediaPropsExtended = CardMediaProps & { layout: LayoutType };
 
-export default function FeaturePicker({
+export function FeaturePicker({
     title,
     decision,
     onDecision,

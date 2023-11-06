@@ -6,7 +6,7 @@ import {
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { IconButton, Box, DialogContentText } from '@mui/material';
-import ClassCollapsible from './class-collapsible';
+import { ClassCollapsible } from './class-collapsible';
 import {
     CharacterClassLevelInfo,
     CharacterClassOption,
@@ -14,8 +14,8 @@ import {
 } from '../../models/character/types';
 import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
 import { CharacterClassInfoToggled } from './types';
-import ConfirmDialog from './confirm-dialog';
-import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
+import { ConfirmDialog } from './confirm-dialog';
+import { GrantedEffect } from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { PlannerStepTitle } from '../character-planner/planner-header/planner-step-title';
 
 const BackIconButton = styled(IconButton)`
@@ -50,7 +50,7 @@ interface LevelManagerProps {
     decision: any;
 }
 
-export default function LevelManager({
+export function LevelManager({
     character,
     onDecision,
     decision,

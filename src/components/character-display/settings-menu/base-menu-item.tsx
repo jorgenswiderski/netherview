@@ -9,7 +9,7 @@ interface BaseMenuItemProps {
     icon?: ReactNode;
 }
 
-function BaseMenuItem({
+export function BaseMenuItem({
     handleClose,
     label,
     onClick,
@@ -28,5 +28,3 @@ function BaseMenuItem({
         </MenuItem>
     );
 }
-
-export default BaseMenuItem;

@@ -13,9 +13,7 @@ interface AbilityScoresProps {
     abilityScores: AbilityScores;
 }
 
-export default function AbilityScoresTable({
-    abilityScores,
-}: AbilityScoresProps) {
+export function AbilityScoresTable({ abilityScores }: AbilityScoresProps) {
     const keys: (keyof AbilityScores)[] = Object.keys(
         abilityScores,
     ) as (keyof AbilityScores)[];

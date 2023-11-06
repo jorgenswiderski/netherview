@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Paper } from '@mui/material';
-import AbilityScoresTable from './ability-scores';
+import { AbilityScoresTable } from './ability-scores';
 import { CharacterEffects } from './character-effects';
 import { CharacterHeader } from './character-header';
 import { EquipmentPanel } from './equipment/equipment-panel';
-import CharacterBackground from './character-background';
+import { CharacterBackground } from './character-background';
 import { useCharacter } from '../../context/character-context/character-context';
 import { ChooseNextStep } from '../character-planner/choose-next-step';
 import { useResponsive } from '../../hooks/use-responsive';
@@ -78,7 +78,7 @@ const RightSection = styled(LeftRightBase)`
     // flex-wrap: wrap;
 `;
 
-export default function CharacterDisplay() {
+export function CharacterDisplay() {
     const { isMobile } = useResponsive();
     const { character } = useCharacter();
 

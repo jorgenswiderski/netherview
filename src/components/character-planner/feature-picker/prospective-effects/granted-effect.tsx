@@ -4,7 +4,7 @@ import {
     GrantableEffectType,
     IActionEffect,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import EffectBase from './effect-base';
+import { EffectBase } from './effect-base';
 import { GrantedEffectTooltip } from '../../../tooltips/granted-effect-tooltip';
 import { WeaveImages } from '../../../../api/weave/weave-images';
 
@@ -14,7 +14,7 @@ interface GrantedEffectProps {
     style?: React.CSSProperties;
 }
 
-export default function GrantedEffect({
+export function GrantedEffect({
     effect,
     elevation,
     style,

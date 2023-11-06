@@ -6,7 +6,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import styled from '@emotion/styled';
 import { Box, Tooltip, IconButton } from '@mui/material';
 import { CollapsibleSection } from '../character-display/collapsible-section';
-import LevelCollapsible from './level-collapsible';
+import { LevelCollapsible } from './level-collapsible';
 import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
 import { CharacterClassInfoToggled } from './types';
 
@@ -32,7 +32,7 @@ interface ClassCollapsibleProps {
     onFavorite: (info: CharacterClassInfoToggled) => void;
 }
 
-export default function ClassCollapsible({
+export function ClassCollapsible({
     info,
     isMainClass,
     onEdit,

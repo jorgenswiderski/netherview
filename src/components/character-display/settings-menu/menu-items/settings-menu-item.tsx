@@ -1,6 +1,6 @@
 import React from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
-import BaseMenuItem from '../base-menu-item';
+import { BaseMenuItem } from '../base-menu-item';
 import { useCharacter } from '../../../../context/character-context/character-context';
 
 interface SettingsMenuItemProps {

@@ -23,9 +23,7 @@ const BackgroundImage = styled.div<{ src: string }>`
     opacity: 0.15;
 `;
 
-export default function CharacterBackground({
-    background,
-}: CharacterBackgroundProps) {
+export function CharacterBackground({ background }: CharacterBackgroundProps) {
     const imageContainerRef = useRef<HTMLDivElement>(null);
 
     return (

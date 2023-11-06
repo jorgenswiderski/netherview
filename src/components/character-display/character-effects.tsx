@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import styled from '@emotion/styled';
 import { Box } from '@mui/material';
-import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
+import { GrantedEffect } from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { CollapsibleSection } from './collapsible-section';
 import { CharacterTreeActionBaseEffect } from '../../models/character/character-tree-node/character-tree-action-base-effect';
 import { useCharacter } from '../../context/character-context/character-context';

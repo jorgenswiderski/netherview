@@ -14,9 +14,9 @@ import {
     IPendingDecision,
     CharacterDecisionInfo,
 } from '../../models/character/character-states';
-import FeaturePicker from './feature-picker/feature-picker';
-import CharacterDisplay from '../character-display/character-display';
-import TreeVisualization from '../tree-visualization';
+import { FeaturePicker } from './feature-picker/feature-picker';
+import { CharacterDisplay } from '../character-display/character-display';
+import { TreeVisualization } from '../tree-visualization';
 import { ChooseNextStep } from './choose-next-step';
 import { useCharacter } from '../../context/character-context/character-context';
 import { useSettings } from '../../context/user-settings-context/user-settings-context';
@@ -99,7 +99,7 @@ interface CharacterPlannerProps {
     character: Character;
 }
 
-export default function CharacterPlanner({ character }: CharacterPlannerProps) {
+export function CharacterPlanner({ character }: CharacterPlannerProps) {
     const { isMobile } = useResponsive();
     const router = useRouter();
     const { build, setCharacter } = useCharacter();

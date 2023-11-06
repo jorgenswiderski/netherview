@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { BeatLoader } from 'react-spinners';
 import { Box } from '@mui/material';
 import { useCharacter } from '../context/character-context/character-context';
-import CharacterPlanner from '../components/character-planner/character-planner';
+import { CharacterPlanner } from '../components/character-planner/character-planner';
 
 const PageContainer = styled.div`
     display: flex;
