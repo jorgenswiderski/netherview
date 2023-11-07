@@ -7,6 +7,8 @@ import { ChooseNextStep } from '../character-planner/choose-next-step';
 import { useResponsive } from '../../hooks/use-responsive';
 import { SimpleTabs } from '../simple-tabs/simple-tabs';
 import { OverviewTab } from './overview/overview-tab';
+import { ProgressionTab } from './progression/progression-tab';
+import { ActionsTab } from './actions/actions-tab';
 
 const PaperContainer = styled(Paper)`
     display: flex;
@@ -37,7 +39,13 @@ export function CharacterDisplay() {
             <CharacterHeader />
             {isMobile && !character.getNextDecision() && <ChooseNextStep />}
 
-            <SimpleTabs tabs={[{ label: 'Overview', element: OverviewTab }]} />
+            <SimpleTabs
+                tabs={[
+                    { label: 'Overview', element: OverviewTab },
+                    { label: 'Progression', element: ProgressionTab },
+                    { label: 'Actions', element: ActionsTab },
+                ]}
+            />
         </PaperContainer>
     );
 }

@@ -1,6 +1,7 @@
 import { Box, Tabs, Tab } from '@mui/material';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { TabPanelProps } from './types';
+import { useResponsive } from '../../hooks/use-responsive';
 
 interface SimpleTabsProps {
     tabs: {
@@ -17,24 +18,29 @@ function a11yProps(index: number) {
 }
 
 export function SimpleTabs({ tabs }: SimpleTabsProps) {
+    const { isMobile } = useResponsive();
     const [currentIndex, setCurrentIndex] = useState(0);
-
-    const tab = useMemo(() => tabs[currentIndex], [currentIndex]);
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs
-                    value={currentIndex}
-                    onChange={(event, index) => setCurrentIndex(index)}
-                >
-                    {tabs.map(({ label }, index) => (
-                        <Tab label={label} {...a11yProps(index)} />
-                    ))}
-                </Tabs>
-            </Box>
+            {!isMobile && (
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs
+                        value={currentIndex}
+                        onChange={(event, index) => setCurrentIndex(index)}
+                    >
+                        {tabs.map(({ label }, index) => (
+                            <Tab label={label} {...a11yProps(index)} />
+                        ))}
+                    </Tabs>
+                </Box>
+            )}
 
-            <tab.element index={currentIndex} currentIndex={currentIndex} />
+            {isMobile && null /* TODO: navbar */}
+
+            {tabs.map((t, index) => (
+                <t.element index={index} currentIndex={currentIndex} />
+            ))}
         </Box>
     );
 }
