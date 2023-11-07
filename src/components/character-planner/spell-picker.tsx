@@ -36,6 +36,39 @@ const SelectedBoxPaper = styled(Paper)`
     gap: 0.5rem;
 `;
 
+interface SelectedSpellsProps {
+    spells: ISpell[];
+    numSpells: number;
+    onClick: (spell: ISpell) => void;
+}
+
+function SelectedSpells({ spells, numSpells, onClick }: SelectedSpellsProps) {
+    return (
+        <SelectedBoxPaper elevation={2}>
+            <Typography>
+                {`Select ${numSpells > 1 ? numSpells : 'a'} spell${
+                    numSpells > 1 ? 's' : ''
+                } to learn.`}
+            </Typography>
+            <RowInnerBox>
+                {Array.from({ length: numSpells }).map((_, idx) => {
+                    const spell = spells[idx];
+
+                    return (
+                        <SpellCard
+                            // eslint-disable-next-line react/no-array-index-key
+                            key={idx}
+                            spell={spell}
+                            selected={spells.includes(spell)}
+                            onClick={() => onClick(spell)}
+                        />
+                    );
+                })}
+            </RowInnerBox>
+        </SelectedBoxPaper>
+    );
+}
+
 // using 'any' here to resolve cyclic dependency with character-states.tsx
 interface SpellPickerProps {
     title: string;
@@ -109,28 +142,12 @@ export function SpellPicker({
             />
 
             <Container>
-                <SelectedBoxPaper elevation={2}>
-                    <Typography>
-                        {`Select ${numSpells > 1 ? numSpells : 'a'} spell${
-                            numSpells > 1 ? 's' : ''
-                        } to learn.`}
-                    </Typography>
-                    <RowInnerBox>
-                        {Array.from({ length: numSpells }).map((_, idx) => {
-                            const spell = selectedSpells[idx];
+                <SelectedSpells
+                    spells={selectedSpells}
+                    numSpells={numSpells}
+                    onClick={handleSpellClick}
+                />
 
-                            return (
-                                <SpellCard
-                                    // eslint-disable-next-line react/no-array-index-key
-                                    key={idx}
-                                    spell={spell}
-                                    selected={selectedSpells.includes(spell)}
-                                    onClick={() => handleSpellClick(spell)}
-                                />
-                            );
-                        })}
-                    </RowInnerBox>
-                </SelectedBoxPaper>
                 <SpellsByLevel
                     spells={spells}
                     selectedSpells={selectedSpells}

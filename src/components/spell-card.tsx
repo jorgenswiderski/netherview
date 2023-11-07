@@ -19,7 +19,7 @@ const ActionArea = styled(CardActionArea)`
 
 interface SpellCardMediaProps {
     spell?: ISpell;
-    containerRef: RefObject<HTMLButtonElement>;
+    containerRef: RefObject<HTMLDivElement>;
 }
 
 function SpellCardMedia({ spell, containerRef }: SpellCardMediaProps) {
@@ -34,27 +34,33 @@ function SpellCardMedia({ spell, containerRef }: SpellCardMediaProps) {
 }
 
 interface SpellCardProps {
-    selected?: boolean;
     spell?: ISpell;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    selected?: boolean;
 }
 
 export function SpellCard({
-    selected = false,
     spell,
     onClick,
+    selected = false,
 }: SpellCardProps) {
-    const imageContainerRef = useRef<HTMLButtonElement>(null);
+    const imageContainerRef = useRef<HTMLDivElement>(null);
 
     return (
         <ActionTooltip action={spell}>
-            <StyledCard elevation={3} selected={selected}>
+            <StyledCard
+                elevation={3}
+                selected={selected}
+                ref={imageContainerRef}
+            >
                 {spell && onClick ? (
-                    <ActionArea onClick={onClick} ref={imageContainerRef}>
-                        <SpellCardMedia
-                            spell={spell}
-                            containerRef={imageContainerRef}
-                        />
+                    <ActionArea onClick={onClick}>
+                        {imageContainerRef.current && (
+                            <SpellCardMedia
+                                spell={spell}
+                                containerRef={imageContainerRef}
+                            />
+                        )}
                     </ActionArea>
                 ) : (
                     <SpellCardMedia
