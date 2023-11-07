@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import styled from '@emotion/styled';
 import { Paper, Typography } from '@mui/material';
-import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
-import { WeaveImages } from '../../api/weave/weave-images';
+import { ICharacterTreeDecision } from '../../../models/character/character-tree-node/types';
+import { WeaveImages } from '../../../api/weave/weave-images';
 
 interface CharacterBackgroundProps {
     background: ICharacterTreeDecision;

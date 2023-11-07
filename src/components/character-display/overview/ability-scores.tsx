@@ -7,7 +7,7 @@ import {
     TableBody,
     Paper,
 } from '@mui/material';
-import { AbilityScores } from '../../models/character/types';
+import { AbilityScores } from '../../../models/character/types';
 
 interface AbilityScoresProps {
     abilityScores: AbilityScores;

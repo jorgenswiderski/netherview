@@ -5,7 +5,7 @@ import styled from '@emotion/styled';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import BuildIcon from '@mui/icons-material/Build';
 import { Box, Tooltip, IconButton, Typography } from '@mui/material';
-import { CollapsibleSection } from '../character-display/collapsible-section';
+import { CollapsibleSection } from '../collapsible-section';
 import { GrantedEffect } from '../character-planner/feature-picker/prospective-effects/granted-effect';
 
 const EffectBox = styled(Box)`
