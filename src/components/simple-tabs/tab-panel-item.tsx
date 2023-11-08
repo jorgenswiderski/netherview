@@ -1,6 +1,6 @@
 import React, { ReactNode, ElementType, forwardRef } from 'react';
 import styled from '@emotion/styled';
-import { Typography } from '@mui/material';
+import { Typography, TypographyVariant } from '@mui/material';
 
 export const ItemContainer = styled.div`
     break-inside: avoid;
@@ -11,6 +11,7 @@ export const ItemContainer = styled.div`
 interface TabPanelItemProps<T extends ElementType = 'div'>
     extends React.ComponentPropsWithRef<'div'> {
     label?: string;
+    labelVariant?: TypographyVariant;
     children: ReactNode;
     component?: T;
     componentProps?: React.ComponentProps<T>;
@@ -21,6 +22,7 @@ export const TabPanelItem = forwardRef(function TabPanelItem<
 >(
     {
         label,
+        labelVariant = 'h6',
         children,
         component: Component,
         componentProps,
@@ -31,7 +33,7 @@ export const TabPanelItem = forwardRef(function TabPanelItem<
     return (
         <ItemContainer ref={ref} as={Component} {...componentProps} {...rest}>
             {label && (
-                <Typography variant="h6" align="left" gutterBottom>
+                <Typography variant={labelVariant} align="left" gutterBottom>
                     {label}
                 </Typography>
             )}

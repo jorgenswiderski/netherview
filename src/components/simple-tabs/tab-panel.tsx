@@ -5,10 +5,11 @@ const ColumnBox = styled.div`
     display: ${({ hidden }) => (hidden ? 'none' : 'block')};
     width: 100%;
     flex: ${({ hidden }) => (hidden ? 'unset' : '1')};
-    overflow: auto;
     column-count: 2;
     column-gap: 1rem;
     column-fill: balance;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     @media (max-width: 1200px) {
         column-count: 1;

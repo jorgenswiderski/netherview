@@ -4,18 +4,9 @@ import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/g
 import styled from '@emotion/styled';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import BuildIcon from '@mui/icons-material/Build';
-import { Box, Tooltip, IconButton, Typography } from '@mui/material';
+import { Tooltip, IconButton, Typography } from '@mui/material';
 import { CollapsibleSection } from '../collapsible-section';
-import { GrantedEffect } from '../character-planner/feature-picker/prospective-effects/granted-effect';
-
-const EffectBox = styled(Box)`
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4px;
-
-    padding: 0 0.5rem;
-`;
+import { GrantedEffects } from '../character-planner/feature-picker/prospective-effects/granted-effects';
 
 const StyledCollapsibleSection = styled(CollapsibleSection)<{
     fade?: boolean;
@@ -83,16 +74,11 @@ export function LevelCollapsible({
             elevation={4}
             fade={disabled}
         >
-            <Typography variant="body2">
+            <Typography variant="body2" gutterBottom>
                 Effects granted by this level:
             </Typography>
-            <EffectBox>
-                {effects
-                    .filter((fx) => !fx.hidden)
-                    .map((fx) => (
-                        <GrantedEffect effect={fx} elevation={4} />
-                    ))}
-            </EffectBox>
+
+            <GrantedEffects effects={effects} elevation={5} flex />
         </StyledCollapsibleSection>
     );
 }

@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import { Box, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
 import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { TabPanelItem } from '../../../../simple-tabs/tab-panel-item';
 import { useCharacter } from '../../../../../context/character-context/character-context';
-import { GrantedEffect } from '../../../../character-planner/feature-picker/prospective-effects/granted-effect';
+import { GrantedEffects } from '../../../../character-planner/feature-picker/prospective-effects/granted-effects';
 
 export function ActionsPanel() {
     const { character } = useCharacter();
@@ -20,7 +20,7 @@ export function ActionsPanel() {
         );
 
         if (spells2.length >= 10) {
-            return [undefined, spells2];
+            return [[], spells2];
         }
 
         return [actions2, spells2];
@@ -28,31 +28,23 @@ export function ActionsPanel() {
 
     return (
         <>
-            {actions && (
+            {actions.length > 0 && (
                 <TabPanelItem
                     label="Actions"
                     component={Paper}
                     componentProps={{ elevation: 2 }}
                 >
-                    <Box display="flex" flexDirection="column" gap="0.25rem">
-                        {actions.map((action) => (
-                            <GrantedEffect effect={action} elevation={3} />
-                        ))}
-                    </Box>
+                    <GrantedEffects effects={actions} elevation={3} flex />
                 </TabPanelItem>
             )}
-            {spells && (
+            {spells.length > 0 && (
                 <TabPanelItem
                     label="Learned Spells"
                     component={Paper}
                     componentProps={{ elevation: 2 }}
                     // sx={{ marginTop: '1rem' }}
                 >
-                    <Box display="flex" flexDirection="column" gap="0.25rem">
-                        {spells.map((action) => (
-                            <GrantedEffect effect={action} elevation={3} />
-                        ))}
-                    </Box>
+                    <GrantedEffects effects={spells} elevation={3} flex />
                 </TabPanelItem>
             )}
         </>

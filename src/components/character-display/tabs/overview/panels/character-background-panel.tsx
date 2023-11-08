@@ -29,11 +29,11 @@ export function CharacterBackgroundPanel() {
 
     const background = useMemo(() => character.getBackground(), [character]);
 
+    const imageContainerRef = useRef<HTMLDivElement>(null);
+
     if (!background) {
         return null;
     }
-
-    const imageContainerRef = useRef<HTMLDivElement>(null);
 
     return (
         <StyledTabPanelItem

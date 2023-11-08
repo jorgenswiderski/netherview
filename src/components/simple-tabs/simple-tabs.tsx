@@ -11,6 +11,7 @@ const TabsBox = styled(Box)`
     flex: 1;
 
     width: 100%;
+    overflow: hidden;
 `;
 
 interface SimpleTabsProps {

@@ -15,21 +15,13 @@ import {
 import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
 import { CharacterClassInfoToggled } from './types';
 import { ConfirmDialog } from './confirm-dialog';
-import { GrantedEffect } from '../character-planner/feature-picker/prospective-effects/granted-effect';
 import { PlannerStepTitle } from '../character-planner/planner-header/planner-step-title';
+import { GrantedEffects } from '../character-planner/feature-picker/prospective-effects/granted-effects';
 
 const BackIconButton = styled(IconButton)`
     position: absolute;
     left: 1.5rem;
     top: 2rem;
-`;
-
-const ItemBox = styled(Box)`
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    padding: 0 0.5rem;
 `;
 
 const StyledBox = styled(Box)`
@@ -126,21 +118,20 @@ export function LevelManager({
     ): ReactNode => {
         return (
             <>
-                <DialogContentText>
+                <DialogContentText paragraph>
                     Are you sure you want to remove {levels.length} level
                     {levels.length > 1 ? 's' : ''} of {cls.name}?
                 </DialogContentText>
-                <DialogContentText marginTop="1rem">
+
+                <DialogContentText gutterBottom>
                     You will lose:
-                    <ItemBox marginTop="0.5rem">
-                        {levels
-                            .flatMap((level) => level.totalEffects)
-                            .filter((fx) => !fx.hidden)
-                            .map((fx) => (
-                                <GrantedEffect effect={fx} elevation={4} />
-                            ))}
-                    </ItemBox>
                 </DialogContentText>
+
+                <GrantedEffects
+                    effects={levels.flatMap((level) => level.totalEffects)}
+                    elevation={10}
+                    flex
+                />
             </>
         );
     };

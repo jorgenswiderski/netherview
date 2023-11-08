@@ -5,9 +5,9 @@ import { Box } from '@mui/material';
 import { useCharacter } from '../../../../context/character-context/character-context';
 import { TabPanel } from '../../../simple-tabs/tab-panel';
 import { TabPanelProps } from '../../../simple-tabs/types';
-import { GrantedEffect } from '../../../character-planner/feature-picker/prospective-effects/granted-effect';
 import { SpellsByLevel } from '../../../spells-by-level';
 import { CollapsibleSection } from '../../../collapsible-section';
+import { GrantedEffects } from '../../../character-planner/feature-picker/prospective-effects/granted-effects';
 
 interface ActionsTabProps extends TabPanelProps {}
 
@@ -29,7 +29,7 @@ export function ActionsTab({ ...panelProps }: ActionsTabProps) {
 
     return (
         <TabPanel {...panelProps}>
-            <CollapsibleSection title="Spells Learned" elevation={2}>
+            <CollapsibleSection title="Learned Spells" elevation={2}>
                 <Box
                     sx={{
                         display: 'flex',
@@ -44,9 +44,7 @@ export function ActionsTab({ ...panelProps }: ActionsTabProps) {
                 </Box>
             </CollapsibleSection>
             <CollapsibleSection title="Actions" elevation={2}>
-                {actions.map((action) => (
-                    <GrantedEffect effect={action} elevation={2} />
-                ))}
+                <GrantedEffects effects={actions} elevation={3} flex />
             </CollapsibleSection>
         </TabPanel>
     );
