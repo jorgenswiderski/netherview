@@ -19,7 +19,7 @@ const PaperContainer = styled(Paper)`
     min-width: 600px;
     max-width: 925px;
     width: auto;
-    // flex: 1;
+    flex: 1;
     overflow-y: hidden;
 
     @media (max-width: 768px) {

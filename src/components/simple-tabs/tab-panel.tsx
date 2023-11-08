@@ -2,9 +2,9 @@ import styled from '@emotion/styled';
 import React, { ElementType, ReactNode } from 'react';
 
 const ColumnBox = styled.div`
-    display: block;
+    display: ${({ hidden }) => (hidden ? 'none' : 'block')};
     width: 100%;
-    max-height: 100%;
+    flex: ${({ hidden }) => (hidden ? 'unset' : '1')};
     overflow: auto;
     column-count: 2;
     column-gap: 1rem;

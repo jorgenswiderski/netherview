@@ -7,8 +7,14 @@ import { TabPanelProps } from '../../simple-tabs/types';
 import { LevelCollapsible } from '../../level-manager/level-collapsible';
 import { TabPanelItem } from '../../simple-tabs/tab-panel-item';
 
+const StyledTabPanel = styled(TabPanel)`
+    padding: 1rem;
+    box-sizing: border-box;
+`;
+
 const StyledTabPanelItem = styled(TabPanelItem)`
     break-inside: auto;
+    padding: 0;
 
     display: flex;
     flex-direction: column;
@@ -27,7 +33,7 @@ export function ProgressionTab({ ...panelProps }: ProgressionTabProps) {
     }, [character]);
 
     return (
-        <TabPanel
+        <StyledTabPanel
             {...panelProps}
             component={Paper}
             componentProps={{ elevation: 2 }}
@@ -43,6 +49,6 @@ export function ProgressionTab({ ...panelProps }: ProgressionTabProps) {
                     />
                 ))}
             </StyledTabPanelItem>
-        </TabPanel>
+        </StyledTabPanel>
     );
 }

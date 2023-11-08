@@ -1,7 +1,17 @@
 import { Box, Tabs, Tab } from '@mui/material';
 import React, { useState } from 'react';
+import styled from '@emotion/styled';
 import { TabPanelProps } from './types';
 import { useResponsive } from '../../hooks/use-responsive';
+
+const TabsBox = styled(Box)`
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+
+    width: 100%;
+`;
 
 interface SimpleTabsProps {
     tabs: {
@@ -22,7 +32,7 @@ export function SimpleTabs({ tabs }: SimpleTabsProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <TabsBox>
             {!isMobile && (
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs
@@ -41,6 +51,6 @@ export function SimpleTabs({ tabs }: SimpleTabsProps) {
             {tabs.map((t, index) => (
                 <t.element index={index} currentIndex={currentIndex} />
             ))}
-        </Box>
+        </TabsBox>
     );
 }
