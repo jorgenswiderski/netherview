@@ -8,9 +8,9 @@ import {
     Paper,
 } from '@mui/material';
 import styled from '@emotion/styled';
-import { AbilityScores } from '../../../../models/character/types';
-import { useCharacter } from '../../../../context/character-context/character-context';
-import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
+import { useCharacter } from '../../../../../context/character-context/character-context';
+import { AbilityScores } from '../../../../../models/character/types';
+import { TabPanelItem } from '../../../../simple-tabs/tab-panel-item';
 
 const StyledTabPanelItem = styled(TabPanelItem)`
     padding: 0.75rem;

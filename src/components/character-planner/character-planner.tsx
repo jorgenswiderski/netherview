@@ -85,6 +85,10 @@ const PlannerContainer = styled(PaperContainer)`
 
     max-width: 600px;
     position: relative;
+
+    @media (max-width: 768px) {
+        max-width: unset;
+    }
 `;
 
 const TreeVisualizationOverlay = styled(TreeVisualization)`

@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Paper } from '@mui/material';
-import { useCharacter } from '../../../context/character-context/character-context';
-import { TabPanel } from '../../simple-tabs/tab-panel';
-import { TabPanelProps } from '../../simple-tabs/types';
-import { LevelCollapsible } from '../../level-manager/level-collapsible';
-import { TabPanelItem } from '../../simple-tabs/tab-panel-item';
+import { useCharacter } from '../../../../context/character-context/character-context';
+import { LevelCollapsible } from '../../../level-manager/level-collapsible';
+import { TabPanel } from '../../../simple-tabs/tab-panel';
+import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
+import { TabPanelProps } from '../../../simple-tabs/types';
 
 const StyledTabPanel = styled(TabPanel)`
     padding: 1rem;

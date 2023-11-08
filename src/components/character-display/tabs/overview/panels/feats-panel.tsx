@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Box, Paper } from '@mui/material';
-import { useCharacter } from '../../../../context/character-context/character-context';
-import { GrantedEffect } from '../../../character-planner/feature-picker/prospective-effects/granted-effect';
-import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
+import { useCharacter } from '../../../../../context/character-context/character-context';
+import { GrantedEffect } from '../../../../character-planner/feature-picker/prospective-effects/granted-effect';
+import { TabPanelItem } from '../../../../simple-tabs/tab-panel-item';
 
 export function FeatsPanel() {
     const { character } = useCharacter();

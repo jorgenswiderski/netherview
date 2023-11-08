@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { Box } from '@mui/material';
-import { useCharacter } from '../../../context/character-context/character-context';
-import { TabPanel } from '../../simple-tabs/tab-panel';
-import { TabPanelProps } from '../../simple-tabs/types';
-import { GrantedEffect } from '../../character-planner/feature-picker/prospective-effects/granted-effect';
-import { SpellsByLevel } from '../../spells-by-level';
-import { CollapsibleSection } from '../../collapsible-section';
+import { useCharacter } from '../../../../context/character-context/character-context';
+import { TabPanel } from '../../../simple-tabs/tab-panel';
+import { TabPanelProps } from '../../../simple-tabs/types';
+import { GrantedEffect } from '../../../character-planner/feature-picker/prospective-effects/granted-effect';
+import { SpellsByLevel } from '../../../spells-by-level';
+import { CollapsibleSection } from '../../../collapsible-section';
 
 interface ActionsTabProps extends TabPanelProps {}
 

@@ -1,9 +1,9 @@
 import React, { useMemo, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Paper, Typography } from '@mui/material';
-import { WeaveImages } from '../../../../api/weave/weave-images';
-import { useCharacter } from '../../../../context/character-context/character-context';
-import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
+import { WeaveImages } from '../../../../../api/weave/weave-images';
+import { useCharacter } from '../../../../../context/character-context/character-context';
+import { TabPanelItem } from '../../../../simple-tabs/tab-panel-item';
 
 const StyledTabPanelItem = styled(TabPanelItem)`
     position: relative;

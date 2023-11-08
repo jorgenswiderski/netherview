@@ -6,9 +6,9 @@ import { useCharacter } from '../../context/character-context/character-context'
 import { ChooseNextStep } from '../character-planner/choose-next-step';
 import { useResponsive } from '../../hooks/use-responsive';
 import { SimpleTabs } from '../simple-tabs/simple-tabs';
-import { OverviewTab } from './overview/overview-tab';
-import { ProgressionTab } from './progression/progression-tab';
-import { ActionsTab } from './actions/actions-tab';
+import { ActionsTab } from './tabs/actions/actions-tab';
+import { OverviewTab } from './tabs/overview/overview-tab';
+import { ProgressionTab } from './tabs/progression/progression-tab';
 
 const PaperContainer = styled(Paper)`
     display: flex;
