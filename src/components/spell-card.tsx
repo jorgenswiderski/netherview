@@ -37,19 +37,21 @@ interface SpellCardProps {
     spell?: ISpell;
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
     selected?: boolean;
+    elevation?: number;
 }
 
 export function SpellCard({
     spell,
     onClick,
     selected = false,
+    elevation = 3,
 }: SpellCardProps) {
     const imageContainerRef = useRef<HTMLDivElement>(null);
 
     return (
         <ActionTooltip action={spell}>
             <StyledCard
-                elevation={3}
+                elevation={elevation}
                 selected={selected}
                 ref={imageContainerRef}
             >

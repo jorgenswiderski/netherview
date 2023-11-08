@@ -1,12 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Paper, Typography } from '@mui/material';
-import { ICharacterTreeDecision } from '../../../models/character/character-tree-node/types';
-import { WeaveImages } from '../../../api/weave/weave-images';
+import { WeaveImages } from '../../../../api/weave/weave-images';
+import { useCharacter } from '../../../../context/character-context/character-context';
+import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
 
-interface CharacterBackgroundProps {
-    background: ICharacterTreeDecision;
-}
+const StyledTabPanelItem = styled(TabPanelItem)`
+    position: relative;
+`;
 
 const BackgroundImage = styled.div<{ src: string }>`
     position: absolute;
@@ -23,13 +24,21 @@ const BackgroundImage = styled.div<{ src: string }>`
     opacity: 0.15;
 `;
 
-export function CharacterBackground({ background }: CharacterBackgroundProps) {
+export function CharacterBackgroundPanel() {
+    const { character } = useCharacter();
+
+    const background = useMemo(() => character.getBackground(), [character]);
+
+    if (!background) {
+        return null;
+    }
+
     const imageContainerRef = useRef<HTMLDivElement>(null);
 
     return (
-        <Paper
-            elevation={2}
-            style={{ padding: '1rem', position: 'relative' }}
+        <StyledTabPanelItem
+            component={Paper}
+            componentProps={{ elevation: 2 }}
             ref={imageContainerRef}
         >
             {background.image && (
@@ -46,6 +55,6 @@ export function CharacterBackground({ background }: CharacterBackgroundProps) {
             >
                 Background: {background.name}
             </Typography>
-        </Paper>
+        </StyledTabPanelItem>
     );
 }

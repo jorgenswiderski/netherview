@@ -1,23 +1,48 @@
-import React from 'react';
+import styled from '@emotion/styled';
+import React, { ElementType, ReactNode } from 'react';
 
-interface TabPanelProps {
-    children?: React.ReactNode;
+const ColumnBox = styled.div`
+    display: block;
+    width: 100%;
+    max-height: 100%;
+    overflow: auto;
+    column-count: 2;
+    column-gap: 1rem;
+    column-fill: balance;
+
+    @media (max-width: 1200px) {
+        column-count: 1;
+    }
+`;
+
+interface TabPanelProps<T extends ElementType = 'div'>
+    extends React.ComponentPropsWithRef<'div'> {
+    children: ReactNode;
     index: number;
     currentIndex: number;
+    component?: T;
+    componentProps?: React.ComponentProps<T>;
 }
 
-export function TabPanel(props: TabPanelProps) {
-    const { children, currentIndex, index, ...other } = props;
-
+export function TabPanel<T extends ElementType = 'div'>({
+    children,
+    currentIndex,
+    index,
+    component: Component,
+    componentProps,
+    ...rest
+}: TabPanelProps<T>) {
     return (
-        <div
+        <ColumnBox
+            as={Component}
+            {...componentProps}
             role="tabpanel"
             hidden={currentIndex !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
-            {...other}
+            {...rest}
         >
             {currentIndex === index && children}
-        </div>
+        </ColumnBox>
     );
 }

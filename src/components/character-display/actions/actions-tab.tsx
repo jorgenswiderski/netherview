@@ -1,46 +1,13 @@
 import React, { useMemo } from 'react';
-import styled from '@emotion/styled';
 import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
+import { Box } from '@mui/material';
 import { useCharacter } from '../../../context/character-context/character-context';
 import { TabPanel } from '../../simple-tabs/tab-panel';
 import { TabPanelProps } from '../../simple-tabs/types';
 import { GrantedEffect } from '../../character-planner/feature-picker/prospective-effects/granted-effect';
 import { SpellsByLevel } from '../../spells-by-level';
-
-const ContentSection = styled.div`
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: stretch;
-    min-width: 100%;
-    gap: 1rem;
-    flex: 1;
-    overflow-y: hidden;
-
-    @media (max-width: 768px) {
-        width: 100%;
-        box-sizing: border-box;
-        flex-direction: column;
-        overflow-y: unset;
-    }
-`;
-
-// const Column = styled.div`
-//     display: flex;
-//     flex-direction: column;
-//     gap: 1rem;
-
-//     height: 100%;
-//     overflow-y: auto;
-
-//     flex: 1;
-
-//     @media (max-width: 768px) {
-//         align-items: stretch;
-//         overflow-y: unset;
-//     }
-// `;
+import { CollapsibleSection } from '../../collapsible-section';
 
 interface ActionsTabProps extends TabPanelProps {}
 
@@ -62,14 +29,25 @@ export function ActionsTab({ ...panelProps }: ActionsTabProps) {
 
     return (
         <TabPanel {...panelProps}>
-            <ContentSection>
-                <SpellsByLevel
-                    spells={spells.map((spell) => spell.action as ISpell)}
-                />
+            <CollapsibleSection title="Spells Learned" elevation={2}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.5rem',
+                    }}
+                >
+                    <SpellsByLevel
+                        elevation={3}
+                        spells={spells.map((spell) => spell.action as ISpell)}
+                    />
+                </Box>
+            </CollapsibleSection>
+            <CollapsibleSection title="Actions" elevation={2}>
                 {actions.map((action) => (
                     <GrantedEffect effect={action} elevation={2} />
                 ))}
-            </ContentSection>
+            </CollapsibleSection>
         </TabPanel>
     );
 }

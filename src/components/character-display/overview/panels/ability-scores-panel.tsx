@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
     Table,
     TableHead,
@@ -7,19 +7,33 @@ import {
     TableBody,
     Paper,
 } from '@mui/material';
-import { AbilityScores } from '../../../models/character/types';
+import styled from '@emotion/styled';
+import { AbilityScores } from '../../../../models/character/types';
+import { useCharacter } from '../../../../context/character-context/character-context';
+import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
 
-interface AbilityScoresProps {
-    abilityScores: AbilityScores;
-}
+const StyledTabPanelItem = styled(TabPanelItem)`
+    padding: 0.75rem;
+`;
 
-export function AbilityScoresTable({ abilityScores }: AbilityScoresProps) {
+export function AbilityScoresPanel() {
+    const { character } = useCharacter();
+
+    const abilityScores = useMemo(
+        () => character.getTotalAbilityScores(),
+        [character],
+    );
+
+    if (!abilityScores) {
+        return null;
+    }
+
     const keys: (keyof AbilityScores)[] = Object.keys(
         abilityScores,
     ) as (keyof AbilityScores)[];
 
     return (
-        <Paper elevation={2} style={{ padding: '12px' }}>
+        <StyledTabPanelItem component={Paper} componentProps={{ elevation: 2 }}>
             <Table size="small">
                 <TableHead>
                     <TableRow>
@@ -65,6 +79,6 @@ export function AbilityScoresTable({ abilityScores }: AbilityScoresProps) {
                     </TableRow>
                 </TableBody>
             </Table>
-        </Paper>
+        </StyledTabPanelItem>
     );
 }

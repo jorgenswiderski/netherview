@@ -1,6 +1,6 @@
 // equipment-panel.tsx
 import React, { useCallback, useMemo } from 'react';
-import { Typography, Grid, Box, Paper } from '@mui/material';
+import { Grid, Box, Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import {
     EquipmentSlot,
@@ -9,17 +9,16 @@ import {
 import { EquipmentSlotCard } from './equipment-slot';
 import { useCharacter } from '../../../context/character-context/character-context';
 import { useResponsive } from '../../../hooks/use-responsive';
+import { TabPanelItem } from '../../simple-tabs/tab-panel-item';
 
-const StyledPaper = styled(Paper)`
-    padding: 1rem;
-    flex: 1;
-`;
+const StyledTabPanelItem = styled(TabPanelItem)``;
 
 const MainContainer = styled(Box)`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 0.5rem;
 
     @media (max-width: 768px) {
         flex-direction: row;
@@ -27,26 +26,26 @@ const MainContainer = styled(Box)`
     }
 `;
 
-const TopContainer = styled(Box)`
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-`;
+// const TopContainer = styled(Box)`
+//     display: flex;
+//     justify-content: space-between;
+//     width: 100%;
+// `;
 
-const Column = styled(Box)`
-    display: flex;
-    flex-direction: column;
-`;
+// const Column = styled(Box)`
+//     display: flex;
+//     flex-direction: column;
+// `;
 
-const BottomContainer = styled(Box)`
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-`;
+// const BottomContainer = styled(Box)`
+//     display: flex;
+//     justify-content: space-between;
+//     width: 100%;
+// `;
 
-const WeaponContainer = styled(Box)`
-    display: flex;
-`;
+// const WeaponContainer = styled(Box)`
+//     display: flex;
+// `;
 
 const StyledGrid = styled(Grid)`
     margin: 8px;
@@ -85,7 +84,7 @@ export function EquipmentPanel() {
     );
 
     const renderEquipmentSlot = (slot: EquipmentSlot) => {
-        return (
+        return isMobile ? (
             <StyledGrid item key={slot}>
                 <EquipmentSlotCard
                     slot={slot}
@@ -97,50 +96,39 @@ export function EquipmentPanel() {
                     filter={slotFilters[slot]}
                 />
             </StyledGrid>
+        ) : (
+            <EquipmentSlotCard
+                slot={slot}
+                onEquipItem={(item: IEquipmentItem) => onEquipItem(slot, item)}
+                item={items[slot]?.item}
+                disabled={disabledSlots[slot]}
+                filter={slotFilters[slot]}
+            />
         );
     };
 
     return (
-        <StyledPaper elevation={2}>
-            <Typography variant="h6" align="left" gutterBottom>
-                Equipped Items:
-            </Typography>
+        <StyledTabPanelItem
+            label="Equipment"
+            component={Paper}
+            componentProps={{ elevation: 2 }}
+        >
             <MainContainer>
-                {!isMobile && (
-                    <>
-                        <TopContainer>
-                            <Column>
-                                {equipmentSlots
-                                    .slice(0, 4)
-                                    .map(renderEquipmentSlot)}
-                            </Column>
-                            <Column>
-                                {equipmentSlots
-                                    .slice(4, 8)
-                                    .map(renderEquipmentSlot)}
-                            </Column>
-                        </TopContainer>
-                        <BottomContainer>
-                            <WeaponContainer>
-                                {equipmentSlots
-                                    .slice(8, 10)
-                                    .map(renderEquipmentSlot)}
-                            </WeaponContainer>
-
-                            <WeaponContainer>
-                                {equipmentSlots
-                                    .slice(10, 12)
-                                    .map(renderEquipmentSlot)}
-                            </WeaponContainer>
-                        </BottomContainer>
-                    </>
-                )}
                 {isMobile && (
                     <Grid container spacing={1}>
                         {equipmentSlots.map(renderEquipmentSlot)}
                     </Grid>
                 )}
+                {!isMobile &&
+                    [
+                        equipmentSlots.slice(0, 6),
+                        equipmentSlots.slice(6, 12),
+                    ].map((row) => (
+                        <Box sx={{ display: 'flex', gap: '0.5rem' }}>
+                            {row.map(renderEquipmentSlot)}
+                        </Box>
+                    ))}
             </MainContainer>
-        </StyledPaper>
+        </StyledTabPanelItem>
     );
 }

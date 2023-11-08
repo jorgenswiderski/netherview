@@ -1019,19 +1019,18 @@ export class Character implements ICharacter {
     }
 
     getGrantedEffects(): GrantableEffect[] {
-        const fx: GrantableEffect[] = this.root.findAllNodes((node) => {
-            if (node.nodeType !== CharacterTreeNodeType.EFFECT) {
-                return false;
-            }
+        const fx: GrantableEffect[] = this.root.findAllNodes(
+            (node) => node.nodeType === CharacterTreeNodeType.EFFECT,
+        ) as CharacterTreeEffect[] as GrantableEffect[];
 
-            return true;
-        }) as CharacterTreeEffect[] as GrantableEffect[];
-
+        // FIXME: Remove this once its clear that nodes is always empty
         const nodes = this.root.findAllNodes(
             (node) =>
                 node.nodeType === CharacterTreeNodeType.DECISION &&
                 typeof (node as CharacterTreeDecision).grants !== 'undefined',
         );
+
+        assert(nodes.length === 0);
 
         fx.push(
             ...nodes.flatMap((node) => (node as CharacterTreeDecision).grants!),
@@ -1057,6 +1056,12 @@ export class Character implements ICharacter {
         return this.getGrantedEffects().filter(
             (effect) => effect.type === GrantableEffectType.CHARACTERISTIC,
         ) as Characteristic[];
+    }
+
+    getFeats(): Characteristic[] {
+        return this.getCharacteristics().filter(
+            (effect) => effect.subtype === CharacteristicType.ABILITY_FEAT,
+        );
     }
 
     private static findNodeByType(

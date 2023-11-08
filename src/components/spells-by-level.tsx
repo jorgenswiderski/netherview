@@ -39,12 +39,14 @@ interface SpellsByLevelProps {
     spells: ISpell[];
     selectedSpells?: ISpell[];
     onClick?: (spell: ISpell) => void;
+    elevation?: number;
 }
 
 export function SpellsByLevel({
     spells,
     selectedSpells,
     onClick,
+    elevation = 2,
 }: SpellsByLevelProps) {
     const spellsByLevel = useMemo(() => {
         const groupedSpells: ISpell[][] = [];
@@ -64,7 +66,7 @@ export function SpellsByLevel({
 
     return spellsByLevel.map((levelSpells, idx) => (
         // eslint-disable-next-line react/no-array-index-key
-        <RowOuterBox key={idx} elevation={2}>
+        <RowOuterBox key={idx} elevation={elevation}>
             <RowLabel variant="h5">{romanNumerals[idx]}</RowLabel>
             <RowInnerBox>
                 {levelSpells.map((spell) => (
@@ -73,6 +75,7 @@ export function SpellsByLevel({
                         spell={spell}
                         selected={selectedSpells?.includes(spell)}
                         onClick={onClick ? () => onClick(spell) : undefined}
+                        elevation={elevation + 1}
                     />
                 ))}
             </RowInnerBox>
