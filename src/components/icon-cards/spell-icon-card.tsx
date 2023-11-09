@@ -1,6 +1,6 @@
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { CardActionArea, CardMedia } from '@mui/material';
-import React, { RefObject, useRef } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { WeaveImages } from '../../api/weave/weave-images';
 import { ActionTooltip } from '../tooltips/action-tooltip';
@@ -17,14 +17,15 @@ interface SpellCardMediaProps {
 }
 
 function SpellCardMedia({ spell, containerRef }: SpellCardMediaProps) {
-    return (
-        spell?.image && (
-            <CardMedia
-                component="img"
-                image={WeaveImages.getPath(spell.image, containerRef)}
-            />
-        )
-    );
+    const [path, setPath] = useState<string>();
+
+    useEffect(() => {
+        if (spell?.image) {
+            setPath(WeaveImages.getPath(spell.image, containerRef));
+        }
+    }, [spell?.image]);
+
+    return path && <CardMedia component="img" image={path} />;
 }
 
 interface SpellCardProps {
@@ -51,12 +52,10 @@ export function SpellIconCard({
             >
                 {spell && onClick ? (
                     <ActionArea onClick={onClick}>
-                        {imageContainerRef.current && (
-                            <SpellCardMedia
-                                spell={spell}
-                                containerRef={imageContainerRef}
-                            />
-                        )}
+                        <SpellCardMedia
+                            spell={spell}
+                            containerRef={imageContainerRef}
+                        />
                     </ActionArea>
                 ) : (
                     <SpellCardMedia

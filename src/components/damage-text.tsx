@@ -40,7 +40,8 @@ export function DamageText({
     );
 
     return damagesParsed.map(({ amount, type }, index) => (
-        <Typography color={damageTypeColor[type]}>{`${
+        // eslint-disable-next-line react/no-array-index-key
+        <Typography key={index} color={damageTypeColor[type]}>{`${
             index > 0 ? '+' : ''
         }${amount} ${DamageType[type]}`}</Typography>
     ));

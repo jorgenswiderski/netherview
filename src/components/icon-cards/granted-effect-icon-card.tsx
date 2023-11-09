@@ -1,5 +1,5 @@
 import { CardActionArea, CardMedia } from '@mui/material';
-import React, { RefObject, useRef } from 'react';
+import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { WeaveImages } from '../../api/weave/weave-images';
@@ -17,14 +17,15 @@ interface SpellCardMediaProps {
 }
 
 function EffectCardMedia({ effect, containerRef }: SpellCardMediaProps) {
-    return (
-        effect?.image && (
-            <CardMedia
-                component="img"
-                image={WeaveImages.getPath(effect.image, containerRef)}
-            />
-        )
-    );
+    const [path, setPath] = useState<string>();
+
+    useEffect(() => {
+        if (effect?.image) {
+            setPath(WeaveImages.getPath(effect.image, containerRef));
+        }
+    }, [effect?.image]);
+
+    return path && <CardMedia component="img" image={path} />;
 }
 
 interface GrantedEffectIconCardProps {

@@ -82,7 +82,12 @@ export function ProgressionLevelPanel({
     return (
         <StyledTabPanelItem component={Paper} componentProps={{ elevation: 2 }}>
             {collapsed && (
-                <Box display="flex" gap="0.5rem" alignItems="center">
+                <Box
+                    display="flex"
+                    gap="0.5rem"
+                    alignItems="center"
+                    flexWrap="wrap"
+                >
                     <Box
                         display="flex"
                         flexDirection="column"
@@ -101,6 +106,7 @@ export function ProgressionLevelPanel({
                         .filter(({ effects }) => effects.length > 0)
                         .map(({ label, effects }) => (
                             <Paper
+                                key={label}
                                 sx={{
                                     padding: '0.25rem 0.5rem 0.5rem',
                                     flex: 1,
@@ -115,6 +121,7 @@ export function ProgressionLevelPanel({
                                         if ((effect as any)?.action) {
                                             return (
                                                 <SpellIconCard
+                                                    key={effect.name}
                                                     spell={
                                                         (effect as any).action
                                                     }
@@ -124,6 +131,7 @@ export function ProgressionLevelPanel({
 
                                         return (
                                             <GrantedEffectIconCard
+                                                key={effect.name}
                                                 effect={effect}
                                             />
                                         );
