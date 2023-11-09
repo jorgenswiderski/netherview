@@ -1,16 +1,10 @@
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
-import { Card, CardActionArea, CardMedia } from '@mui/material';
+import { CardActionArea, CardMedia } from '@mui/material';
 import React, { RefObject, useRef } from 'react';
 import styled from '@emotion/styled';
-import { WeaveImages } from '../api/weave/weave-images';
-import { ActionTooltip } from './tooltips/action-tooltip';
-
-const StyledCard = styled(Card)<{ selected: boolean }>`
-    aspect-ratio: 1;
-    opacity: ${(props) => (props.selected ? 0.85 : 1)};
-    border: 3px solid ${(props) => (props.selected ? '#3f51b5' : 'transparent')};
-    width: 36px;
-`;
+import { WeaveImages } from '../../api/weave/weave-images';
+import { ActionTooltip } from '../tooltips/action-tooltip';
+import { StyledIconCard } from './styled-icon-card';
 
 const ActionArea = styled(CardActionArea)`
     position: relative;
@@ -40,7 +34,7 @@ interface SpellCardProps {
     elevation?: number;
 }
 
-export function SpellCard({
+export function SpellIconCard({
     spell,
     onClick,
     selected = false,
@@ -50,7 +44,7 @@ export function SpellCard({
 
     return (
         <ActionTooltip action={spell}>
-            <StyledCard
+            <StyledIconCard
                 elevation={elevation}
                 selected={selected}
                 ref={imageContainerRef}
@@ -70,7 +64,7 @@ export function SpellCard({
                         containerRef={imageContainerRef}
                     />
                 )}
-            </StyledCard>
+            </StyledIconCard>
         </ActionTooltip>
     );
 }

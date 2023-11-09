@@ -3,7 +3,7 @@ import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { Box, Paper, Typography } from '@mui/material';
 import React, { useMemo } from 'react';
 import { Utils } from '../models/utils';
-import { SpellCard } from './spell-card';
+import { SpellIconCard } from './icon-cards/spell-icon-card';
 
 const RowOuterBox = styled(Paper)`
     display: flex;
@@ -70,7 +70,7 @@ export function SpellsByLevel({
             <RowLabel variant="h5">{romanNumerals[idx]}</RowLabel>
             <RowInnerBox>
                 {levelSpells.map((spell) => (
-                    <SpellCard
+                    <SpellIconCard
                         key={spell.id}
                         spell={spell}
                         selected={selectedSpells?.includes(spell)}

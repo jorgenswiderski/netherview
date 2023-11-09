@@ -5,7 +5,7 @@ import { Paper, Box, Typography } from '@mui/material';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { ICharacter } from '../../models/character/types';
 import { PlannerHeader } from './planner-header/planner-header';
-import { SpellCard } from '../spell-card';
+import { SpellIconCard } from '../icon-cards/spell-icon-card';
 import { SpellsByLevel } from '../spells-by-level';
 
 const Container = styled.div`
@@ -55,7 +55,7 @@ function SelectedSpells({ spells, numSpells, onClick }: SelectedSpellsProps) {
                     const spell = spells[idx];
 
                     return (
-                        <SpellCard
+                        <SpellIconCard
                             // eslint-disable-next-line react/no-array-index-key
                             key={idx}
                             spell={spell}
