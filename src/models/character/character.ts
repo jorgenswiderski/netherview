@@ -1058,10 +1058,39 @@ export class Character implements ICharacter {
         ) as Characteristic[];
     }
 
-    getFeats(): Characteristic[] {
-        return this.getCharacteristics().filter(
-            (effect) => effect.subtype === CharacteristicType.ABILITY_FEAT,
-        );
+    getFeats(): CharacterTreeDecision[] {
+        return this.findAllDecisionsByType(CharacterPlannerStep.FEAT);
+    }
+
+    static getFeatAsEffect(featNode: CharacterTreeDecision): GrantableEffect {
+        safeAssert(featNode.type === CharacterPlannerStep.FEAT);
+
+        const { name, description, image } = featNode;
+
+        const featEffect = featNode.findNode(
+            (effect) =>
+                effect.nodeType === CharacterTreeNodeType.EFFECT &&
+                effect.name === name &&
+                (effect as CharacterTreeEffect).type ===
+                    GrantableEffectType.CHARACTERISTIC,
+        ) as CharacterTreeEffect | undefined as GrantableEffect | undefined;
+
+        if (featEffect) {
+            return featEffect;
+        }
+
+        const featDummyEffect: GrantableEffect = {
+            name,
+            description,
+            image,
+            type: GrantableEffectType.CHARACTERISTIC, // FIXME
+        };
+
+        return featDummyEffect;
+    }
+
+    getFeatsAsEffects(): GrantableEffect[] {
+        return this.getFeats().map(Character.getFeatAsEffect);
     }
 
     private static findNodeByType(

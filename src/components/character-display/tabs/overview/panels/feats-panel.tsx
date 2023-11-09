@@ -7,7 +7,7 @@ import { GrantedEffects } from '../../../../character-planner/feature-picker/pro
 export function FeatsPanel() {
     const { character } = useCharacter();
 
-    const feats = useMemo(() => character.getFeats(), [character]);
+    const feats = useMemo(() => character.getFeatsAsEffects(), [character]);
 
     if (feats.length === 0) {
         return null;

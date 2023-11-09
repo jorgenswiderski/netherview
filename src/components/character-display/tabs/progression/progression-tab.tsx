@@ -9,17 +9,22 @@ interface ProgressionTabProps extends TabPanelProps {}
 export function ProgressionTab({ ...panelProps }: ProgressionTabProps) {
     const { character } = useCharacter();
 
-    const levelInfo = useMemo(() => {
-        const info = character.getClassInfo();
+    const classInfo = useMemo(() => character.getClassInfo(), [character]);
 
-        return info.flatMap((level) => level.levels);
-    }, [character]);
+    const levelInfo = useMemo(
+        () => classInfo.flatMap((level) => level.levels),
+        [classInfo],
+    );
 
     return (
         <TabPanel {...panelProps}>
             {levelInfo.map((info, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <ProgressionLevelPanel key={index} levelInfo={info} />
+                <ProgressionLevelPanel
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={index}
+                    levelInfo={info}
+                    multiclassed={classInfo.length > 1}
+                />
             ))}
         </TabPanel>
     );
