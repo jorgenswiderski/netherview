@@ -71,8 +71,8 @@ function NextStepGrid({ options }: { options: StepInfo[] }) {
                         typeof visible === 'undefined' || visible(character),
                 )
                 .map(({ label, onClick, media }) => (
-                    <StyledGridItem item xs={12} sm={6}>
-                        <Card key={label} elevation={2}>
+                    <StyledGridItem item xs={12} sm={6} key={label}>
+                        <Card elevation={2}>
                             <CardActionArea
                                 onClick={onClick}
                                 sx={{

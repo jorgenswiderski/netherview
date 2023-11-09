@@ -98,6 +98,7 @@ export function EquipmentPanel() {
             </StyledGrid>
         ) : (
             <EquipmentSlotCard
+                key={slot}
                 slot={slot}
                 onEquipItem={(item: IEquipmentItem) => onEquipItem(slot, item)}
                 item={items[slot]?.item}
@@ -123,8 +124,12 @@ export function EquipmentPanel() {
                     [
                         equipmentSlots.slice(0, 6),
                         equipmentSlots.slice(6, 12),
-                    ].map((row) => (
-                        <Box sx={{ display: 'flex', gap: '0.5rem' }}>
+                    ].map((row, index) => (
+                        <Box
+                            // eslint-disable-next-line react/no-array-index-key
+                            key={index}
+                            sx={{ display: 'flex', gap: '0.5rem' }}
+                        >
                             {row.map(renderEquipmentSlot)}
                         </Box>
                     ))}

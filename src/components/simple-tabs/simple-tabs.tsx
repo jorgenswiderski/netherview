@@ -41,7 +41,11 @@ export function SimpleTabs({ tabs }: SimpleTabsProps) {
                         onChange={(event, index) => setCurrentIndex(index)}
                     >
                         {tabs.map(({ label }, index) => (
-                            <Tab label={label} {...a11yProps(index)} />
+                            <Tab
+                                label={label}
+                                key={label}
+                                {...a11yProps(index)}
+                            />
                         ))}
                     </Tabs>
                 </Box>
@@ -50,7 +54,11 @@ export function SimpleTabs({ tabs }: SimpleTabsProps) {
             {isMobile && null /* TODO: navbar */}
 
             {tabs.map((t, index) => (
-                <t.element index={index} currentIndex={currentIndex} />
+                <t.element
+                    index={index}
+                    key={t.label}
+                    currentIndex={currentIndex}
+                />
             ))}
         </TabsBox>
     );
