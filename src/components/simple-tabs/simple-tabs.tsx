@@ -14,6 +14,13 @@ const TabsBox = styled(Box)`
     overflow: hidden;
 `;
 
+const PanelScrollBox = styled(Box)`
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+`;
+
 interface SimpleTabsProps {
     tabs: {
         label: string;
@@ -53,13 +60,15 @@ export function SimpleTabs({ tabs }: SimpleTabsProps) {
 
             {isMobile && null /* TODO: navbar */}
 
-            {tabs.map((t, index) => (
-                <t.element
-                    index={index}
-                    key={t.label}
-                    currentIndex={currentIndex}
-                />
-            ))}
+            <PanelScrollBox>
+                {tabs.map((t, index) => (
+                    <t.element
+                        index={index}
+                        key={t.label}
+                        currentIndex={currentIndex}
+                    />
+                ))}
+            </PanelScrollBox>
         </TabsBox>
     );
 }

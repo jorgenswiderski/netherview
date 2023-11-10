@@ -4,12 +4,9 @@ import React, { ElementType, ReactNode } from 'react';
 const ColumnBox = styled.div`
     display: ${({ hidden }) => (hidden ? 'none' : 'block')};
     width: 100%;
-    flex: ${({ hidden }) => (hidden ? 'unset' : '1')};
     column-count: 2;
     column-gap: 1rem;
     column-fill: balance;
-    overflow-y: auto;
-    overflow-x: hidden;
 
     @media (max-width: 1400px) {
         column-count: 1;

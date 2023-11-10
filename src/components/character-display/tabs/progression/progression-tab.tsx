@@ -27,6 +27,7 @@ export function ProgressionTab({ ...panelProps }: ProgressionTabProps) {
                 <ProgressionLevelPanel
                     // eslint-disable-next-line react/no-array-index-key
                     key={index}
+                    level={index + 1}
                     levelInfo={info}
                     multiclassed={classInfo.length > 1}
                 />

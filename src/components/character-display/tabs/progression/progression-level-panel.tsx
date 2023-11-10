@@ -24,11 +24,13 @@ const StyledTabPanelItem = styled(TabPanelItem)`
 `;
 
 interface ProgressionLevelPanelProps {
+    level: number;
     levelInfo: CharacterClassLevelInfo;
     multiclassed: boolean;
 }
 
 export function ProgressionLevelPanel({
+    level = 1,
     levelInfo,
     multiclassed,
 }: ProgressionLevelPanelProps) {
@@ -94,12 +96,19 @@ export function ProgressionLevelPanel({
                         alignItems="center"
                         mr={1}
                     >
-                        <Typography variant="body2" color="gray">
-                            {multiclassed ? levelInfo.node.name : 'Level'}
-                        </Typography>
-                        <Typography variant="h6">
-                            {(levelInfo.node as any).level + 1}
-                        </Typography>
+                        {!multiclassed && (
+                            <Typography variant="body2" color="gray">
+                                Level
+                            </Typography>
+                        )}
+                        <Typography variant="h6">{level}</Typography>
+                        {multiclassed && (
+                            <Typography variant="body2" color="gray">
+                                {`${levelInfo.node.name} ${
+                                    (levelInfo.node as any).level + 1
+                                }`}
+                            </Typography>
+                        )}
                     </Box>
 
                     {effectGroups
