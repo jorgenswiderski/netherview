@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
 import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
-import { Box } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import { useCharacter } from '../../../../context/character-context/character-context';
 import { TabPanel } from '../../../simple-tabs/tab-panel';
 import { TabPanelProps } from '../../../simple-tabs/types';
 import { SpellsByLevel } from '../../../spells-by-level';
-import { CollapsibleSection } from '../../../collapsible-section';
 import { GrantedEffects } from '../../../character-planner/feature-picker/prospective-effects/granted-effects';
+import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
 
 interface ActionsTabProps extends TabPanelProps {}
 
@@ -29,7 +29,11 @@ export function ActionsTab({ ...panelProps }: ActionsTabProps) {
 
     return (
         <TabPanel {...panelProps}>
-            <CollapsibleSection title="Learned Spells" elevation={2}>
+            <TabPanelItem
+                label="Learned Spells"
+                component={Paper}
+                componentProps={{ elevation: 2 }}
+            >
                 <Box
                     sx={{
                         display: 'flex',
@@ -42,10 +46,14 @@ export function ActionsTab({ ...panelProps }: ActionsTabProps) {
                         spells={spells.map((spell) => spell.action as ISpell)}
                     />
                 </Box>
-            </CollapsibleSection>
-            <CollapsibleSection title="Actions" elevation={2}>
+            </TabPanelItem>
+            <TabPanelItem
+                label="Actions"
+                component={Paper}
+                componentProps={{ elevation: 2 }}
+            >
                 <GrantedEffects effects={actions} elevation={3} flex />
-            </CollapsibleSection>
+            </TabPanelItem>
         </TabPanel>
     );
 }
