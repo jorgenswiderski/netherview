@@ -96,6 +96,37 @@ function SlotsCompact({
     );
 }
 
+const EquipmentSlotBox = styled(Box)<{
+    color: string;
+    mirrored: boolean;
+}>`
+    display: flex;
+    flex-direction: ${({ mirrored }) => (mirrored ? 'row-reverse' : 'row')};
+    gap: 1rem;
+
+    position: relative;
+    padding: 1rem;
+    background: linear-gradient(
+        ${({ mirrored }) => (mirrored ? '-10deg' : '10deg')},
+        ${({ color }) => alpha(color, 0.2)},
+        #0000 50%
+    );
+
+    ::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 1px;
+        width: 100%;
+        background: linear-gradient(
+            ${({ mirrored }) => (mirrored ? 'to left' : 'to right')},
+            ${({ color }) => color},
+            #0000
+        );
+    }
+`;
+
 interface SlotsProps extends SlotsCompactProps {}
 
 function Slots({
@@ -108,20 +139,10 @@ function Slots({
     const { isMobile } = useResponsive();
 
     return slots.map((slot, index) => (
-        <Box
+        <EquipmentSlotBox
             key={slot}
-            display="flex"
-            flexDirection={!isMobile && index < 6 ? 'row-reverse' : 'row'}
-            gap="1rem"
-            sx={{
-                background: `linear-gradient(${
-                    index < 6 ? '-10deg' : '10deg'
-                }, ${alpha(
-                    ItemColors[items[slot]?.item.rarity] ?? '#0000',
-                    0.2,
-                )}, #0000 50%)`,
-            }}
-            padding="1rem"
+            color={ItemColors[items[slot]?.item.rarity] ?? '#0000'}
+            mirrored={!isMobile && index < 6}
         >
             <EquipmentSlotCard
                 slot={slot}
@@ -136,7 +157,7 @@ function Slots({
                     {items[slot]?.item.name}
                 </Typography>
             </Box>
-        </Box>
+        </EquipmentSlotBox>
     ));
 }
 
