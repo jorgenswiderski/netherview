@@ -23,7 +23,7 @@ function EffectCardMedia({ effect, containerRef }: SpellCardMediaProps) {
         if (effect?.image) {
             setPath(WeaveImages.getPath(effect.image, containerRef));
         }
-    }, [effect?.image]);
+    }, [effect?.image, containerRef]);
 
     return path && <CardMedia component="img" image={path} />;
 }

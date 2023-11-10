@@ -9,6 +9,7 @@ import { SimpleTabs } from '../simple-tabs/simple-tabs';
 import { ActionsTab } from './tabs/actions/actions-tab';
 import { OverviewTab } from './tabs/overview/overview-tab';
 import { ProgressionTab } from './tabs/progression/progression-tab';
+import { EquipmentTab } from './tabs/equipment/equipment-tab';
 
 const PaperContainer = styled(Paper)`
     display: flex;
@@ -44,6 +45,7 @@ export function CharacterDisplay() {
                     { label: 'Overview', element: OverviewTab },
                     { label: 'Progression', element: ProgressionTab },
                     { label: 'Actions', element: ActionsTab },
+                    { label: 'Equipment', element: EquipmentTab },
                 ]}
             />
         </PaperContainer>

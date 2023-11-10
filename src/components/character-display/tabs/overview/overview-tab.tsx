@@ -5,7 +5,7 @@ import { FeatsPanel } from './panels/feats-panel';
 import { ActionsPanel } from './panels/actions-panel';
 import { TabPanel } from '../../../simple-tabs/tab-panel';
 import { TabPanelProps } from '../../../simple-tabs/types';
-import { EquipmentPanel } from '../../equipment/equipment-panel';
+import { EquipmentPanel } from './panels/equipment-panel';
 
 interface OverviewTabProps extends TabPanelProps {}
 

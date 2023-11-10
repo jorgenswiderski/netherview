@@ -139,7 +139,7 @@ export function EquipmentSlotCard({
         if (item?.image) {
             setPath(WeaveImages.getPath(item.image, imageContainerRef));
         }
-    }, [item?.image]);
+    }, [item?.image, imageContainerRef]);
 
     return (
         <>

@@ -23,7 +23,7 @@ function SpellCardMedia({ spell, containerRef }: SpellCardMediaProps) {
         if (spell?.image) {
             setPath(WeaveImages.getPath(spell.image, containerRef));
         }
-    }, [spell?.image]);
+    }, [spell?.image, containerRef]);
 
     return path && <CardMedia component="img" image={path} />;
 }

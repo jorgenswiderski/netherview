@@ -55,7 +55,7 @@ const WeightPriceBox = styled(Box)`
 
 interface ItemTooltipProps {
     item?: IEquipmentItem;
-    children: ReactElement<any, any>;
+    children: ReactElement;
 }
 
 export function ItemTooltip({ item, children }: ItemTooltipProps) {

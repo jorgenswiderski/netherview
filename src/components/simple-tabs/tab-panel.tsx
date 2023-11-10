@@ -11,7 +11,7 @@ const ColumnBox = styled.div`
     overflow-y: auto;
     overflow-x: hidden;
 
-    @media (max-width: 1200px) {
+    @media (max-width: 1400px) {
         column-count: 1;
     }
 `;
