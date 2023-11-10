@@ -21,6 +21,8 @@ import { ChooseNextStep } from './choose-next-step';
 import { useCharacter } from '../../context/character-context/character-context';
 import { useSettings } from '../../context/user-settings-context/user-settings-context';
 import { useResponsive } from '../../hooks/use-responsive';
+import { CharacterDisplayTabProvider } from '../../context/character-display-tab-context/character-display-tab-context';
+import { MobileNavbar } from '../mobile-navbar';
 
 const Container = styled(Box)`
     display: flex;
@@ -34,10 +36,17 @@ const Container = styled(Box)`
     width: 100%;
     height: 100%;
     min-height: 100%;
+    overflow: hidden;
 
     @media (max-width: 768px) {
         flex-direction: column-reverse;
         gap: 1rem;
+
+        flex: 1;
+
+        height: auto;
+        min-height: auto;
+        overflow-y: auto;
     }
 `;
 
@@ -219,7 +228,7 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
 
     return (
         <>
-            {debugMode && (
+            {debugMode && false && (
                 <DebugBar>
                     <DevButton
                         variant="contained"
@@ -231,20 +240,26 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
                 </DebugBar>
             )}
 
-            {isTreeVisible ? (
-                <TreeVisualizationOverlay data={character.root} />
-            ) : (
-                <Container>
-                    {character.root.children && // FIXME
-                        character.root.children.length > 1 && (
-                            <CharacterDisplay />
-                        )}
+            <CharacterDisplayTabProvider>
+                {isTreeVisible ? (
+                    <TreeVisualizationOverlay data={character.root} />
+                ) : (
+                    <Container>
+                        {character.root.children && // FIXME
+                            character.root.children.length > 1 && (
+                                <CharacterDisplay />
+                            )}
 
-                    {decisionPanel && (
-                        <PlannerContainer>{decisionPanel}</PlannerContainer>
-                    )}
-                </Container>
-            )}
+                        {decisionPanel && (
+                            <PlannerContainer>{decisionPanel}</PlannerContainer>
+                        )}
+                    </Container>
+                )}
+
+                {character.root.children && // FIXME
+                    character.root.children.length > 1 &&
+                    isMobile && <MobileNavbar />}
+            </CharacterDisplayTabProvider>
         </>
     );
 }

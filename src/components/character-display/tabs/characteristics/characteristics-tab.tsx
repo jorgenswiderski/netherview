@@ -12,7 +12,6 @@ import {
     CharacterTreeEffect,
 } from '../../../../models/character/character-tree-node/character-tree';
 import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
-import { log } from '../../../../models/logger';
 import { safeAssert } from '../../../../models/utils';
 
 const StyledTabPanel = styled(TabPanel)``;
@@ -80,16 +79,12 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
                 `Label '${label}' must be a string`,
             );
 
-            log(label);
-
             if (!m[label]) {
                 m[label] = [];
             }
 
             m[label].push(c);
         });
-
-        log(m);
 
         return m;
     }, [characteristics]);
@@ -104,6 +99,7 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
                 )
                 .map(([label, effects]) => (
                     <StyledTabPanelItem
+                        key={label}
                         label={label}
                         component={Paper}
                         componentProps={{ elevation: 2 }}

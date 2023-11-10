@@ -12,7 +12,7 @@ import { useCharacter } from '../../../context/character-context/character-conte
 import { EquipmentSlotCard } from './equipment-slot-card';
 import { CharacterEquipment, ItemColors } from '../../../models/items/types';
 
-const MainContainer = styled(Box)<{ compact: boolean }>`
+const MainContainer = styled(Box)<{ compact?: boolean }>`
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -165,7 +165,7 @@ interface EquipmentSlotsProps {
     compact?: boolean;
 }
 
-export function EquipmentSlots({ compact = false }: EquipmentSlotsProps) {
+export function EquipmentSlots({ compact }: EquipmentSlotsProps) {
     const { character, setCharacter } = useCharacter();
 
     const equipmentSlots = Object.keys(EquipmentSlot)

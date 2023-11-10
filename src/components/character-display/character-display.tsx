@@ -1,16 +1,12 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { Paper } from '@mui/material';
-import { CharacterHeader } from './character-header';
-import { useCharacter } from '../../context/character-context/character-context';
-import { ChooseNextStep } from '../character-planner/choose-next-step';
-import { useResponsive } from '../../hooks/use-responsive';
 import { SimpleTabs } from '../simple-tabs/simple-tabs';
-import { ActionsTab } from './tabs/actions/actions-tab';
-import { OverviewTab } from './tabs/overview/overview-tab';
-import { ProgressionTab } from './tabs/progression/progression-tab';
-import { EquipmentTab } from './tabs/equipment/equipment-tab';
-import { CharacteristicsTab } from './tabs/characteristics/characteristics-tab';
+import { useResponsive } from '../../hooks/use-responsive';
+import { ChooseNextStep } from '../character-planner/choose-next-step';
+import { useCharacter } from '../../context/character-context/character-context';
+import { CharacterHeader } from './character-header';
+import { characterDisplayTabs } from './character-display-tabs';
 
 const PaperContainer = styled(Paper)`
     display: flex;
@@ -22,13 +18,12 @@ const PaperContainer = styled(Paper)`
     max-width: 925px;
     width: auto;
     flex: 1;
-    overflow-y: hidden;
 
     @media (max-width: 768px) {
-        min-width: unset;
         width: 100%;
+        min-width: auto;
+        padding: 0.5rem;
         box-sizing: border-box;
-        overflow-y: unset;
     }
 `;
 
@@ -41,15 +36,7 @@ export function CharacterDisplay() {
             <CharacterHeader />
             {isMobile && !character.getNextDecision() && <ChooseNextStep />}
 
-            <SimpleTabs
-                tabs={[
-                    { label: 'Overview', element: OverviewTab },
-                    { label: 'Progression', element: ProgressionTab },
-                    { label: 'Actions', element: ActionsTab },
-                    { label: 'Equipment', element: EquipmentTab },
-                    { label: 'Passives', element: CharacteristicsTab },
-                ]}
-            />
+            <SimpleTabs tabs={characterDisplayTabs} />
         </PaperContainer>
     );
 }

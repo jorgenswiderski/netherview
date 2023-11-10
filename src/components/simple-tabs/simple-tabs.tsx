@@ -1,8 +1,9 @@
 import { Box, Tabs, Tab } from '@mui/material';
-import React, { useState } from 'react';
+import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
 import { TabPanelProps } from './types';
 import { useResponsive } from '../../hooks/use-responsive';
+import { useCharacterDisplayTab } from '../../context/character-display-tab-context/character-display-tab-context';
 
 const TabsBox = styled(Box)`
     display: flex;
@@ -15,15 +16,23 @@ const TabsBox = styled(Box)`
 `;
 
 const PanelScrollBox = styled(Box)`
-    height: 100%;
+    flex: 1;
+
     width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
+
+    @media (max-width: 768px) {
+        margin-bottom: 64px;
+        overflow-y: hidden;
+    }
 `;
 
 interface SimpleTabsProps {
     tabs: {
         label: string;
+        labelMobile?: string;
+        icon?: ReactNode;
         element: (props: TabPanelProps) => React.JSX.Element;
     }[];
 }
@@ -37,15 +46,15 @@ function a11yProps(index: number) {
 
 export function SimpleTabs({ tabs }: SimpleTabsProps) {
     const { isMobile } = useResponsive();
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const { tabIndex, setTabIndex } = useCharacterDisplayTab();
 
     return (
         <TabsBox>
             {!isMobile && (
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs
-                        value={currentIndex}
-                        onChange={(event, index) => setCurrentIndex(index)}
+                        value={tabIndex}
+                        onChange={(event, index) => setTabIndex(index)}
                     >
                         {tabs.map(({ label }, index) => (
                             <Tab
@@ -58,14 +67,12 @@ export function SimpleTabs({ tabs }: SimpleTabsProps) {
                 </Box>
             )}
 
-            {isMobile && null /* TODO: navbar */}
-
             <PanelScrollBox>
                 {tabs.map((t, index) => (
                     <t.element
                         index={index}
                         key={t.label}
-                        currentIndex={currentIndex}
+                        currentIndex={tabIndex}
                     />
                 ))}
             </PanelScrollBox>

@@ -12,6 +12,7 @@ const StyledGridContainer = styled(Grid)`
     flex: 1;
 
     @media (max-width: 600px) {
+        flex: unset;
         margin-left: -6px;
         width: calc(100% + 12px);
 
