@@ -1,6 +1,8 @@
 import styled from '@emotion/styled';
 import React, { ElementType, ReactNode } from 'react';
 
+// Scrolling behavior is implemented in parent component
+// (adding overflow prop to this div breaks the column behavior)
 const ColumnBox = styled.div`
     display: ${({ hidden }) => (hidden ? 'none' : 'block')};
     width: 100%;
