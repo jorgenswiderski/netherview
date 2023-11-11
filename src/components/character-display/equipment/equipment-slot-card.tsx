@@ -27,12 +27,28 @@ import { WeaveImages } from '../../../api/weave/weave-images';
 
 const StyledDialog = styled(Dialog)``;
 
+const StyledDialogTitle = styled(DialogTitle)`
+    @media (max-width: 768px) {
+        padding: 1rem;
+    }
+`;
+
+const StyledDialogContent = styled(DialogContent)`
+    @media (max-width: 768px) {
+        padding: 0 0.75rem 0.75rem;
+    }
+`;
+
 const DialogBox = styled(Paper)`
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 
     padding: 1rem;
+
+    @media (max-width: 768px) {
+        padding: 0.75rem;
+    }
 `;
 
 const StyledCard = styled(Card, {
@@ -161,8 +177,10 @@ export function EquipmentSlotCard({
                 open={isOpen}
                 onClose={() => setIsOpen(false)}
             >
-                <DialogTitle>{EquipmentSlot[slot]} Options</DialogTitle>
-                <DialogContent>
+                <StyledDialogTitle>
+                    {EquipmentSlot[slot]} Options
+                </StyledDialogTitle>
+                <StyledDialogContent>
                     <DialogBox>
                         <TextField
                             variant="outlined"
@@ -184,7 +202,7 @@ export function EquipmentSlotCard({
                             />
                         ))}
                     </DialogBox>
-                </DialogContent>
+                </StyledDialogContent>
             </StyledDialog>
         </>
     );
