@@ -1,13 +1,12 @@
 import React, { useMemo } from 'react';
 import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
-import { Box, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
 import { useCharacter } from '../../../../context/character-context/character-context';
 import { TabPanel } from '../../../simple-tabs/tab-panel';
 import { TabPanelProps } from '../../../simple-tabs/types';
-import { SpellsByLevel } from '../../../spells-by-level';
 import { GrantedEffects } from '../../../character-planner/feature-picker/prospective-effects/granted-effects';
 import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
+import { LearnedSpellsPanel } from './panels/learned-spells-panel';
 
 interface ActionsTabProps extends TabPanelProps {}
 
@@ -29,28 +28,7 @@ export function ActionsTab({ ...panelProps }: ActionsTabProps) {
 
     return (
         <TabPanel {...panelProps}>
-            {spells.length > 0 && (
-                <TabPanelItem
-                    label="Learned Spells"
-                    component={Paper}
-                    componentProps={{ elevation: 2 }}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '0.5rem',
-                        }}
-                    >
-                        <SpellsByLevel
-                            elevation={3}
-                            spells={spells.map(
-                                (spell) => spell.action as ISpell,
-                            )}
-                        />
-                    </Box>
-                </TabPanelItem>
-            )}
+            {spells.length > 0 && <LearnedSpellsPanel spells={spells} />}
 
             {actions.length > 0 && (
                 <TabPanelItem
