@@ -26,7 +26,7 @@ import { MobileNavbar } from '../mobile-navbar';
 
 const Container = styled(Box)`
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     align-items: stretch;
     justify-content: center;
     gap: 40px;
@@ -39,13 +39,14 @@ const Container = styled(Box)`
     overflow: hidden;
 
     @media (max-width: 768px) {
-        flex-direction: column-reverse;
+        flex-direction: column;
+        justify-content: flex-start;
         gap: 1rem;
 
         flex: 1;
 
         height: auto;
-        min-height: auto;
+        min-height: unset;
         overflow-y: auto;
     }
 `;
@@ -84,8 +85,7 @@ const PaperContainer = styled(Paper)`
     gap: 1rem;
 
     @media (max-width: 768px) {
-        width: 100%;
-        box-sizing: border-box;
+        align-items: stretch;
     }
 `;
 
@@ -245,14 +245,14 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
                     <TreeVisualizationOverlay data={character.root} />
                 ) : (
                     <Container>
+                        {decisionPanel && (
+                            <PlannerContainer>{decisionPanel}</PlannerContainer>
+                        )}
+
                         {character.root.children && // FIXME
                             character.root.children.length > 1 && (
                                 <CharacterDisplay />
                             )}
-
-                        {decisionPanel && (
-                            <PlannerContainer>{decisionPanel}</PlannerContainer>
-                        )}
                     </Container>
                 )}
 

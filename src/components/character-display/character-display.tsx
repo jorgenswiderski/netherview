@@ -20,10 +20,8 @@ const PaperContainer = styled(Paper)`
     flex: 1;
 
     @media (max-width: 768px) {
-        width: 100%;
-        min-width: auto;
+        min-width: unset;
         padding: 0.5rem;
-        box-sizing: border-box;
     }
 `;
 

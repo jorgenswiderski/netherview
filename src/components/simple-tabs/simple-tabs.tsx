@@ -23,7 +23,6 @@ const PanelScrollBox = styled(Box)`
     overflow-y: auto;
 
     @media (max-width: 768px) {
-        margin-bottom: 64px;
         overflow-y: hidden;
     }
 `;
