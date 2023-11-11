@@ -7,7 +7,8 @@ const StyledPaper = styled(Paper)`
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
+
     padding: 2px 4px;
 `;
 
@@ -37,7 +38,7 @@ export function EffectBase({
             ) : (
                 image
             )}
-            <Typography variant="body2" style={{ fontWeight: 600 }}>
+            <Typography variant="body2" fontWeight="bold">
                 {label}
             </Typography>
         </StyledPaper>
