@@ -26,6 +26,10 @@ const labels: Record<string, CharacterPlannerStep[]> = {
         CharacterPlannerStep.SECONDARY_CLASS,
         CharacterPlannerStep.LEVEL_UP,
     ],
+    Subclass: [
+        CharacterPlannerStep.CHOOSE_SUBCLASS,
+        CharacterPlannerStep.SUBCLASS_FEATURE,
+    ],
     Racial: [CharacterPlannerStep.SET_RACE],
     Feats: [CharacterPlannerStep.FEAT],
     Items: [CharacterPlannerStep.EQUIP_ITEM],
@@ -72,6 +76,8 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
 
             if (label === 'Class') {
                 label = parent.name;
+            } else if (label === 'Subclass') {
+                label = parent.parent!.name;
             }
 
             safeAssert(
