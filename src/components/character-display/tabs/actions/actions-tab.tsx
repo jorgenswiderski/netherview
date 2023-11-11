@@ -29,31 +29,38 @@ export function ActionsTab({ ...panelProps }: ActionsTabProps) {
 
     return (
         <TabPanel {...panelProps}>
-            <TabPanelItem
-                label="Learned Spells"
-                component={Paper}
-                componentProps={{ elevation: 2 }}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.5rem',
-                    }}
+            {spells.length > 0 && (
+                <TabPanelItem
+                    label="Learned Spells"
+                    component={Paper}
+                    componentProps={{ elevation: 2 }}
                 >
-                    <SpellsByLevel
-                        elevation={3}
-                        spells={spells.map((spell) => spell.action as ISpell)}
-                    />
-                </Box>
-            </TabPanelItem>
-            <TabPanelItem
-                label="Actions"
-                component={Paper}
-                componentProps={{ elevation: 2 }}
-            >
-                <GrantedEffects effects={actions} elevation={3} flex />
-            </TabPanelItem>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0.5rem',
+                        }}
+                    >
+                        <SpellsByLevel
+                            elevation={3}
+                            spells={spells.map(
+                                (spell) => spell.action as ISpell,
+                            )}
+                        />
+                    </Box>
+                </TabPanelItem>
+            )}
+
+            {actions.length > 0 && (
+                <TabPanelItem
+                    label="Actions"
+                    component={Paper}
+                    componentProps={{ elevation: 2 }}
+                >
+                    <GrantedEffects effects={actions} elevation={3} flex />
+                </TabPanelItem>
+            )}
         </TabPanel>
     );
 }
