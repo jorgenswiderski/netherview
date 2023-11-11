@@ -16,15 +16,10 @@ const PageContainer = styled.div`
     width: 100%;
     padding: 50px;
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow: hidden;
 
     @media (max-width: 768px) {
-        height: auto;
-        padding: 20px; // Reduced padding for mobile devices
-    }
-
-    @media (max-width: 480px) {
-        padding: 10px; // Further reduced padding for very small screens
+        padding: 0;
     }
 `;
 

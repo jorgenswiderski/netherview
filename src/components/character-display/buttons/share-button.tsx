@@ -14,6 +14,7 @@ import { useCharacter } from '../../../context/character-context/character-conte
 import { CONFIG } from '../../../models/config';
 import { useNotification } from '../../../context/notification-context/notification-context';
 import { PACKAGE_VERSION } from '../../../../version';
+import { error } from '../../../models/logger';
 
 export function ShareButton() {
     const { character, setBuild, build } = useCharacter();
@@ -84,6 +85,7 @@ export function ShareButton() {
                 mayEdit: true,
             });
         } catch (err) {
+            error(err);
             showNotification('An unexpected error occurred');
         }
     };

@@ -22,19 +22,25 @@ export class CharacterTreeNode implements ICharacterTreeNode {
         public name: string,
         public nodeType: CharacterTreeNodeType,
         // public parent?: ICharacterTreeNode,
-        public children?: (ICharacterTreeDecision | ICharacterTreeEffect)[],
-    ) {}
+        public children?: (CharacterTreeDecision | CharacterTreeEffect)[],
+    ) {
+        children?.forEach((child) => {
+            // eslint-disable-next-line no-param-reassign
+            child.parent = this;
+        });
+    }
 
-    addChild(node: ICharacterTreeDecision | ICharacterTreeEffect): void {
+    addChild(node: CharacterTreeDecision | CharacterTreeEffect): void {
         if (!this.children) {
             this.children = [];
         }
 
-        // node.parent = this;
+        // eslint-disable-next-line no-param-reassign
+        node.parent = this;
         this.children.push(node);
     }
 
-    removeChild(node: ICharacterTreeDecision | ICharacterTreeEffect): void {
+    removeChild(node: CharacterTreeDecision | CharacterTreeEffect): void {
         if (this.children) {
             const index = this.children.indexOf(node);
 
@@ -220,11 +226,13 @@ export class CharacterTreeRoot
 }
 
 class CharacterTreeChildNode extends CharacterTreeNode {
+    parent?: ICharacterTreeNode;
+
     constructor(
         public name: string,
         public nodeType: CharacterTreeNodeType,
         // public parent: ICharacterTreeNode,
-        public children?: (ICharacterTreeDecision | ICharacterTreeEffect)[],
+        public children?: (CharacterTreeDecision | CharacterTreeEffect)[],
     ) {
         super(
             name,
@@ -232,6 +240,15 @@ class CharacterTreeChildNode extends CharacterTreeNode {
             // parent,
             children,
         );
+    }
+
+    // Allow descendants to override in whatever manner they would like
+    // (eg static references of compressed records)
+    toJSON(): any {
+        // omit parent to avoid cyclic object structure
+        const { parent, ...rest } = this;
+
+        return rest;
     }
 }
 
@@ -252,7 +269,7 @@ export class CharacterTreeDecision
         { name, choices, ...rest }: ICharacterOption,
         // parent: CharacterTreeNode,
         public choiceId: string | null,
-        children?: (ICharacterTreeDecision | ICharacterTreeEffect)[],
+        children?: (CharacterTreeDecision | CharacterTreeEffect)[],
     ) {
         super(
             name,
@@ -272,18 +289,19 @@ export class CharacterTreeEffect
     implements ICharacterTreeEffect, GrantableEffect
 {
     nodeType: CharacterTreeNodeType.EFFECT;
-    children?: ICharacterTreeEffect[];
+    children?: CharacterTreeEffect[];
 
     description?: string;
     hidden?: boolean;
     type: GrantableEffectType;
     image?: string;
     grants?: GrantableEffect[];
+    sourceType?: CharacterPlannerStep;
 
     constructor(
         { name, ...rest }: GrantableEffect,
         // parent: CharacterTreeNode,
-        children?: ICharacterTreeEffect[],
+        children?: CharacterTreeEffect[],
     ) {
         super(
             name,

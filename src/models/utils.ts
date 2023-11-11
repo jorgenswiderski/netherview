@@ -89,29 +89,49 @@ export class Utils extends SharedUtils {
     }
 
     // Compare two objects using JSON.stringify, sorting the keys such that a different key order still counts as a valid comparison.
-    static compareObjects(obj1: any, obj2: any) {
+    static compareObjects(obj1: any, obj2: any, ignoredKeys?: string[]) {
         const a = Utils.deepCopyAndRemoveUndefined(obj1);
         const b = Utils.deepCopyAndRemoveUndefined(obj2);
-        const diffs = this.deepCompare(a, b);
+        const diffs = this.deepCompare(a, b, ignoredKeys);
 
         return diffs.length === 0;
     }
 
-    private static deepCopyAndRemoveUndefined<T>(obj: T): T {
+    private static deepCopyAndRemoveUndefined<T>(
+        obj: T,
+        cache = new Map<any, any>(),
+    ): T {
+        // Return the cached result if we've seen this object before
+        if (cache.has(obj)) {
+            return cache.get(obj);
+        }
+
         if (obj === null || typeof obj !== 'object') {
             return obj;
         }
 
         if (Array.isArray(obj)) {
-            return obj.map(Utils.deepCopyAndRemoveUndefined) as unknown as T;
+            // Cache the partially constructed array
+            const arrCopy: any[] = [];
+            cache.set(obj, arrCopy);
+
+            const result = obj.map((item) =>
+                Utils.deepCopyAndRemoveUndefined(item, cache),
+            ) as unknown as T;
+
+            // Update the cached array with fully constructed array
+            arrCopy.push(...(result as any));
+
+            return result;
         }
 
         const newObj: Record<string, any> = {};
+        cache.set(obj, newObj); // Cache the partially constructed object
 
         // eslint-disable-next-line no-restricted-syntax
         for (const [key, value] of Object.entries(obj)) {
             if (value !== undefined) {
-                newObj[key] = Utils.deepCopyAndRemoveUndefined(value);
+                newObj[key] = Utils.deepCopyAndRemoveUndefined(value, cache);
             }
         }
 
@@ -121,6 +141,7 @@ export class Utils extends SharedUtils {
     private static deepCompare(
         obj1: any,
         obj2: any,
+        ignoredKeys?: string[],
         path: string = '',
     ): Difference[] {
         let differences: Difference[] = [];
@@ -131,6 +152,10 @@ export class Utils extends SharedUtils {
         const allKeys = new Set([...keys1, ...keys2]);
 
         allKeys.forEach((key) => {
+            if (ignoredKeys?.includes(key)) {
+                return;
+            }
+
             const newPath = path ? `${path}.${key}` : key;
 
             // eslint-disable-next-line no-prototype-builtins
@@ -154,7 +179,12 @@ export class Utils extends SharedUtils {
                 obj2[key] !== null
             ) {
                 differences = differences.concat(
-                    this.deepCompare(obj1[key], obj2[key], newPath),
+                    this.deepCompare(
+                        obj1[key],
+                        obj2[key],
+                        ignoredKeys,
+                        newPath,
+                    ),
                 );
             } else if (obj1[key] !== obj2[key]) {
                 differences.push({

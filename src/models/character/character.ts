@@ -1019,19 +1019,18 @@ export class Character implements ICharacter {
     }
 
     getGrantedEffects(): GrantableEffect[] {
-        const fx: GrantableEffect[] = this.root.findAllNodes((node) => {
-            if (node.nodeType !== CharacterTreeNodeType.EFFECT) {
-                return false;
-            }
+        const fx: GrantableEffect[] = this.root.findAllNodes(
+            (node) => node.nodeType === CharacterTreeNodeType.EFFECT,
+        ) as CharacterTreeEffect[] as GrantableEffect[];
 
-            return true;
-        }) as CharacterTreeEffect[] as GrantableEffect[];
-
+        // FIXME: Remove this once its clear that nodes is always empty
         const nodes = this.root.findAllNodes(
             (node) =>
                 node.nodeType === CharacterTreeNodeType.DECISION &&
                 typeof (node as CharacterTreeDecision).grants !== 'undefined',
         );
+
+        assert(nodes.length === 0);
 
         fx.push(
             ...nodes.flatMap((node) => (node as CharacterTreeDecision).grants!),
@@ -1057,6 +1056,41 @@ export class Character implements ICharacter {
         return this.getGrantedEffects().filter(
             (effect) => effect.type === GrantableEffectType.CHARACTERISTIC,
         ) as Characteristic[];
+    }
+
+    getFeats(): CharacterTreeDecision[] {
+        return this.findAllDecisionsByType(CharacterPlannerStep.FEAT);
+    }
+
+    static getFeatAsEffect(featNode: CharacterTreeDecision): GrantableEffect {
+        safeAssert(featNode.type === CharacterPlannerStep.FEAT);
+
+        const { name, description, image } = featNode;
+
+        const featEffect = featNode.findNode(
+            (effect) =>
+                effect.nodeType === CharacterTreeNodeType.EFFECT &&
+                effect.name === name &&
+                (effect as CharacterTreeEffect).type ===
+                    GrantableEffectType.CHARACTERISTIC,
+        ) as CharacterTreeEffect | undefined as GrantableEffect | undefined;
+
+        if (featEffect) {
+            return featEffect;
+        }
+
+        const featDummyEffect: GrantableEffect = {
+            name,
+            description,
+            image,
+            type: GrantableEffectType.CHARACTERISTIC, // FIXME
+        };
+
+        return featDummyEffect;
+    }
+
+    getFeatsAsEffects(): GrantableEffect[] {
+        return this.getFeats().map(Character.getFeatAsEffect);
     }
 
     private static findNodeByType(

@@ -1,5 +1,5 @@
 // base-tooltip.tsx
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { Box, ClickAwayListener, Tooltip, TooltipProps } from '@mui/material';
 import styled from '@emotion/styled';
 import { darken } from '@mui/system';
@@ -48,13 +48,13 @@ const Icon = styled('img')`
 `;
 
 interface BaseTooltipProps extends Omit<TooltipProps, 'title'> {
-    header?: React.ReactNode;
-    body?: React.ReactNode;
-    quote?: React.ReactNode;
-    footer?: React.ReactNode;
+    header?: ReactNode;
+    body?: ReactNode;
+    quote?: ReactNode;
+    footer?: ReactNode;
     image?: string;
     name: string;
-    children: React.ReactElement;
+    children: ReactElement;
     touchBehavior?: 'tap' | 'longPress' /* | 'modal' */ | 'none';
 }
 

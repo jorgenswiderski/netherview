@@ -6,8 +6,8 @@ import {
 import styled from '@emotion/styled';
 import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { Box, Typography } from '@mui/material';
-import { GrantedEffect } from './granted-effect';
 import { ChoiceDescription } from './choice-description';
+import { GrantedEffects } from './granted-effects';
 
 const EffectsContainer = styled(Box)`
     display: flex;
@@ -87,15 +87,7 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
         <EffectsContainer>
             <Typography variant="body2">{text}</Typography>
             <ItemBox>
-                {effects
-                    .filter((fx) => !fx.hidden)
-                    .map((fx) => (
-                        <GrantedEffect
-                            key={`${fx.name}-${fx.description}`}
-                            effect={fx}
-                            elevation={4}
-                        />
-                    ))}
+                <GrantedEffects effects={effects} />
                 {choices
                     .filter((choice) => !choice.forcedOptions)
                     .map((choice) => (
