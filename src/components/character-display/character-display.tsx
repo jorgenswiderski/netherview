@@ -21,7 +21,8 @@ const PaperContainer = styled(Paper)`
 
     @media (max-width: 768px) {
         min-width: unset;
-        padding: 0.5rem;
+        padding: 0.75rem;
+        gap: 0.75rem;
     }
 `;
 

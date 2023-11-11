@@ -1,6 +1,6 @@
 // equipment-slots.tsx
 import React, { useCallback, useMemo } from 'react';
-import { Grid, Box, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import styled from '@emotion/styled';
 import {
@@ -25,14 +25,6 @@ const MainContainer = styled(Box)<{ compact?: boolean }>`
     }
 `;
 
-const StyledGrid = styled(Grid)`
-    margin: 8px;
-
-    @media (max-width: 768px) {
-        margin: 0;
-    }
-`;
-
 interface SlotsCompactProps {
     slots: EquipmentSlot[];
     items: CharacterEquipment;
@@ -48,12 +40,17 @@ function SlotsCompact({
     slotFilters,
     disabledSlots,
 }: SlotsCompactProps) {
-    const { isMobile } = useResponsive();
-
-    const renderEquipmentSlot = (slot: EquipmentSlot) => {
-        return isMobile ? (
-            <StyledGrid item key={slot}>
+    return (
+        <Box
+            sx={{ width: 'calc(300px + 2.5rem)' }}
+            display="flex"
+            flexWrap="wrap"
+            gap="0.5rem"
+            justifyContent="center"
+        >
+            {slots.map((slot) => (
                 <EquipmentSlotCard
+                    key={slot}
                     slot={slot}
                     onEquipItem={(item: IEquipmentItem) =>
                         onEquipItem(slot, item)
@@ -62,37 +59,8 @@ function SlotsCompact({
                     disabled={disabledSlots[slot]}
                     filter={slotFilters[slot]}
                 />
-            </StyledGrid>
-        ) : (
-            <EquipmentSlotCard
-                key={slot}
-                slot={slot}
-                onEquipItem={(item: IEquipmentItem) => onEquipItem(slot, item)}
-                item={items[slot]?.item}
-                disabled={disabledSlots[slot]}
-                filter={slotFilters[slot]}
-            />
-        );
-    };
-
-    return (
-        <>
-            {isMobile && (
-                <Grid container spacing={1}>
-                    {slots.map(renderEquipmentSlot)}
-                </Grid>
-            )}
-            {!isMobile &&
-                [slots.slice(0, 6), slots.slice(6, 12)].map((row, index) => (
-                    <Box
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={index}
-                        sx={{ display: 'flex', gap: '0.5rem' }}
-                    >
-                        {row.map(renderEquipmentSlot)}
-                    </Box>
-                ))}
-        </>
+            ))}
+        </Box>
     );
 }
 

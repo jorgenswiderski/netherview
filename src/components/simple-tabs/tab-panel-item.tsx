@@ -6,6 +6,11 @@ export const ItemContainer = styled.div`
     break-inside: avoid;
     margin-bottom: 1rem;
     padding: 1rem;
+
+    @media (max-width: 768px) {
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+    }
 `;
 
 interface TabPanelItemProps<T extends ElementType = 'div'>
