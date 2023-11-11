@@ -126,7 +126,7 @@ const MainContainer = styled(Box)<{ compact?: boolean }>`
     position: relative;
 
     @media (max-width: 768px) {
-        flex-direction: row;
+        flex-direction: ${({ compact }) => (compact ? 'row' : 'column')};
         flex-wrap: wrap;
     }
 `;
