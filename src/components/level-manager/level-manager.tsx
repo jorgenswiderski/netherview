@@ -6,7 +6,8 @@ import {
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { IconButton, Box, DialogContentText } from '@mui/material';
-import ClassCollapsible from './class-collapsible';
+import CloseIcon from '@mui/icons-material/Close';
+import { ClassCollapsible } from './class-collapsible';
 import {
     CharacterClassLevelInfo,
     CharacterClassOption,
@@ -14,22 +15,21 @@ import {
 } from '../../models/character/types';
 import { ICharacterTreeDecision } from '../../models/character/character-tree-node/types';
 import { CharacterClassInfoToggled } from './types';
-import ConfirmDialog from './confirm-dialog';
-import GrantedEffect from '../character-planner/feature-picker/prospective-effects/granted-effect';
+import { ConfirmDialog } from './confirm-dialog';
 import { PlannerStepTitle } from '../character-planner/planner-header/planner-step-title';
+import { GrantedEffects } from '../character-planner/feature-picker/prospective-effects/granted-effects';
+import { useResponsive } from '../../hooks/use-responsive';
 
 const BackIconButton = styled(IconButton)`
     position: absolute;
     left: 1.5rem;
     top: 2rem;
-`;
 
-const ItemBox = styled(Box)`
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    padding: 0 0.5rem;
+    @media (max-width: 768px) {
+        left: unset;
+        right: 1.5rem;
+        top: 1.25rem;
+    }
 `;
 
 const StyledBox = styled(Box)`
@@ -50,11 +50,13 @@ interface LevelManagerProps {
     decision: any;
 }
 
-export default function LevelManager({
+export function LevelManager({
     character,
     onDecision,
     decision,
 }: LevelManagerProps) {
+    const { isMobile } = useResponsive();
+
     const initInfo = () =>
         character.getClassInfo().map((info) => ({
             ...info,
@@ -126,21 +128,20 @@ export default function LevelManager({
     ): ReactNode => {
         return (
             <>
-                <DialogContentText>
+                <DialogContentText paragraph>
                     Are you sure you want to remove {levels.length} level
                     {levels.length > 1 ? 's' : ''} of {cls.name}?
                 </DialogContentText>
-                <DialogContentText marginTop="1rem">
+
+                <DialogContentText gutterBottom>
                     You will lose:
-                    <ItemBox marginTop="0.5rem">
-                        {levels
-                            .flatMap((level) => level.totalEffects)
-                            .filter((fx) => !fx.hidden)
-                            .map((fx) => (
-                                <GrantedEffect effect={fx} elevation={4} />
-                            ))}
-                    </ItemBox>
                 </DialogContentText>
+
+                <GrantedEffects
+                    effects={levels.flatMap((level) => level.totalEffects)}
+                    elevation={10}
+                    flex
+                />
             </>
         );
     };
@@ -201,7 +202,7 @@ export default function LevelManager({
             <PlannerStepTitle title="Revise Levels" />
 
             <BackIconButton onClick={onBack}>
-                <KeyboardBackspaceIcon />
+                {isMobile ? <CloseIcon /> : <KeyboardBackspaceIcon />}
             </BackIconButton>
             <StyledBox>
                 {classInfo.map((info, index) => (

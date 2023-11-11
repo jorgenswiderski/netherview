@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { BeatLoader } from 'react-spinners';
 import { Box } from '@mui/material';
 import { useCharacter } from '../context/character-context/character-context';
-import CharacterPlanner from '../components/character-planner/character-planner';
+import { CharacterPlanner } from '../components/character-planner/character-planner';
 
 const PageContainer = styled.div`
     display: flex;
@@ -16,15 +16,10 @@ const PageContainer = styled.div`
     width: 100%;
     padding: 50px;
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow: hidden;
 
     @media (max-width: 768px) {
-        height: auto;
-        padding: 20px; // Reduced padding for mobile devices
-    }
-
-    @media (max-width: 480px) {
-        padding: 10px; // Further reduced padding for very small screens
+        padding: 0;
     }
 `;
 

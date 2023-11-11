@@ -6,7 +6,7 @@ import { AboutMenuItem } from './menu-items/about-menu-item';
 import { SettingsMenuItem } from './menu-items/settings-menu-item';
 import { AppSettingsDialog } from '../../app-settings-dialog';
 
-export default function SettingsMenu({ ...props }) {
+export function SettingsMenu({ ...props }) {
     const [showAppSettings, setShowAppSettings] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 

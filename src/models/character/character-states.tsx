@@ -11,10 +11,10 @@ import {
     CharacterTreeDecision,
     CharacterTreeRoot,
 } from './character-tree-node/character-tree';
-import AbilitiesPointBuy from '../../components/character-planner/abilities/abilities-point-buy';
-import AbilitiesIncrease from '../../components/character-planner/abilities/abilities-increase';
-import SpellPicker from '../../components/character-planner/spell-picker';
-import LevelManager from '../../components/level-manager/level-manager';
+import { AbilitiesPointBuy } from '../../components/character-planner/abilities/abilities-point-buy';
+import { AbilitiesIncrease } from '../../components/character-planner/abilities/abilities-increase';
+import { SpellPicker } from '../../components/character-planner/spell-picker';
+import { LevelManager } from '../../components/level-manager/level-manager';
 import { CharacterTreeBackground } from './character-tree-node/character-tree-background';
 
 export interface CharacterWidgetProps {

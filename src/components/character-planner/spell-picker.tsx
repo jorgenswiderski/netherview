@@ -1,26 +1,12 @@
-import React, {
-    useState,
-    useMemo,
-    useCallback,
-    useEffect,
-    useRef,
-} from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
-import {
-    Card,
-    CardActionArea,
-    Paper,
-    Box,
-    Typography,
-    CardMedia,
-} from '@mui/material';
+import { Paper, Box, Typography } from '@mui/material';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { ICharacter } from '../../models/character/types';
-import { Utils } from '../../models/utils';
-import { ActionTooltip } from '../tooltips/action-tooltip';
-import { WeaveImages } from '../../api/weave/weave-images';
 import { PlannerHeader } from './planner-header/planner-header';
+import { SpellIconCard } from '../icon-cards/spell-icon-card';
+import { SpellsByLevel } from '../spells-by-level';
 
 const Container = styled.div`
     display: flex;
@@ -32,28 +18,6 @@ const Container = styled.div`
     gap: 1rem;
 `;
 
-const StyledCard = styled(Card)<{ selected: boolean }>`
-    aspect-ratio: 1;
-    opacity: ${(props) => (props.selected ? 0.85 : 1)};
-    border: 3px solid ${(props) => (props.selected ? '#3f51b5' : 'transparent')};
-    width: 36px;
-`;
-
-const ActionArea = styled(CardActionArea)`
-    position: relative;
-    height: 100%;
-`;
-
-const RowOuterBox = styled(Paper)`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    padding: 0.5rem;
-    box-sizing: border-box;
-`;
-
 const RowInnerBox = styled(Box)`
     display: flex;
     flex-direction: row;
@@ -61,10 +25,6 @@ const RowInnerBox = styled(Box)`
     flex-wrap: wrap;
     flex: 1;
 `;
-
-// const DescriptionPaper = styled(Paper)`
-//     padding: 0.5rem;
-// `;
 
 const SelectedBoxPaper = styled(Paper)`
     display: flex;
@@ -76,43 +36,36 @@ const SelectedBoxPaper = styled(Paper)`
     gap: 0.5rem;
 `;
 
-const RowLabel = styled(Typography)`
-    ${Utils.textShadow}
-
-    width: 2rem;
-    padding: 0 1.5rem;
-    text-align: center;
-
-    @media (max-width: 768px) {
-        padding: 0 0.5rem;
-    }
-`;
-
-interface SpellCardProps {
-    selected: boolean;
-    spell?: ISpell;
-    onClick: React.MouseEventHandler<HTMLButtonElement>;
+interface SelectedSpellsProps {
+    spells: ISpell[];
+    numSpells: number;
+    onClick: (spell: ISpell) => void;
 }
 
-function SpellCard({ selected, spell, onClick }: SpellCardProps) {
-    const imageContainerRef = useRef<HTMLButtonElement>(null);
-
+function SelectedSpells({ spells, numSpells, onClick }: SelectedSpellsProps) {
     return (
-        <ActionTooltip action={spell}>
-            <StyledCard elevation={3} selected={selected}>
-                <ActionArea onClick={spell && onClick} ref={imageContainerRef}>
-                    {spell?.image && (
-                        <CardMedia
-                            component="img"
-                            image={WeaveImages.getPath(
-                                spell.image,
-                                imageContainerRef,
-                            )}
+        <SelectedBoxPaper elevation={2}>
+            <Typography>
+                {`Select ${numSpells > 1 ? numSpells : 'a'} spell${
+                    numSpells > 1 ? 's' : ''
+                } to learn.`}
+            </Typography>
+            <RowInnerBox>
+                {Array.from({ length: numSpells }).map((_, idx) => {
+                    const spell = spells[idx];
+
+                    return (
+                        <SpellIconCard
+                            // eslint-disable-next-line react/no-array-index-key
+                            key={idx}
+                            spell={spell}
+                            selected={spells.includes(spell)}
+                            onClick={() => onClick(spell)}
                         />
-                    )}
-                </ActionArea>
-            </StyledCard>
-        </ActionTooltip>
+                    );
+                })}
+            </RowInnerBox>
+        </SelectedBoxPaper>
     );
 }
 
@@ -124,7 +77,7 @@ interface SpellPickerProps {
     character: ICharacter;
 }
 
-export default function SpellPicker({
+export function SpellPicker({
     title,
     onDecision,
     decision,
@@ -134,10 +87,8 @@ export default function SpellPicker({
 
     const [selectedSpells, setSelectedSpells] = useState<ISpell[]>([]);
 
-    const spellsByLevel = useMemo(() => {
-        const groupedSpells: ISpell[][] = [];
-
-        decision.options.forEach((option: ICharacterOption) => {
+    const spells = useMemo(() => {
+        return decision.options.flatMap((option: ICharacterOption) => {
             const spell = character.spellData.find(
                 (spell2) => spell2.name === option.name,
             );
@@ -146,14 +97,8 @@ export default function SpellPicker({
                 throw new Error(`could not find spell ${option.name}`);
             }
 
-            if (!groupedSpells[spell.level]) {
-                groupedSpells[spell.level] = [];
-            }
-
-            groupedSpells[spell.level].push(spell);
+            return spell!;
         });
-
-        return groupedSpells;
     }, [decision.options]);
 
     const options = useMemo(
@@ -169,14 +114,16 @@ export default function SpellPicker({
 
     const handleSpellClick = (spell: ISpell) => {
         if (selectedSpells.includes(spell)) {
-            setSelectedSpells((spells) => spells.filter((s) => s !== spell));
+            setSelectedSpells((oldSpells) =>
+                oldSpells.filter((s) => s !== spell),
+            );
         } else if (selectedSpells.length === numSpells) {
-            setSelectedSpells((spells) => [
-                ...spells.slice(1, numSpells),
+            setSelectedSpells((oldSpells) => [
+                ...oldSpells.slice(1, numSpells),
                 spell,
             ]);
         } else {
-            setSelectedSpells((spells) => [...spells, spell]);
+            setSelectedSpells((oldSpells) => [...oldSpells, spell]);
         }
     };
 
@@ -185,12 +132,6 @@ export default function SpellPicker({
     }, [options]);
 
     useEffect(() => setSelectedSpells([]), [decision]);
-
-    const romanNumerals = ['0', 'I', 'II', 'III', 'IV', 'V', 'VI'];
-
-    // const showEffects =
-    //     options.flatMap((option) => option?.grants).length > 0 ||
-    //     options.flatMap((option) => option?.choices).length > 0;
 
     return (
         <>
@@ -201,44 +142,17 @@ export default function SpellPicker({
             />
 
             <Container>
-                <SelectedBoxPaper elevation={2}>
-                    <Typography>
-                        {`Select ${numSpells > 1 ? numSpells : 'a'} spell${
-                            numSpells > 1 ? 's' : ''
-                        } to learn.`}
-                    </Typography>
-                    <RowInnerBox>
-                        {Array.from({ length: numSpells }).map((_, idx) => {
-                            const spell = selectedSpells[idx];
+                <SelectedSpells
+                    spells={selectedSpells}
+                    numSpells={numSpells}
+                    onClick={handleSpellClick}
+                />
 
-                            return (
-                                <SpellCard
-                                    // eslint-disable-next-line react/no-array-index-key
-                                    key={idx}
-                                    spell={spell}
-                                    selected={selectedSpells.includes(spell)}
-                                    onClick={() => handleSpellClick(spell)}
-                                />
-                            );
-                        })}
-                    </RowInnerBox>
-                </SelectedBoxPaper>
-                {spellsByLevel.map((levelSpells, idx) => (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <RowOuterBox key={idx} elevation={2}>
-                        <RowLabel variant="h5">{romanNumerals[idx]}</RowLabel>
-                        <RowInnerBox>
-                            {levelSpells.map((spell) => (
-                                <SpellCard
-                                    key={spell.id}
-                                    spell={spell}
-                                    selected={selectedSpells.includes(spell)}
-                                    onClick={() => handleSpellClick(spell)}
-                                />
-                            ))}
-                        </RowInnerBox>
-                    </RowOuterBox>
-                ))}
+                <SpellsByLevel
+                    spells={spells}
+                    selectedSpells={selectedSpells}
+                    onClick={handleSpellClick}
+                />
             </Container>
         </>
     );

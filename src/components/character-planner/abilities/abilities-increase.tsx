@@ -6,7 +6,7 @@ import {
     GrantableEffectType,
     CharacteristicType,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import AbilitiesUI from './abilities-ui';
+import { AbilitiesUI } from './abilities-ui';
 import { AbilityScores } from '../../../models/character/types';
 import { AbilitiesCostMode } from './types';
 
@@ -21,7 +21,7 @@ interface CharacterWidgetProps {
     abilityOptions: (keyof AbilityScores)[];
 }
 
-export default function AbilitiesPointBuy({
+export function AbilitiesIncrease({
     title,
     onDecision,
     decision,

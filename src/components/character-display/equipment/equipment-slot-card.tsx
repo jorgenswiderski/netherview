@@ -1,5 +1,5 @@
 // equipment-slot.tsx
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
     CardContent,
     Card,
@@ -133,6 +133,13 @@ export function EquipmentSlotCard({
     }, [filteredItems]);
 
     const imageContainerRef = useRef<HTMLDivElement>(null);
+    const [path, setPath] = useState<string>();
+
+    useEffect(() => {
+        if (item?.image) {
+            setPath(WeaveImages.getPath(item.image, imageContainerRef));
+        }
+    }, [item?.image, imageContainerRef]);
 
     return (
         <>
@@ -144,15 +151,7 @@ export function EquipmentSlotCard({
                     disabled={disabled}
                     ref={imageContainerRef}
                 >
-                    {item && (
-                        <ItemIcon
-                            image={WeaveImages.getPath(
-                                item.image,
-                                imageContainerRef,
-                            )}
-                            component="img"
-                        />
-                    )}
+                    {path && <ItemIcon image={path} component="img" />}
                     <CardContent />
                 </StyledCard>
             </ItemTooltip>

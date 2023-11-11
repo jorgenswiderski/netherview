@@ -68,7 +68,7 @@ interface AbilitiesUIProps {
     abilityOptions?: (keyof AbilityScores)[];
 }
 
-export default function AbilitiesUI({
+export function AbilitiesUI({
     title,
     baseAbilities = {
         Strength: 8,

@@ -135,4 +135,5 @@ html {
     margin: 0;
     padding: 0;
     background-color: #1a1a1a; /* This matches the PageContainer background color */
+    overflow: hidden;
 }

@@ -33,7 +33,7 @@ const linkStyle = {
     strokeWidth: '2px',
 };
 
-export default function TreeVisualization({ data }: TreeVisualizationProps) {
+export function TreeVisualization({ data }: TreeVisualizationProps) {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const nodeSizes = useMemo(() => new Map<TreeNode, number>(), []);
 

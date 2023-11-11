@@ -1,7 +1,7 @@
 import React from 'react';
 import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
-import EffectBase from './effect-base';
+import { EffectBase } from './effect-base';
 import { CharacterPlannerStepDescriptions } from '../types';
 
 interface ChoiceDescriptionProps {
@@ -10,7 +10,7 @@ interface ChoiceDescriptionProps {
     style?: React.CSSProperties;
 }
 
-export default function ChoiceDescription({
+export function ChoiceDescription({
     step,
     elevation,
     style,

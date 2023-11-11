@@ -263,7 +263,7 @@ export class TreeCompressor {
         if (validate) {
             const inf = await this.inflate(encoded);
 
-            if (!Utils.compareObjects(data, inf)) {
+            if (!Utils.compareObjects(data, inf, ['parent'])) {
                 error(inf);
                 throw new Error('Failed validation after deflating data');
             }
