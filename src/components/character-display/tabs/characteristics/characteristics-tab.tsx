@@ -31,7 +31,11 @@ const labels: Record<string, CharacterPlannerStep[]> = {
         CharacterPlannerStep.SUBCLASS_FEATURE,
     ],
     Racial: [CharacterPlannerStep.SET_RACE],
-    Feats: [CharacterPlannerStep.FEAT],
+    Feats: [
+        CharacterPlannerStep.FEAT,
+        CharacterPlannerStep.FEAT_SUBCHOICE,
+        CharacterPlannerStep.FEAT_ABILITY_SCORES,
+    ],
     Items: [CharacterPlannerStep.EQUIP_ITEM],
 };
 
