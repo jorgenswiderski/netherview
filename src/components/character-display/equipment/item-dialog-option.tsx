@@ -11,11 +11,11 @@ import {
     Typography,
 } from '@mui/material';
 import { IEquipmentItem } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
-import ShieldIcon from '@mui/icons-material/Shield';
 import LazyLoad from 'react-lazyload';
 import { ItemTooltip } from '../../tooltips/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
 import { WeaveImages } from '../../../api/weave/weave-images';
+import { EquipmentArmorIcon } from './equipment-armor-icon';
 
 const ItemContainer = styled(Card)`
     display: flex;
@@ -51,13 +51,6 @@ const CardIcon = styled(CardMedia)<
     }
 `;
 
-const AcLabel = styled(Typography)`
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-`;
-
 const ItemLabel = styled(Typography)`
     @media (max-width: 768px) {
         font-size: 1rem;
@@ -90,19 +83,7 @@ export function ItemDialogOption({ item, ...props }: ItemDialogOptionProps) {
                 </LazyLoad>
                 <ItemDetails>
                     <HeaderBox>
-                        {(item.baseArmorClass || item.bonusArmorClass) && (
-                            <Box
-                                position="relative"
-                                display="flex"
-                                alignItems="center"
-                            >
-                                <ShieldIcon fontSize="large" />
-                                <AcLabel variant="body2" color="black">
-                                    {item.baseArmorClass ??
-                                        `+${item.bonusArmorClass}`}
-                                </AcLabel>
-                            </Box>
-                        )}
+                        <EquipmentArmorIcon item={item} />
                         <ItemLabel variant="h6" color={color}>
                             {item.name}
                         </ItemLabel>

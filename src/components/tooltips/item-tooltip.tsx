@@ -17,6 +17,7 @@ import { ItemColors } from '../../models/items/types';
 import { Utils } from '../../models/utils';
 import { BaseTooltip } from './base-tooltip';
 import { DamageText } from '../damage-text';
+import { EquipmentArmorIcon } from '../character-display/equipment/equipment-armor-icon';
 
 const GradientBox = styled(Box)<{ gradient: string }>`
     display: flex;
@@ -26,6 +27,10 @@ const GradientBox = styled(Box)<{ gradient: string }>`
     background: ${(props) => props.gradient};
     margin: -0.5rem;
     padding: 0.5rem;
+`;
+
+const StyledEquipmentArmorIcon = styled(EquipmentArmorIcon)`
+    float: right;
 `;
 
 const EffectName = styled.span`
@@ -117,10 +122,13 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
                 </GradientBox>
             }
             body={
-                <>
+                <Box position="relative">
+                    <StyledEquipmentArmorIcon item={item} />
+
                     {weapon?.enchantment && (
                         <Typography variant="body2">{`Weapon Enchantment +${weapon.enchantment}`}</Typography>
                     )}
+
                     {item.effects
                         .filter((effect) => !effect.hidden)
                         .map((effect) => (
@@ -138,7 +146,7 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
                                 </EffectDescription>
                             </Typography>
                         ))}
-                </>
+                </Box>
             }
             quote={
                 <Box
