@@ -140,12 +140,6 @@ const EmptyStateOverlay = styled(Box)`
     display: flex;
     align-items: center;
     justify-content: center;
-    // background-color: rgba(
-    //     255,
-    //     255,
-    //     255,
-    //     0.1
-    // ); // Adjust the color and opacity to your liking
     backdrop-filter: blur(10px);
     z-index: 10;
     cursor: pointer;
