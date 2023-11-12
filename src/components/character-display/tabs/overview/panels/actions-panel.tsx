@@ -4,6 +4,7 @@ import { ActionEffectType } from '@jorgenswiderski/tomekeeper-shared/dist/types/
 import { TabPanelItem } from '../../../../simple-tabs/tab-panel-item';
 import { useCharacter } from '../../../../../context/character-context/character-context';
 import { GrantedEffects } from '../../../../character-planner/feature-picker/prospective-effects/granted-effects';
+import { LearnedSpellsPanel } from '../../actions/panels/learned-spells-panel';
 
 export function ActionsPanel() {
     const { character } = useCharacter();
@@ -37,16 +38,8 @@ export function ActionsPanel() {
                     <GrantedEffects effects={actions} elevation={3} flex />
                 </TabPanelItem>
             )}
-            {spells.length > 0 && (
-                <TabPanelItem
-                    label="Learned Spells"
-                    component={Paper}
-                    componentProps={{ elevation: 2 }}
-                    // sx={{ marginTop: '1rem' }}
-                >
-                    <GrantedEffects effects={spells} elevation={3} flex />
-                </TabPanelItem>
-            )}
+
+            {spells.length > 0 && <LearnedSpellsPanel spells={spells} />}
         </>
     );
 }

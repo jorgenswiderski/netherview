@@ -30,7 +30,10 @@ const labels: Record<string, CharacterPlannerStep[]> = {
         CharacterPlannerStep.CHOOSE_SUBCLASS,
         CharacterPlannerStep.SUBCLASS_FEATURE,
     ],
-    Racial: [CharacterPlannerStep.SET_RACE],
+    Racial: [
+        CharacterPlannerStep.SET_RACE,
+        CharacterPlannerStep.CHOOSE_SUBRACE,
+    ],
     Feats: [
         CharacterPlannerStep.FEAT,
         CharacterPlannerStep.FEAT_SUBCHOICE,

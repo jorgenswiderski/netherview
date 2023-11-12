@@ -1,29 +1,17 @@
 // equipment-slots.tsx
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import styled from '@emotion/styled';
 import {
     EquipmentSlot,
     IEquipmentItem,
+    equipmentSlotLabels,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import { useResponsive } from '../../../hooks/use-responsive';
 import { useCharacter } from '../../../context/character-context/character-context';
 import { EquipmentSlotCard } from './equipment-slot-card';
 import { CharacterEquipment, ItemColors } from '../../../models/items/types';
-
-const MainContainer = styled(Box)<{ compact?: boolean }>`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: ${({ compact }) => (compact ? 'center' : 'stretch')};
-    gap: ${({ compact }) => (compact ? '0.5rem' : '0')};
-
-    @media (max-width: 768px) {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-`;
 
 interface SlotsCompactProps {
     slots: EquipmentSlot[];
@@ -119,15 +107,50 @@ function Slots({
                 disabled={disabledSlots[slot]}
                 filter={slotFilters[slot]}
             />
-
-            <Box display="flex" flexDirection="column" flex={1}>
+            <Box
+                display="flex"
+                flexDirection="column"
+                flex={1}
+                color={ItemColors[items[slot]?.item.rarity] ?? '#555'}
+            >
                 <Typography align={!isMobile && index < 6 ? 'right' : 'left'}>
-                    {items[slot]?.item.name}
+                    {items[slot]?.item.name
+                        ? items[slot]?.item.name
+                        : equipmentSlotLabels[slot]}
                 </Typography>
             </Box>
         </EquipmentSlotBox>
     ));
 }
+
+const MainContainer = styled(Box)<{ compact?: boolean }>`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: ${({ compact }) => (compact ? 'center' : 'stretch')};
+    gap: ${({ compact }) => (compact ? '0.5rem' : '0')};
+
+    position: relative;
+
+    @media (max-width: 768px) {
+        flex-direction: ${({ compact }) => (compact ? 'row' : 'column')};
+        flex-wrap: wrap;
+    }
+`;
+
+const EmptyStateOverlay = styled(Box)`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+    cursor: pointer;
+`;
 
 interface EquipmentSlotsProps {
     compact?: boolean;
@@ -136,11 +159,14 @@ interface EquipmentSlotsProps {
 export function EquipmentSlots({ compact }: EquipmentSlotsProps) {
     const { character, setCharacter } = useCharacter();
 
+    const [dismissedOverlay, setDismissedOverlay] = useState(false);
+
     const equipmentSlots = Object.keys(EquipmentSlot)
         .filter((key) => !Number.isNaN(Number(EquipmentSlot[key as any])))
         .map((key) => EquipmentSlot[key as keyof typeof EquipmentSlot]);
 
     const items = useMemo(() => character.getEquipment(), [character]);
+    const hasItems = equipmentSlots.some((slot) => items[slot]?.item);
 
     const onEquipItem = useCallback(
         (slot: EquipmentSlot, item: IEquipmentItem) => {
@@ -162,6 +188,14 @@ export function EquipmentSlots({ compact }: EquipmentSlotsProps) {
 
     return (
         <MainContainer compact={compact}>
+            {!hasItems && !dismissedOverlay && (
+                <EmptyStateOverlay onClick={() => setDismissedOverlay(true)}>
+                    <Typography variant="body1">
+                        No equipment yet, click here to add some!
+                    </Typography>
+                </EmptyStateOverlay>
+            )}
+
             {compact ? (
                 <SlotsCompact
                     slots={equipmentSlots}
