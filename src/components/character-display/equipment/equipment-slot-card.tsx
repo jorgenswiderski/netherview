@@ -10,6 +10,7 @@ import {
     CardMedia,
     TextField,
     CardMediaProps,
+    Box,
 } from '@mui/material';
 import styled from '@emotion/styled';
 import {
@@ -25,14 +26,47 @@ import { ItemTooltip } from '../../tooltips/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
 import { WeaveImages } from '../../../api/weave/weave-images';
 
-const StyledDialog = styled(Dialog)``;
+const StyledDialog = styled(Dialog)`
+    @media (max-width: 768px) {
+        height: calc(100vh - 64px);
+    }
+`;
+
+const StyledDialogTitle = styled(DialogTitle)`
+    @media (max-width: 768px) {
+        padding: 1rem;
+    }
+`;
+
+const StyledDialogContent = styled(DialogContent)`
+    @media (max-width: 768px) {
+        padding: 0 0.75rem 0.75rem;
+    }
+`;
 
 const DialogBox = styled(Paper)`
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 0.5rem;
 
     padding: 1rem;
+    overflow: hidden;
+
+    @media (max-width: 768px) {
+        padding: 0.75rem;
+    }
+`;
+
+const ItemBox = styled(Box)`
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    flex: 1;
+
+    overflow: auto;
+    min-height: 300px;
 `;
 
 const StyledCard = styled(Card, {
@@ -96,11 +130,13 @@ export function EquipmentSlotCard({
 
     const handleClick = async () => {
         setIsOpen(true);
-        setIsLoading(true);
 
         try {
-            const data = await WeaveApi.items.getEquipmentItemInfo(slot);
-            setItems(data);
+            if (items.length === 0) {
+                setIsLoading(true);
+                const data = await WeaveApi.items.getEquipmentItemInfo(slot);
+                setItems(data);
+            }
         } catch (err) {
             error(err);
         } finally {
@@ -161,8 +197,17 @@ export function EquipmentSlotCard({
                 open={isOpen}
                 onClose={() => setIsOpen(false)}
             >
-                <DialogTitle>{EquipmentSlot[slot]} Options</DialogTitle>
-                <DialogContent>
+                <StyledDialogTitle>
+                    {EquipmentSlot[slot]} Options
+                </StyledDialogTitle>
+                <StyledDialogContent
+                    sx={{
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1,
+                    }}
+                >
                     <DialogBox>
                         <TextField
                             variant="outlined"
@@ -172,19 +217,25 @@ export function EquipmentSlotCard({
                             onChange={(e) => setSearchInput(e.target.value)}
                             margin="normal"
                         />
-                        {isLoading && <BeatLoader />}
-                        {sortedItems.map((itemOption) => (
-                            <ItemDialogOption
-                                item={itemOption}
-                                elevation={3}
-                                onClick={() => {
-                                    onEquipItem(itemOption);
-                                    setIsOpen(false);
-                                }}
-                            />
-                        ))}
+                        <ItemBox>
+                            {isLoading && (
+                                <Box textAlign="center">
+                                    <BeatLoader />
+                                </Box>
+                            )}
+                            {sortedItems.map((itemOption) => (
+                                <ItemDialogOption
+                                    item={itemOption}
+                                    elevation={3}
+                                    onClick={() => {
+                                        onEquipItem(itemOption);
+                                        setIsOpen(false);
+                                    }}
+                                />
+                            ))}
+                        </ItemBox>
                     </DialogBox>
-                </DialogContent>
+                </StyledDialogContent>
             </StyledDialog>
         </>
     );
