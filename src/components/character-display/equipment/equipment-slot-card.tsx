@@ -47,6 +47,7 @@ const StyledDialogContent = styled(DialogContent)`
 const DialogBox = styled(Paper)`
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 0.5rem;
 
     padding: 1rem;
@@ -65,6 +66,7 @@ const ItemBox = styled(Box)`
     flex: 1;
 
     overflow: auto;
+    min-height: 300px;
 `;
 
 const StyledCard = styled(Card, {
@@ -128,11 +130,13 @@ export function EquipmentSlotCard({
 
     const handleClick = async () => {
         setIsOpen(true);
-        setIsLoading(true);
 
         try {
-            const data = await WeaveApi.items.getEquipmentItemInfo(slot);
-            setItems(data);
+            if (items.length === 0) {
+                setIsLoading(true);
+                const data = await WeaveApi.items.getEquipmentItemInfo(slot);
+                setItems(data);
+            }
         } catch (err) {
             error(err);
         } finally {
@@ -214,7 +218,11 @@ export function EquipmentSlotCard({
                             margin="normal"
                         />
                         <ItemBox>
-                            {isLoading && <BeatLoader />}
+                            {isLoading && (
+                                <Box textAlign="center">
+                                    <BeatLoader />
+                                </Box>
+                            )}
                             {sortedItems.map((itemOption) => (
                                 <ItemDialogOption
                                     item={itemOption}
