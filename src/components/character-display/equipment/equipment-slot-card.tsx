@@ -25,6 +25,7 @@ import { ItemDialogOption } from './item-dialog-option';
 import { ItemTooltip } from '../../tooltips/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
 import { WeaveImages } from '../../../api/weave/weave-images';
+import { EquipmentPlaceholderIcon } from './equipment-placeholder-icon';
 
 const StyledDialog = styled(Dialog)`
     @media (max-width: 768px) {
@@ -187,7 +188,11 @@ export function EquipmentSlotCard({
                     disabled={disabled}
                     ref={imageContainerRef}
                 >
-                    {path && <ItemIcon image={path} component="img" />}
+                    {path ? (
+                        <ItemIcon image={path} component="img" />
+                    ) : (
+                        <EquipmentPlaceholderIcon slotType={slot} />
+                    )}
                     <CardContent />
                 </StyledCard>
             </ItemTooltip>
