@@ -6,6 +6,7 @@ import styled from '@emotion/styled';
 import {
     EquipmentSlot,
     IEquipmentItem,
+    equipmentSlotLabels,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import { useResponsive } from '../../../hooks/use-responsive';
 import { useCharacter } from '../../../context/character-context/character-context';
@@ -106,10 +107,16 @@ function Slots({
                 disabled={disabledSlots[slot]}
                 filter={slotFilters[slot]}
             />
-
-            <Box display="flex" flexDirection="column" flex={1}>
+            <Box
+                display="flex"
+                flexDirection="column"
+                flex={1}
+                color={ItemColors[items[slot]?.item.rarity] ?? '#555'}
+            >
                 <Typography align={!isMobile && index < 6 ? 'right' : 'left'}>
-                    {items[slot]?.item.name}
+                    {items[slot]?.item.name
+                        ? items[slot]?.item.name
+                        : equipmentSlotLabels[slot]}
                 </Typography>
             </Box>
         </EquipmentSlotBox>
