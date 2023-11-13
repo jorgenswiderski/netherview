@@ -228,7 +228,7 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
 
     return (
         <>
-            {debugMode && false && (
+            {debugMode && (
                 <DebugBar>
                     <DevButton
                         variant="contained"
