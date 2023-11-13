@@ -8,10 +8,12 @@ import {
     IEquipmentItem,
     equipmentSlotLabels,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
+import { ItemSource } from '@jorgenswiderski/tomekeeper-shared/dist/types/item-sources';
 import { useResponsive } from '../../../hooks/use-responsive';
 import { useCharacter } from '../../../context/character-context/character-context';
 import { EquipmentSlotCard } from './equipment-slot-card';
 import { CharacterEquipment, ItemColors } from '../../../models/items/types';
+import { ItemSourceText } from '../../tooltips/item-tooltip/item-source-text';
 
 interface SlotsCompactProps {
     slots: EquipmentSlot[];
@@ -118,6 +120,14 @@ function Slots({
                         ? items[slot]?.item.name
                         : equipmentSlotLabels[slot]}
                 </Typography>
+                {items[slot]?.item.sources && (
+                    <ItemSourceText
+                        align={!isMobile && index < 6 ? 'right' : 'left'}
+                        variant="body2"
+                        color="gray"
+                        sources={items[slot].item.sources as ItemSource[]}
+                    />
+                )}
             </Box>
         </EquipmentSlotBox>
     ));

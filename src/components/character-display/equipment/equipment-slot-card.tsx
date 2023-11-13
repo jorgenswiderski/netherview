@@ -22,7 +22,7 @@ import { BeatLoader } from 'react-spinners';
 import { WeaveApi } from '../../../api/weave/weave';
 import { error } from '../../../models/logger';
 import { ItemDialogOption } from './item-dialog-option';
-import { ItemTooltip } from '../../tooltips/item-tooltip';
+import { ItemTooltip } from '../../tooltips/item-tooltip/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
 import { WeaveImages } from '../../../api/weave/weave-images';
 import { EquipmentPlaceholderIcon } from './equipment-placeholder-icon';

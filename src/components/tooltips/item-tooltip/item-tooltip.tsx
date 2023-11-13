@@ -13,11 +13,12 @@ import styled from '@emotion/styled';
 import { darken, useTheme } from '@mui/system';
 import { alpha } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
-import { ItemColors } from '../../models/items/types';
-import { Utils } from '../../models/utils';
-import { BaseTooltip } from './base-tooltip';
-import { DamageText } from '../damage-text';
-import { EquipmentArmorIcon } from '../character-display/equipment/equipment-armor-icon';
+import { ItemColors } from '../../../models/items/types';
+import { Utils } from '../../../models/utils';
+import { BaseTooltip } from '../base-tooltip';
+import { DamageText } from '../../damage-text';
+import { EquipmentArmorIcon } from '../../character-display/equipment/equipment-armor-icon';
+import { ItemSourceText } from './item-source-text';
 
 const GradientBox = styled(Box)<{ gradient: string }>`
     display: flex;
@@ -49,13 +50,24 @@ const WeaponPropertiesBox = styled(Box)`
     gap: 0.75rem;
 `;
 
+const SourceBox = styled(Box)`
+    display: flex;
+    gap: 0.5rem;
+
+    background: ${darken('#333', 0.3)};
+    flex: 1;
+
+    span {
+        color: #777;
+    }
+`;
+
 const WeightPriceBox = styled(Box)`
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
 
     background: ${darken('#333', 0.3)};
-    flex: 1;
 `;
 
 interface ItemTooltipProps {
@@ -186,12 +198,19 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
                 </Box>
             }
             footer={
-                <WeightPriceBox>
-                    {item.weightKg && (
-                        <Typography>{item.weightKg}kg</Typography>
-                    )}
-                    {item.price && <Typography>{item.price}g</Typography>}
-                </WeightPriceBox>
+                <>
+                    <SourceBox>
+                        {item.sources && (
+                            <ItemSourceText sources={item.sources} />
+                        )}
+                    </SourceBox>
+                    <WeightPriceBox>
+                        {item.weightKg && (
+                            <Typography>{item.weightKg}kg</Typography>
+                        )}
+                        {item.price && <Typography>{item.price}g</Typography>}
+                    </WeightPriceBox>
+                </>
             }
             touchBehavior="longPress"
         >

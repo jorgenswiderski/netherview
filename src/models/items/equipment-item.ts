@@ -10,6 +10,7 @@ import {
     StaticReferenceHandle,
     StaticallyReferenceable,
 } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
+import { ItemSource } from '@jorgenswiderski/tomekeeper-shared/dist/types/item-sources';
 import { WeaveApi } from '../../api/weave/weave';
 
 let ref: {
@@ -34,7 +35,7 @@ export class EquipmentItem implements IEquipmentItem, StaticallyReferenceable {
     price?: number;
     uid?: string;
     effects: GrantableEffect[];
-    source?: string;
+    sources?: ItemSource[];
     // notes: string[];
     id: number;
 
@@ -55,7 +56,7 @@ export class EquipmentItem implements IEquipmentItem, StaticallyReferenceable {
         this.price = item.price;
         this.uid = item.uid;
         this.effects = item.effects;
-        this.source = item.source;
+        this.sources = item.sources;
         // this.notes = item.notes;
         this.id = item.id;
 
