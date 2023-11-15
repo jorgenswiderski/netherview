@@ -30,6 +30,14 @@ const GradientBox = styled(Box)<{ gradient: string }>`
     padding: 0.5rem;
 `;
 
+const HeaderText = styled(Typography)`
+    text-shadow:
+        -1px -1px 0 #0004,
+        1px -1px 0 #0004,
+        -1px 1px 0 #0004,
+        1px 1px 0 #0004;
+`;
+
 const StyledEquipmentArmorIcon = styled(EquipmentArmorIcon)`
     float: right;
 `;
@@ -116,12 +124,12 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
             image={item.image}
             header={
                 <GradientBox gradient={backgroundGradient}>
-                    <Typography variant="h6" style={{ color: rarityColor }}>
+                    <HeaderText variant="h6" style={{ color: rarityColor }}>
                         {item.name}
-                    </Typography>
-                    <Typography color="rgb(138,99,69)">
+                    </HeaderText>
+                    <HeaderText color="rgb(138,99,69)">
                         {Utils.toProperCase(ItemRarity[item.rarity])}
-                    </Typography>
+                    </HeaderText>
                     {weapon && (
                         <DamageText
                             damages={[
@@ -201,7 +209,10 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
                 <>
                     <SourceBox>
                         {item.sources && (
-                            <ItemSourceText sources={item.sources} />
+                            <ItemSourceText
+                                sources={item.sources}
+                                variant="body2"
+                            />
                         )}
                     </SourceBox>
                     <WeightPriceBox>

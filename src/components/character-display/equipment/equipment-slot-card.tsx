@@ -96,7 +96,7 @@ const StyledCard = styled(Card, {
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(-45deg, transparent 49.5%, #444 49.5%, #444 50.5%, transparent 50.5%);
+            background: linear-gradient(45deg, transparent 49%, #444 49%, #444 51%, transparent 51%);
         }
     `}
 `;

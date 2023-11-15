@@ -9,13 +9,22 @@ interface ItemSourceTextProps extends TypographyProps {
 export function ItemSourceText({ sources, ...rest }: ItemSourceTextProps) {
     return (
         <Typography {...rest}>
-            {sources.slice(0, 1).map(({ location, character }) => {
+            {sources.slice(0, 1).map(({ location, character, quest }) => {
                 let locationStr = `${location.act.name}`;
 
                 if (location.location || location.region) {
                     locationStr += `, ${
                         location.location?.name ?? location.region?.name
                     }`;
+                }
+
+                if (quest) {
+                    return (
+                        <>
+                            {quest.name}
+                            <span>{` (${locationStr})`}</span>
+                        </>
+                    );
                 }
 
                 if (character) {
