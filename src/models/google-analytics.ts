@@ -1,4 +1,5 @@
-import ReactGA from 'react-ga';
+// google-analytics.ts
+import ReactGA from 'react-ga4';
 import { CONFIG } from './config';
 import { error } from './logger';
 
@@ -33,7 +34,11 @@ export class GoogleAnalytics {
 
         const page = window.location.pathname;
         ReactGA.set({ page });
-        ReactGA.pageview(page);
+
+        ReactGA.send({
+            hitType: 'pageview',
+            page,
+        });
         // log('Logged page view', page);
     }
 
