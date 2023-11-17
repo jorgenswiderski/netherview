@@ -42,7 +42,7 @@ export function TabPanel<T extends ElementType = 'div'>({
             aria-labelledby={`simple-tab-${index}`}
             {...rest}
         >
-            {currentIndex === index && children}
+            {children}
         </ColumnBox>
     );
 }
