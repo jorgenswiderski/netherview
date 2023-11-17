@@ -10,6 +10,7 @@ module.exports = {
         'airbnb',
         'plugin:prettier/recommended',
     ],
+    plugins: ['react-hooks'],
     overrides: [
         {
             extends: ['airbnb-typescript', 'prettier'],
@@ -31,7 +32,7 @@ module.exports = {
         {
             files: ['*.jsx', '*.tsx'],
             rules: {
-                'import/no-default-export': 'warn',
+                'import/no-default-export': 'error',
             },
         },
         {
@@ -117,6 +118,7 @@ module.exports = {
                 enforceForRenamedProperties: false,
             },
         ],
+        'react-hooks/rules-of-hooks': 'error',
 
         // style rules
         'prettier/prettier': 'warn',

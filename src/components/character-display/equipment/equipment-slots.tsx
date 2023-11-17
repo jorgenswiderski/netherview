@@ -8,10 +8,12 @@ import {
     IEquipmentItem,
     equipmentSlotLabels,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
+import { ItemSource } from '@jorgenswiderski/tomekeeper-shared/dist/types/item-sources';
 import { useResponsive } from '../../../hooks/use-responsive';
 import { useCharacter } from '../../../context/character-context/character-context';
 import { EquipmentSlotCard } from './equipment-slot-card';
 import { CharacterEquipment, ItemColors } from '../../../models/items/types';
+import { ItemSourceText } from '../../tooltips/item-tooltip/item-source-text';
 
 interface SlotsCompactProps {
     slots: EquipmentSlot[];
@@ -83,6 +85,23 @@ const EquipmentSlotBox = styled(Box)<{
     }
 `;
 
+const EquipmentSlotTextBox = styled(Box)`
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    flex: 1;
+
+    overflow: hidden;
+`;
+
+const EquipmentSlotTypography = styled(Typography)<{ mirrored: boolean }>`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: ${({ mirrored }) => (mirrored ? 'right' : 'left')};
+`;
+
 interface SlotsProps extends SlotsCompactProps {}
 
 function Slots({
@@ -107,18 +126,26 @@ function Slots({
                 disabled={disabledSlots[slot]}
                 filter={slotFilters[slot]}
             />
-            <Box
-                display="flex"
-                flexDirection="column"
-                flex={1}
+            <EquipmentSlotTextBox
                 color={ItemColors[items[slot]?.item.rarity] ?? '#555'}
             >
-                <Typography align={!isMobile && index < 6 ? 'right' : 'left'}>
+                <EquipmentSlotTypography mirrored={!isMobile && index < 6}>
                     {items[slot]?.item.name
                         ? items[slot]?.item.name
                         : equipmentSlotLabels[slot]}
-                </Typography>
-            </Box>
+                </EquipmentSlotTypography>
+                {items[slot]?.item.sources && (
+                    <ItemSourceText
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                        align={!isMobile && index < 6 ? 'right' : 'left'}
+                        variant="body2"
+                        color="gray"
+                        sources={items[slot].item.sources as ItemSource[]}
+                    />
+                )}
+            </EquipmentSlotTextBox>
         </EquipmentSlotBox>
     ));
 }

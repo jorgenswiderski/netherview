@@ -3,12 +3,12 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShieldIcon from '@mui/icons-material/Shield';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import FlareIcon from '@mui/icons-material/Flare';
+import BoltIcon from '@mui/icons-material/Bolt';
 import { CharacteristicsTab } from './tabs/characteristics/characteristics-tab';
 import { EquipmentTab } from './tabs/equipment/equipment-tab';
 import { ProgressionTab } from './tabs/progression/progression-tab';
 import { OverviewTab } from './tabs/overview/overview-tab';
-// import BoltIcon from '@mui/icons-material/Bolt';
-// import { ActionsTab } from './tabs/actions/actions-tab';
+import { ActionsTab } from './tabs/actions/actions-tab';
 
 export const characterDisplayTabs = [
     {
@@ -23,11 +23,11 @@ export const characterDisplayTabs = [
         element: ProgressionTab,
         icon: <AutoGraphIcon />,
     },
-    // {
-    //     label: 'Actions',
-    //     element: ActionsTab,
-    //     icon: <BoltIcon />,
-    // },
+    {
+        label: 'Actions',
+        element: ActionsTab,
+        icon: <BoltIcon />,
+    },
     {
         label: 'Equipment',
         labelMobile: 'Items',

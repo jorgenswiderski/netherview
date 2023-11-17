@@ -13,11 +13,12 @@ import styled from '@emotion/styled';
 import { darken, useTheme } from '@mui/system';
 import { alpha } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
-import { ItemColors } from '../../models/items/types';
-import { Utils } from '../../models/utils';
-import { BaseTooltip } from './base-tooltip';
-import { DamageText } from '../damage-text';
-import { EquipmentArmorIcon } from '../character-display/equipment/equipment-armor-icon';
+import { ItemColors } from '../../../models/items/types';
+import { Utils } from '../../../models/utils';
+import { BaseTooltip } from '../base-tooltip';
+import { DamageText } from '../../damage-text';
+import { EquipmentArmorIcon } from '../../character-display/equipment/equipment-armor-icon';
+import { ItemSourceText } from './item-source-text';
 
 const GradientBox = styled(Box)<{ gradient: string }>`
     display: flex;
@@ -27,6 +28,14 @@ const GradientBox = styled(Box)<{ gradient: string }>`
     background: ${(props) => props.gradient};
     margin: -0.5rem;
     padding: 0.5rem;
+`;
+
+const HeaderText = styled(Typography)`
+    text-shadow:
+        -1px -1px 0 #0004,
+        1px -1px 0 #0004,
+        -1px 1px 0 #0004,
+        1px 1px 0 #0004;
 `;
 
 const StyledEquipmentArmorIcon = styled(EquipmentArmorIcon)`
@@ -49,13 +58,24 @@ const WeaponPropertiesBox = styled(Box)`
     gap: 0.75rem;
 `;
 
+const SourceBox = styled(Box)`
+    display: flex;
+    gap: 0.5rem;
+
+    background: ${darken('#333', 0.3)};
+    flex: 1;
+
+    span {
+        color: #777;
+    }
+`;
+
 const WeightPriceBox = styled(Box)`
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
 
     background: ${darken('#333', 0.3)};
-    flex: 1;
 `;
 
 interface ItemTooltipProps {
@@ -104,12 +124,12 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
             image={item.image}
             header={
                 <GradientBox gradient={backgroundGradient}>
-                    <Typography variant="h6" style={{ color: rarityColor }}>
+                    <HeaderText variant="h6" style={{ color: rarityColor }}>
                         {item.name}
-                    </Typography>
-                    <Typography color="rgb(138,99,69)">
+                    </HeaderText>
+                    <HeaderText color="rgb(138,99,69)">
                         {Utils.toProperCase(ItemRarity[item.rarity])}
-                    </Typography>
+                    </HeaderText>
                     {weapon && (
                         <DamageText
                             damages={[
@@ -186,12 +206,22 @@ export function ItemTooltip({ item, children }: ItemTooltipProps) {
                 </Box>
             }
             footer={
-                <WeightPriceBox>
-                    {item.weightKg && (
-                        <Typography>{item.weightKg}kg</Typography>
-                    )}
-                    {item.price && <Typography>{item.price}g</Typography>}
-                </WeightPriceBox>
+                <>
+                    <SourceBox>
+                        {item.sources && (
+                            <ItemSourceText
+                                sources={item.sources}
+                                variant="body2"
+                            />
+                        )}
+                    </SourceBox>
+                    <WeightPriceBox>
+                        {item.weightKg && (
+                            <Typography>{item.weightKg}kg</Typography>
+                        )}
+                        {item.price && <Typography>{item.price}g</Typography>}
+                    </WeightPriceBox>
+                </>
             }
             touchBehavior="longPress"
         >
