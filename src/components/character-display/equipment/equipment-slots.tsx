@@ -1,5 +1,5 @@
 // equipment-slots.tsx
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Box, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import styled from '@emotion/styled';
@@ -165,36 +165,18 @@ const MainContainer = styled(Box)<{ compact?: boolean }>`
     }
 `;
 
-const EmptyStateOverlay = styled(Box)`
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(10px);
-    z-index: 10;
-    cursor: pointer;
-`;
-
 interface EquipmentSlotsProps {
     compact?: boolean;
 }
 
 export function EquipmentSlots({ compact }: EquipmentSlotsProps) {
-    const { isMobile } = useResponsive();
     const { character, setCharacter } = useCharacter();
-
-    const [dismissedOverlay, setDismissedOverlay] = useState(false);
 
     const equipmentSlots = Object.keys(EquipmentSlot)
         .filter((key) => !Number.isNaN(Number(EquipmentSlot[key as any])))
         .map((key) => EquipmentSlot[key as keyof typeof EquipmentSlot]);
 
     const items = useMemo(() => character.getEquipment(), [character]);
-    const hasItems = equipmentSlots.some((slot) => items[slot]?.item);
 
     const onEquipItem = useCallback(
         (slot: EquipmentSlot, item: IEquipmentItem) => {
@@ -216,15 +198,6 @@ export function EquipmentSlots({ compact }: EquipmentSlotsProps) {
 
     return (
         <MainContainer compact={compact}>
-            {!hasItems && !dismissedOverlay && (
-                <EmptyStateOverlay onClick={() => setDismissedOverlay(true)}>
-                    <Typography variant="body1">
-                        No equipment yet, {isMobile ? 'tap' : 'click'} here to
-                        add some!
-                    </Typography>
-                </EmptyStateOverlay>
-            )}
-
             {compact ? (
                 <SlotsCompact
                     slots={equipmentSlots}
