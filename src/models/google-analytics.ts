@@ -9,6 +9,7 @@ declare global {
 
 export class GoogleAnalytics {
     static enabled = false;
+    static initialized = false;
 
     static init(): void {
         if (!CONFIG.GOOGLE_ANALYTICS.ID) {
@@ -16,7 +17,7 @@ export class GoogleAnalytics {
         }
 
         ReactGA.initialize(CONFIG.GOOGLE_ANALYTICS.ID);
-        this.enabled = true;
+        this.initialized = true;
     }
 
     static logPageView(): void {
@@ -30,6 +31,10 @@ export class GoogleAnalytics {
     }
 
     static enable() {
+        if (!this.initialized) {
+            this.init();
+        }
+
         this.enabled = true;
         window[`ga-disable-${CONFIG.GOOGLE_ANALYTICS.ID}`] = !this.enabled;
     }
