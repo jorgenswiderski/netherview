@@ -192,11 +192,13 @@ export function ActionTooltip({ action, children }: ActionTooltipProps) {
             }
             footer={
                 <ActionDetailsBox>
-                    {action.cost && (
+                    {action.costs.map(({ resource, amount }) => (
                         <Typography variant="body2">
-                            {Utils.toProperCase(ActionResource[action.cost])}
+                            {`${
+                                amount > 1 ? `${amount} ` : ''
+                            }${Utils.toProperCase(ActionResource[resource])}`}
                         </Typography>
-                    )}
+                    ))}
                     {action.ritual && (
                         <Typography variant="body2" color="textSecondary">
                             Ritual

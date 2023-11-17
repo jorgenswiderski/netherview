@@ -22,7 +22,7 @@ import { BeatLoader } from 'react-spinners';
 import { WeaveApi } from '../../../api/weave/weave';
 import { error } from '../../../models/logger';
 import { ItemDialogOption } from './item-dialog-option';
-import { ItemTooltip } from '../../tooltips/item-tooltip';
+import { ItemTooltip } from '../../tooltips/item-tooltip/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
 import { WeaveImages } from '../../../api/weave/weave-images';
 import { EquipmentPlaceholderIcon } from './equipment-placeholder-icon';
@@ -96,7 +96,7 @@ const StyledCard = styled(Card, {
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(-45deg, transparent 49.5%, #444 49.5%, #444 50.5%, transparent 50.5%);
+            background: linear-gradient(45deg, transparent 49%, #444 49%, #444 51%, transparent 51%);
         }
     `}
 `;

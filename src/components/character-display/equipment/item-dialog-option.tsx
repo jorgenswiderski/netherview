@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { IEquipmentItem } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import LazyLoad from 'react-lazyload';
-import { ItemTooltip } from '../../tooltips/item-tooltip';
+import { ItemTooltip } from '../../tooltips/item-tooltip/item-tooltip';
 import { ItemColors } from '../../../models/items/types';
 import { WeaveImages } from '../../../api/weave/weave-images';
 import { EquipmentArmorIcon } from './equipment-armor-icon';

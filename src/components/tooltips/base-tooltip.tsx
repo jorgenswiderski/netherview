@@ -34,6 +34,8 @@ const QuoteBox = styled(Section)`
 
 const FooterBox = styled(Section)`
     flex-direction: row;
+    align-items: center;
+    gap: 1rem;
 
     background: ${darken('#333', 0.3)};
 `;

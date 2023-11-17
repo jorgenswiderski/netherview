@@ -118,7 +118,9 @@ export function TreeVisualization({ data }: TreeVisualizationProps) {
                         Object.entries(d.data)
                             .filter(
                                 ([key]) =>
-                                    key !== 'children' && key !== 'grants',
+                                    key !== 'children' &&
+                                    key !== 'grants' &&
+                                    key !== 'parent',
                             )
                             .map(([key, value]) =>
                                 key === 'description' || key === 'progression'
