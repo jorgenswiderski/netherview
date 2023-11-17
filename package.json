@@ -1,6 +1,6 @@
 {
     "name": "netherview",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "A character planner for Baldur's Gate 3",
     "main": "src/pages/_app.tsx",
     "scripts": {
