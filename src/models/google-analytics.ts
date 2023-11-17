@@ -1,6 +1,6 @@
 import ReactGA from 'react-ga';
 import { CONFIG } from './config';
-import { error, log } from './logger';
+import { error } from './logger';
 
 declare global {
     interface Window {
@@ -21,7 +21,7 @@ export class GoogleAnalytics {
 
         ReactGA.initialize(CONFIG.GOOGLE_ANALYTICS.ID);
         this.initialized = true;
-        log('Initialized google analytics');
+        // log('Initialized google analytics');
 
         return true;
     }
@@ -34,7 +34,7 @@ export class GoogleAnalytics {
         const page = window.location.pathname;
         ReactGA.set({ page });
         ReactGA.pageview(page);
-        log('Logged page view', page);
+        // log('Logged page view', page);
     }
 
     static enable(): void {
@@ -46,12 +46,12 @@ export class GoogleAnalytics {
 
         this.enabled = true;
         window[`ga-disable-${CONFIG.GOOGLE_ANALYTICS.ID}`] = !this.enabled;
-        log('Enabled google analytics');
+        // log('Enabled google analytics');
     }
 
     static disable(): void {
         this.enabled = false;
         window[`ga-disable-${CONFIG.GOOGLE_ANALYTICS.ID}`] = !this.enabled;
-        log('Disabled google analytics');
+        // log('Disabled google analytics');
     }
 }
