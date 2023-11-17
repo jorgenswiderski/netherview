@@ -184,6 +184,7 @@ interface EquipmentSlotsProps {
 }
 
 export function EquipmentSlots({ compact }: EquipmentSlotsProps) {
+    const { isMobile } = useResponsive();
     const { character, setCharacter } = useCharacter();
 
     const [dismissedOverlay, setDismissedOverlay] = useState(false);
@@ -218,7 +219,8 @@ export function EquipmentSlots({ compact }: EquipmentSlotsProps) {
             {!hasItems && !dismissedOverlay && (
                 <EmptyStateOverlay onClick={() => setDismissedOverlay(true)}>
                     <Typography variant="body1">
-                        No equipment yet, click here to add some!
+                        No equipment yet, {isMobile ? 'tap' : 'click'} here to
+                        add some!
                     </Typography>
                 </EmptyStateOverlay>
             )}
