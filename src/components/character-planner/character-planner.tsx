@@ -12,7 +12,7 @@ import {
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
-    CharacterDecisionInfo,
+    characterDecisionInfo,
 } from '../../models/character/character-states';
 import { FeaturePicker } from './feature-picker/feature-picker';
 import { CharacterDisplay } from '../character-display/character-display';
@@ -127,7 +127,7 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
     );
 
     const nextDecisionInfo = useMemo(
-        () => (nextDecision ? CharacterDecisionInfo[nextDecision.type] : null),
+        () => (nextDecision ? characterDecisionInfo[nextDecision.type] : null),
         [nextDecision],
     );
 
@@ -211,14 +211,14 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
 
         return nextDecisionInfo.render ? (
             nextDecisionInfo.render({
-                title: nextDecisionInfo.title,
+                title: nextDecisionInfo.title(nextDecision),
                 onDecision: handleDecision,
                 decision: nextDecision,
                 character,
             })
         ) : (
             <FeaturePicker
-                title={nextDecisionInfo.title}
+                title={nextDecisionInfo.title(nextDecision)}
                 onDecision={handleDecision}
                 decision={nextDecision}
                 {...nextDecisionInfo.extraFeaturePickerArgs}

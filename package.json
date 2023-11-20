@@ -13,7 +13,7 @@
         "build": "npm run version-file && next build",
         "start": "npm run version-file && next start",
         "type-check": "tsc --noEmit --skipLibCheck --jsx react",
-        "check": "npm run lint-fix && npm run type-check",
+        "check": "npm run type-check && npm run lint-fix",
         "version-file": "ts-node scripts/create-version-file.ts",
         "preinstall": "echo \"@jorgenswiderski:registry=https://npm.pkg.github.com/\n//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}\" > .npmrc",
         "link": "npm i @jorgenswiderski/tomekeeper-shared@latest && npm link @jorgenswiderski/tomekeeper-shared"

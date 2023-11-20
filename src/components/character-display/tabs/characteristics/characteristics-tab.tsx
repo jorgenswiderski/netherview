@@ -13,6 +13,8 @@ import {
 } from '../../../../models/character/character-tree-node/character-tree';
 import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
 import { safeAssert } from '../../../../models/utils';
+import { Character } from '../../../../models/character/character';
+import { ICharacterTreeDecision } from '../../../../models/character/character-tree-node/types';
 
 const StyledTabPanel = styled(TabPanel)``;
 
@@ -25,8 +27,8 @@ const labels: Record<string, CharacterPlannerStep[]> = {
         CharacterPlannerStep.PRIMARY_CLASS,
         CharacterPlannerStep.SECONDARY_CLASS,
         CharacterPlannerStep.LEVEL_UP,
-    ],
-    Subclass: [
+        CharacterPlannerStep.CLASS_FEATURE,
+        CharacterPlannerStep.CLASS_FEATURE_SUBCHOICE,
         CharacterPlannerStep.CHOOSE_SUBCLASS,
         CharacterPlannerStep.SUBCLASS_FEATURE,
     ],
@@ -63,6 +65,16 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
         [character],
     );
 
+    const getClassParent = (
+        node: ICharacterTreeDecision,
+    ): ICharacterTreeDecision => {
+        if (node.type && Character.LEVEL_STEPS.includes(node.type)) {
+            return node;
+        }
+
+        return getClassParent(node.parent as ICharacterTreeDecision);
+    };
+
     const effectGroups = useMemo(() => {
         const m: Record<string | number, Characteristic[]> = {};
 
@@ -82,14 +94,14 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
             let label = labels2[parent.type] ?? parent.type;
 
             if (label === 'Class') {
-                label = parent.name;
-            } else if (label === 'Subclass') {
-                label = parent.parent!.name;
+                // Find the nearest class parent node
+                const classParent = getClassParent(parent);
+                label = classParent.name;
             }
 
             safeAssert(
                 typeof label === 'string',
-                `Label '${label}' must be a string`,
+                `Characteristics tab section label '${label}' must be a string`,
             );
 
             if (!m[label]) {

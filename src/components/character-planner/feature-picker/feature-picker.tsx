@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { Box, Card, CardActionArea, Grid, Paper } from '@mui/material';
 import styled from '@emotion/styled';
+import { IActionEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
 import { ProspectiveEffects } from './prospective-effects/prospective-effects';
@@ -168,11 +169,49 @@ export function FeaturePicker({
                   lg: options.length < 4 ? 12 / options.length : 3,
               };
 
-    const showDescription = typeof selectedOption?.description === 'string';
-
     const showEffects =
         (selectedOption?.grants && selectedOption?.grants?.length > 0) ||
         (selectedOption?.choices && selectedOption?.choices?.length > 0);
+
+    const selectedDescription = useMemo(() => {
+        if (selectedOption?.description) {
+            return selectedOption.description;
+        }
+
+        if (
+            (selectedOption?.choices ?? []).length === 0 &&
+            selectedOption?.grants &&
+            selectedOption.grants.length === 1
+        ) {
+            return (
+                selectedOption.grants[0].description ??
+                (selectedOption.grants[0] as IActionEffect)?.action?.description
+            );
+        }
+
+        return undefined;
+    }, [selectedOption]);
+
+    const showDescription = typeof selectedDescription === 'string';
+
+    const getOptionImage = (option: ICharacterOption) => {
+        if (option.image) {
+            return option.image;
+        }
+
+        if (
+            (option?.choices ?? []).length === 0 &&
+            option?.grants &&
+            option.grants.length === 1
+        ) {
+            return (
+                option.grants[0].image ??
+                (option.grants[0] as IActionEffect)?.action?.image
+            );
+        }
+
+        return undefined;
+    };
 
     return (
         <MainBox>
@@ -197,11 +236,11 @@ export function FeaturePicker({
                                     layout={layoutType}
                                     ref={imageContainerRef}
                                 >
-                                    {option.image &&
+                                    {getOptionImage(option) &&
                                         renderCardMedia({
                                             component: 'img',
                                             image: WeaveImages.getPath(
-                                                option.image,
+                                                getOptionImage(option)!,
                                                 276,
                                             ),
                                             layout: layoutType,
@@ -224,7 +263,7 @@ export function FeaturePicker({
                 <DescriptionPaper elevation={2}>
                     {showDescription && (
                         <DescriptionText variant="body2">
-                            {selectedOption?.description}
+                            {selectedDescription}
                         </DescriptionText>
                     )}
 

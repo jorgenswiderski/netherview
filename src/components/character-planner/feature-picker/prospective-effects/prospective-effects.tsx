@@ -52,8 +52,10 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
 
     const getChoicesFromOption = (
         option: ICharacterOption,
-    ): ICharacterChoice[] => {
-        const effects = option.choices ? [...option.choices] : [];
+    ): { choice: ICharacterChoice; option: ICharacterOption }[] => {
+        const effects = option.choices
+            ? [...option.choices.map((choice) => ({ choice, option }))]
+            : [];
 
         if (option.choices) {
             effects.push(
@@ -89,11 +91,12 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
             <ItemBox>
                 <GrantedEffects effects={effects} />
                 {choices
-                    .filter((choice) => !choice.forcedOptions)
-                    .map((choice) => (
+                    .filter(({ choice }) => !choice.forcedOptions)
+                    .map(({ choice, option }) => (
                         <ChoiceDescription
+                            option={option}
+                            choice={choice}
                             key={choice.type}
-                            step={choice.type}
                             elevation={4}
                         />
                     ))}
