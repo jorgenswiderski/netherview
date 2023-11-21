@@ -5,6 +5,7 @@ import { SpellStubConstructor } from '@jorgenswiderski/tomekeeper-shared/dist/mo
 import {
     CompressableRecord,
     CompressableRecordHandle,
+    CompressableRecordIdentifier,
 } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/types';
 import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/compressable-record';
 import { CharacterTreeActionBase } from './character-tree-action-base';
@@ -50,4 +51,7 @@ export class CharacterTreeSpell
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const typeCheck: SpellStubConstructor = CharacterTreeSpell;
 
-compress = RecordCompressor.registerClass(CharacterTreeSpell, 1);
+compress = RecordCompressor.registerClass(
+    CharacterTreeSpell,
+    CompressableRecordIdentifier.Spell,
+);

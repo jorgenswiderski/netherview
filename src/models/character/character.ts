@@ -5,12 +5,12 @@ import {
     ICharacterChoice,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
-    Characteristic,
     GrantableEffect,
     CharacteristicType,
     GrantableEffectType,
     Proficiency,
     IActionEffect,
+    ICharacteristic,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import {
@@ -1077,10 +1077,10 @@ export class Character implements ICharacter {
         ) as IActionEffect[];
     }
 
-    getCharacteristics(): Characteristic[] {
+    getCharacteristics(): ICharacteristic[] {
         return this.getGrantedEffects().filter(
             (effect) => effect.type === GrantableEffectType.CHARACTERISTIC,
-        ) as Characteristic[];
+        ) as ICharacteristic[];
     }
 
     getFeats(): CharacterTreeDecision[] {
