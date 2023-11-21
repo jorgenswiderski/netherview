@@ -142,7 +142,9 @@ export const characterDecisionInfo: Record<number, DecisionStateInfo> = {
     },
     [CharacterPlannerStep.CLASS_FEATURE_SUBCHOICE]: {
         title: (decision: IPendingDecision) =>
-            `Select a ${decision.parent!.name} option`,
+            `Select ${(decision.count ?? 1) > 1 ? decision.count : 'a'} ${
+                decision.parent!.name
+            } option${(decision.count ?? 1) > 1 ? 's' : ''}`,
         description: (option: ICharacterOption) =>
             `Select a ${option.name} option`,
         image: (option: ICharacterOption, choice: ICharacterChoice) =>

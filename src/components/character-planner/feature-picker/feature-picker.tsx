@@ -112,7 +112,10 @@ const DescriptionPaper = styled(Paper)`
 interface FeaturePickerProps {
     title: string;
     decision: IPendingDecision;
-    onDecision: (decision: IPendingDecision, choice: ICharacterOption) => void;
+    onDecision: (
+        decision: IPendingDecision,
+        choice: ICharacterOption[],
+    ) => void;
     negate?: boolean;
 }
 
@@ -124,24 +127,40 @@ export function FeaturePicker({
     onDecision,
     negate,
 }: FeaturePickerProps) {
-    const { options } = decision;
+    const { options, count } = decision;
 
-    const [selectedOption, setSelectedOption] =
-        useState<ICharacterOption | null>(null);
+    const [selectedOptions, setSelectedOptions] = useState<ICharacterOption[]>(
+        [],
+    );
 
     useEffect(() => {
-        setSelectedOption(null);
+        setSelectedOptions([]);
     }, [options]);
 
     // Preload subchoice assets for the selected options
     useEffect(() => {
-        if (selectedOption?.choices) {
+        selectedOptions.forEach((option) =>
             // Only need to preload first choice, others handled by decision queue preloader
-            Utils.preloadOptionImages(selectedOption?.choices[0]?.options);
-        }
-    }, [selectedOption]);
+            Utils.preloadOptionImages(option.choices?.[0]?.options),
+        );
+    }, [selectedOptions]);
 
     const imageContainerRef = useRef<HTMLButtonElement>(null);
+
+    const handleOptionClick = (option: ICharacterOption) => {
+        if (selectedOptions.includes(option)) {
+            setSelectedOptions((oldOptions) =>
+                oldOptions.filter((s) => s !== option),
+            );
+        } else if (selectedOptions.length === count) {
+            setSelectedOptions((oldOptions) => [
+                ...oldOptions.slice(1, count),
+                option,
+            ]);
+        } else {
+            setSelectedOptions((oldOptions) => [...oldOptions, option]);
+        }
+    };
 
     const renderCardMedia = (props: CardMediaPropsExtended) => {
         const { layout, ...restProps } = props;
@@ -170,27 +189,32 @@ export function FeaturePicker({
               };
 
     const showEffects =
-        (selectedOption?.grants && selectedOption?.grants?.length > 0) ||
-        (selectedOption?.choices && selectedOption?.choices?.length > 0);
+        selectedOptions.flatMap((opt) => opt.grants ?? []).length > 0 ||
+        selectedOptions.flatMap((opt) => opt.choices ?? []).length > 0;
 
     const selectedDescription = useMemo(() => {
-        if (selectedOption?.description) {
-            return selectedOption.description;
+        if (count > 1 || !selectedOptions[0]) {
+            return undefined;
+        }
+
+        if (selectedOptions[0].description) {
+            return selectedOptions[0].description;
         }
 
         if (
-            (selectedOption?.choices ?? []).length === 0 &&
-            selectedOption?.grants &&
-            selectedOption.grants.length === 1
+            (selectedOptions[0].choices ?? []).length === 0 &&
+            selectedOptions[0].grants &&
+            selectedOptions[0].grants.length === 1
         ) {
             return (
-                selectedOption.grants[0].description ??
-                (selectedOption.grants[0] as IActionEffect)?.action?.description
+                selectedOptions[0].grants[0].description ??
+                (selectedOptions[0].grants[0] as IActionEffect)?.action
+                    ?.description
             );
         }
 
         return undefined;
-    }, [selectedOption]);
+    }, [selectedOptions]);
 
     const showDescription = typeof selectedDescription === 'string';
 
@@ -218,9 +242,9 @@ export function FeaturePicker({
             <PlannerHeader
                 title={title}
                 onButtonClick={() =>
-                    selectedOption && onDecision(decision, selectedOption)
+                    selectedOptions && onDecision(decision, selectedOptions)
                 }
-                buttonDisabled={!selectedOption}
+                buttonDisabled={selectedOptions.length !== count}
             />
 
             <Box style={{ overflowY: 'auto', width: '100%' }}>
@@ -229,10 +253,10 @@ export function FeaturePicker({
                         <StyledGrid item {...gridSize} key={option.name}>
                             <StyledCard
                                 elevation={2}
-                                selected={selectedOption === option}
+                                selected={selectedOptions.includes(option)}
                             >
                                 <ActionArea
-                                    onClick={() => setSelectedOption(option)}
+                                    onClick={() => handleOptionClick(option)}
                                     layout={layoutType}
                                     ref={imageContainerRef}
                                 >
@@ -269,7 +293,7 @@ export function FeaturePicker({
 
                     {showEffects && (
                         <ProspectiveEffects
-                            options={selectedOption}
+                            options={selectedOptions}
                             text={negate ? 'You will lose:' : 'You will gain:'}
                         />
                     )}
