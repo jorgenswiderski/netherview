@@ -4,6 +4,7 @@ import { ActionStubConstructor } from '@jorgenswiderski/tomekeeper-shared/dist/m
 import {
     CompressableRecord,
     CompressableRecordHandle,
+    CompressableRecordIdentifier,
 } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/types';
 import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/compressable-record';
 import { CharacterTreeActionBase } from './character-tree-action-base';
@@ -44,5 +45,9 @@ export class CharacterTreeAction
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const typeCheck: ActionStubConstructor = CharacterTreeAction;
 
-compress = RecordCompressor.registerClass(CharacterTreeAction, 2);
+compress = RecordCompressor.registerClass(
+    CharacterTreeAction,
+    CompressableRecordIdentifier.Action,
+);
+
 export const initCharacterTreeActionCompressor = () => compress;

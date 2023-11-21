@@ -1,5 +1,6 @@
 import {
     StaticReferenceHandle,
+    StaticReferenceIdentifier,
     StaticallyReferenceable,
 } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
 import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
@@ -55,4 +56,7 @@ export class CharacterTreeBackground
     }
 }
 
-ref = StaticReference.registerClass(CharacterTreeBackground, 'b');
+ref = StaticReference.registerClass(
+    CharacterTreeBackground,
+    StaticReferenceIdentifier.Background,
+);

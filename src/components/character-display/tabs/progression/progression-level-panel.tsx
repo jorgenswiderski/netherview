@@ -2,10 +2,10 @@ import React, { useMemo } from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 import {
     ActionEffectType,
-    Characteristic,
     GrantableEffect,
     GrantableEffectType,
     IActionEffect,
+    ICharacteristic,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import styled from '@emotion/styled';
 import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
@@ -69,7 +69,7 @@ export function ProgressionLevelPanel({
                 levelInfo.totalEffects.filter(
                     (effect) =>
                         effect.type === GrantableEffectType.CHARACTERISTIC,
-                ) as Characteristic[]
+                ) as ICharacteristic[]
             ).filter((effect) => !feats.includes(effect)),
         [levelInfo.totalEffects, feats],
     );

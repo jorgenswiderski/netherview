@@ -1,5 +1,6 @@
 import {
     StaticReferenceHandle,
+    StaticReferenceIdentifier,
     StaticallyReferenceable,
 } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
 import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
@@ -38,5 +39,9 @@ export class CharacterTreeActionEffect
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const typeCheck: ActionEffectStubConstructor = CharacterTreeActionEffect;
 
-ref = StaticReference.registerClass(CharacterTreeActionEffect, 'a');
+ref = StaticReference.registerClass(
+    CharacterTreeActionEffect,
+    StaticReferenceIdentifier.Action,
+);
+
 export const initCharacterTreeActionEffectRef = () => ref;
