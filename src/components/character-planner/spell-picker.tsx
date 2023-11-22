@@ -61,6 +61,7 @@ function SelectedSpells({ spells, numSpells, onClick }: SelectedSpellsProps) {
                             spell={spell}
                             selected={spells.includes(spell)}
                             onClick={() => onClick(spell)}
+                            elevation={4} // boost elevation slightly for better contrast on empty card
                         />
                     );
                 })}
