@@ -111,13 +111,13 @@ function Slots({
     slotFilters,
     disabledSlots,
 }: SlotsProps) {
-    const { isMobile } = useResponsive();
+    const { hasMulticolumnTabs } = useResponsive();
 
     return slots.map((slot, index) => (
         <EquipmentSlotBox
             key={slot}
             color={ItemColors[items[slot]?.item.rarity] ?? '#0000'}
-            mirrored={!isMobile && index < 6}
+            mirrored={hasMulticolumnTabs && index < 6}
         >
             <EquipmentSlotCard
                 slot={slot}
@@ -129,7 +129,9 @@ function Slots({
             <EquipmentSlotTextBox
                 color={ItemColors[items[slot]?.item.rarity] ?? '#555'}
             >
-                <EquipmentSlotTypography mirrored={!isMobile && index < 6}>
+                <EquipmentSlotTypography
+                    mirrored={hasMulticolumnTabs && index < 6}
+                >
                     {items[slot]?.item.name
                         ? items[slot]?.item.name
                         : equipmentSlotLabels[slot]}
@@ -139,7 +141,9 @@ function Slots({
                         overflow="hidden"
                         textOverflow="ellipsis"
                         whiteSpace="nowrap"
-                        align={!isMobile && index < 6 ? 'right' : 'left'}
+                        align={
+                            hasMulticolumnTabs && index < 6 ? 'right' : 'left'
+                        }
                         variant="body2"
                         color="gray"
                         sources={items[slot].item.sources as ItemSource[]}
