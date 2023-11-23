@@ -176,7 +176,7 @@ export function FeaturePicker({
     };
 
     const layoutType =
-        options.length < 17 ? LayoutType.SPARSE : LayoutType.DENSE;
+        options.length <= 12 ? LayoutType.SPARSE : LayoutType.DENSE;
 
     const gridSize =
         layoutType === LayoutType.DENSE
