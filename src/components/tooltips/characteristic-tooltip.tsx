@@ -1,11 +1,11 @@
 // action-tooltip.tsx
 import React from 'react';
 import { Typography } from '@mui/material';
-import { Characteristic } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { ICharacteristic } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { BaseTooltip } from './base-tooltip';
 
 interface CharacteristicTooltipProps {
-    characteristic?: Characteristic;
+    characteristic?: ICharacteristic;
     children: React.ReactElement;
 }
 

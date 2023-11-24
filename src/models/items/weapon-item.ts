@@ -7,7 +7,10 @@ import {
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
 import { DamageType } from '@jorgenswiderski/tomekeeper-shared/dist/types/damage';
 import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
-import { StaticReferenceHandle } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
+import {
+    StaticReferenceHandle,
+    StaticReferenceIdentifier,
+} from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
 import { EquipmentItem } from './equipment-item';
 import { WeaveApi } from '../../api/weave/weave';
 
@@ -70,4 +73,7 @@ export class WeaponItem extends EquipmentItem implements IWeaponItem {
     }
 }
 
-ref = StaticReference.registerClass(WeaponItem, 'w');
+ref = StaticReference.registerClass(
+    WeaponItem,
+    StaticReferenceIdentifier.WeaponItem,
+);

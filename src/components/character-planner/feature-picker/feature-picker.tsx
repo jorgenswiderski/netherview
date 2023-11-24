@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import CardMedia, { CardMediaProps } from '@mui/material/CardMedia';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { Box, Card, CardActionArea, Grid, Paper } from '@mui/material';
 import styled from '@emotion/styled';
+import { IActionEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
 import { ProspectiveEffects } from './prospective-effects/prospective-effects';
@@ -111,7 +112,10 @@ const DescriptionPaper = styled(Paper)`
 interface FeaturePickerProps {
     title: string;
     decision: IPendingDecision;
-    onDecision: (decision: IPendingDecision, choice: ICharacterOption) => void;
+    onDecision: (
+        decision: IPendingDecision,
+        choice: ICharacterOption[],
+    ) => void;
     negate?: boolean;
 }
 
@@ -123,24 +127,40 @@ export function FeaturePicker({
     onDecision,
     negate,
 }: FeaturePickerProps) {
-    const { options } = decision;
+    const { options, count } = decision;
 
-    const [selectedOption, setSelectedOption] =
-        useState<ICharacterOption | null>(null);
+    const [selectedOptions, setSelectedOptions] = useState<ICharacterOption[]>(
+        [],
+    );
 
     useEffect(() => {
-        setSelectedOption(null);
+        setSelectedOptions([]);
     }, [options]);
 
     // Preload subchoice assets for the selected options
     useEffect(() => {
-        if (selectedOption?.choices) {
+        selectedOptions.forEach((option) =>
             // Only need to preload first choice, others handled by decision queue preloader
-            Utils.preloadOptionImages(selectedOption?.choices[0]?.options);
-        }
-    }, [selectedOption]);
+            Utils.preloadOptionImages(option.choices?.[0]?.options),
+        );
+    }, [selectedOptions]);
 
     const imageContainerRef = useRef<HTMLButtonElement>(null);
+
+    const handleOptionClick = (option: ICharacterOption) => {
+        if (selectedOptions.includes(option)) {
+            setSelectedOptions((oldOptions) =>
+                oldOptions.filter((s) => s !== option),
+            );
+        } else if (selectedOptions.length === count) {
+            setSelectedOptions((oldOptions) => [
+                ...oldOptions.slice(1, count),
+                option,
+            ]);
+        } else {
+            setSelectedOptions((oldOptions) => [...oldOptions, option]);
+        }
+    };
 
     const renderCardMedia = (props: CardMediaPropsExtended) => {
         const { layout, ...restProps } = props;
@@ -156,7 +176,7 @@ export function FeaturePicker({
     };
 
     const layoutType =
-        options.length < 17 ? LayoutType.SPARSE : LayoutType.DENSE;
+        options.length <= 12 ? LayoutType.SPARSE : LayoutType.DENSE;
 
     const gridSize =
         layoutType === LayoutType.DENSE
@@ -168,20 +188,63 @@ export function FeaturePicker({
                   lg: options.length < 4 ? 12 / options.length : 3,
               };
 
-    const showDescription = typeof selectedOption?.description === 'string';
-
     const showEffects =
-        (selectedOption?.grants && selectedOption?.grants?.length > 0) ||
-        (selectedOption?.choices && selectedOption?.choices?.length > 0);
+        selectedOptions.flatMap((opt) => opt.grants ?? []).length > 0 ||
+        selectedOptions.flatMap((opt) => opt.choices ?? []).length > 0;
+
+    const selectedDescription = useMemo(() => {
+        if (count > 1 || !selectedOptions[0]) {
+            return undefined;
+        }
+
+        if (selectedOptions[0].description) {
+            return selectedOptions[0].description;
+        }
+
+        if (
+            (selectedOptions[0].choices ?? []).length === 0 &&
+            selectedOptions[0].grants &&
+            selectedOptions[0].grants.length === 1
+        ) {
+            return (
+                selectedOptions[0].grants[0].description ??
+                (selectedOptions[0].grants[0] as IActionEffect)?.action
+                    ?.description
+            );
+        }
+
+        return undefined;
+    }, [selectedOptions]);
+
+    const showDescription = typeof selectedDescription === 'string';
+
+    const getOptionImage = (option: ICharacterOption) => {
+        if (option.image) {
+            return option.image;
+        }
+
+        if (
+            (option?.choices ?? []).length === 0 &&
+            option?.grants &&
+            option.grants.length === 1
+        ) {
+            return (
+                option.grants[0].image ??
+                (option.grants[0] as IActionEffect)?.action?.image
+            );
+        }
+
+        return undefined;
+    };
 
     return (
         <MainBox>
             <PlannerHeader
                 title={title}
                 onButtonClick={() =>
-                    selectedOption && onDecision(decision, selectedOption)
+                    selectedOptions && onDecision(decision, selectedOptions)
                 }
-                buttonDisabled={!selectedOption}
+                buttonDisabled={selectedOptions.length !== count}
             />
 
             <Box style={{ overflowY: 'auto', width: '100%' }}>
@@ -190,18 +253,18 @@ export function FeaturePicker({
                         <StyledGrid item {...gridSize} key={option.name}>
                             <StyledCard
                                 elevation={2}
-                                selected={selectedOption === option}
+                                selected={selectedOptions.includes(option)}
                             >
                                 <ActionArea
-                                    onClick={() => setSelectedOption(option)}
+                                    onClick={() => handleOptionClick(option)}
                                     layout={layoutType}
                                     ref={imageContainerRef}
                                 >
-                                    {option.image &&
+                                    {getOptionImage(option) &&
                                         renderCardMedia({
                                             component: 'img',
                                             image: WeaveImages.getPath(
-                                                option.image,
+                                                getOptionImage(option)!,
                                                 276,
                                             ),
                                             layout: layoutType,
@@ -224,13 +287,13 @@ export function FeaturePicker({
                 <DescriptionPaper elevation={2}>
                     {showDescription && (
                         <DescriptionText variant="body2">
-                            {selectedOption?.description}
+                            {selectedDescription}
                         </DescriptionText>
                     )}
 
                     {showEffects && (
                         <ProspectiveEffects
-                            options={selectedOption}
+                            options={selectedOptions}
                             text={negate ? 'You will lose:' : 'You will gain:'}
                         />
                     )}

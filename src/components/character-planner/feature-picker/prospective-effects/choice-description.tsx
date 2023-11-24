@@ -1,27 +1,46 @@
-import React from 'react';
-import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
+import React, { useMemo } from 'react';
+import {
+    ICharacterChoice,
+    ICharacterOption,
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import { EffectBase } from './effect-base';
-import { CharacterPlannerStepDescriptions } from '../types';
+import { characterDecisionInfo } from '../../../../models/character/character-states';
+import { WeaveImages } from '../../../../api/weave/weave-images';
 
 interface ChoiceDescriptionProps {
-    step: CharacterPlannerStep;
+    option: ICharacterOption;
+    choice: ICharacterChoice;
     elevation: number;
     style?: React.CSSProperties;
 }
 
 export function ChoiceDescription({
-    step,
+    option,
+    choice,
     elevation,
     style,
 }: ChoiceDescriptionProps) {
-    const label = CharacterPlannerStepDescriptions.has(step)
-        ? CharacterPlannerStepDescriptions.get(step)!
-        : `Warning: No description for step type '${step}'.`;
+    const label =
+        characterDecisionInfo[choice.type]?.description(option, choice) ??
+        `Warning: No description for step type '${choice.type}'.`;
+
+    const image = useMemo(() => {
+        const decisionImage = characterDecisionInfo[choice.type]?.image?.(
+            option,
+            choice,
+        );
+
+        if (decisionImage) {
+            return WeaveImages.getPath(decisionImage, 24);
+        }
+
+        return <KeyboardDoubleArrowUpIcon />;
+    }, []);
 
     return (
         <EffectBase
-            image={<KeyboardDoubleArrowUpIcon />}
+            image={image}
             label={label}
             elevation={elevation}
             style={style}

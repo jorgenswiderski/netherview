@@ -17,10 +17,12 @@ import { initCharacterTreeSpellEffectRef } from '../models/character/character-t
 import { NotificationProvider } from '../context/notification-context/notification-context';
 import { SettingsProvider } from '../context/user-settings-context/user-settings-context';
 import { AppHead } from '../components/head';
+import { initCharacterTreePassiveRef } from '../models/character/character-tree-node/character-tree-passive';
 
 initCharacterTreeActionEffectRef();
 initCharacterTreeSpellEffectRef();
 initCharacterTreeActionCompressor();
+initCharacterTreePassiveRef();
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (

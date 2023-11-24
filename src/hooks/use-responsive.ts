@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 export function useResponsive() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const hasMulticolumnTabs = !useMediaQuery('(max-width: 1400px)');
 
     let isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
@@ -18,5 +19,5 @@ export function useResponsive() {
         isTouch = false;
     }
 
-    return { isMobile, isTouch };
+    return { isMobile, isTouch, hasMulticolumnTabs };
 }

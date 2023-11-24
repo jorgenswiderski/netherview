@@ -4,6 +4,7 @@ import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models
 import {
     CompressableRecordHandle,
     CompressableRecord,
+    CompressableRecordIdentifier,
 } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/types';
 import { CharacterTreeDecision, CharacterTreeEffect } from './character-tree';
 import { ICharacterTreeEquipmentItem } from '../../items/types';
@@ -44,4 +45,7 @@ export class CharacterTreeEquipmentItem
     }
 }
 
-compress = RecordCompressor.registerClass(CharacterTreeEquipmentItem, 0);
+compress = RecordCompressor.registerClass(
+    CharacterTreeEquipmentItem,
+    CompressableRecordIdentifier.EquipmentItem,
+);

@@ -1,18 +1,18 @@
 import React, { useMemo } from 'react';
 import styled from '@emotion/styled';
-import { Characteristic } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { Paper } from '@mui/material';
+import { ICharacteristic } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { TabPanel } from '../../../simple-tabs/tab-panel';
 import { TabPanelProps } from '../../../simple-tabs/types';
 import { useCharacter } from '../../../../context/character-context/character-context';
 import { GrantedEffects } from '../../../character-planner/feature-picker/prospective-effects/granted-effects';
-import {
-    CharacterTreeDecision,
-    CharacterTreeEffect,
-} from '../../../../models/character/character-tree-node/character-tree';
+import { CharacterTreeDecision } from '../../../../models/character/character-tree-node/character-tree';
 import { TabPanelItem } from '../../../simple-tabs/tab-panel-item';
 import { safeAssert } from '../../../../models/utils';
+import { Character } from '../../../../models/character/character';
+import { ICharacterTreeDecision } from '../../../../models/character/character-tree-node/types';
+import { CharacterTreePassive } from '../../../../models/character/character-tree-node/character-tree-passive';
 
 const StyledTabPanel = styled(TabPanel)``;
 
@@ -25,8 +25,8 @@ const labels: Record<string, CharacterPlannerStep[]> = {
         CharacterPlannerStep.PRIMARY_CLASS,
         CharacterPlannerStep.SECONDARY_CLASS,
         CharacterPlannerStep.LEVEL_UP,
-    ],
-    Subclass: [
+        CharacterPlannerStep.CLASS_FEATURE,
+        CharacterPlannerStep.CLASS_FEATURE_SUBCHOICE,
         CharacterPlannerStep.CHOOSE_SUBCLASS,
         CharacterPlannerStep.SUBCLASS_FEATURE,
     ],
@@ -63,15 +63,25 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
         [character],
     );
 
+    const getClassParent = (
+        node: ICharacterTreeDecision,
+    ): ICharacterTreeDecision => {
+        if (node.type && Character.LEVEL_STEPS.includes(node.type)) {
+            return node;
+        }
+
+        return getClassParent(node.parent as ICharacterTreeDecision);
+    };
+
     const effectGroups = useMemo(() => {
-        const m: Record<string | number, Characteristic[]> = {};
+        const m: Record<string | number, ICharacteristic[]> = {};
 
         characteristics.forEach((c) => {
             if (c.hidden) {
                 return;
             }
 
-            const { parent } = c as CharacterTreeEffect as {
+            const { parent } = c as CharacterTreePassive as {
                 parent?: CharacterTreeDecision;
             };
 
@@ -82,14 +92,14 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
             let label = labels2[parent.type] ?? parent.type;
 
             if (label === 'Class') {
-                label = parent.name;
-            } else if (label === 'Subclass') {
-                label = parent.parent!.name;
+                // Find the nearest class parent node
+                const classParent = getClassParent(parent);
+                label = classParent.name;
             }
 
             safeAssert(
                 typeof label === 'string',
-                `Label '${label}' must be a string`,
+                `Characteristics tab section label '${label}' must be a string`,
             );
 
             if (!m[label]) {

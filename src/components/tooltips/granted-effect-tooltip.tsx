@@ -2,7 +2,7 @@ import React from 'react';
 import { Tooltip } from '@mui/material';
 import { IActionBase } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import {
-    Characteristic,
+    ICharacteristic,
     GrantableEffect,
     GrantableEffectType,
     IActionEffect,
@@ -30,7 +30,7 @@ export function GrantedEffectTooltip({
 
     if (effect.type === GrantableEffectType.CHARACTERISTIC) {
         return (
-            <CharacteristicTooltip characteristic={effect as Characteristic}>
+            <CharacteristicTooltip characteristic={effect as ICharacteristic}>
                 {children}
             </CharacteristicTooltip>
         );

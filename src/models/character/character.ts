@@ -5,12 +5,12 @@ import {
     ICharacterChoice,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
-    Characteristic,
     GrantableEffect,
     CharacteristicType,
     GrantableEffectType,
     Proficiency,
     IActionEffect,
+    ICharacteristic,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import {
@@ -39,7 +39,7 @@ import {
     ICharacterTreeDecision,
     ICharacterTreeNode,
 } from './character-tree-node/types';
-import { CharacterDecisionInfo, IPendingDecision } from './character-states';
+import { characterDecisionInfo, IPendingDecision } from './character-states';
 import { CharacterClassProgressionLevel } from '../../api/weave/types';
 import {
     CharacterEquipment,
@@ -96,7 +96,7 @@ export class Character implements ICharacter {
         }
 
         const step = this.pendingSteps.shift()!;
-        const info = CharacterDecisionInfo[step];
+        const info = characterDecisionInfo[step];
 
         const choices = info?.getChoices
             ? await info.getChoices(this)
@@ -236,7 +236,7 @@ export class Character implements ICharacter {
 
                     parent.addChild(decision);
                     Character.grantEffects(decision);
-                    this.queueSubchoices(decision);
+                    this.queueSubchoices(decision, option.choices);
                 });
 
                 return;
@@ -308,18 +308,18 @@ export class Character implements ICharacter {
         });
     }
 
-    private filterFeatChoices(choice: ICharacterChoice): ICharacterChoice {
-        assert(choice.type === CharacterPlannerStep.FEAT);
+    filterWhitelist = new Set(['Ability Improvement']);
 
-        const feats = this.findAllDecisionsByType(CharacterPlannerStep.FEAT);
-        const featNames = feats.map((feat) => feat.name);
+    private filterOptions(choice: ICharacterChoice): ICharacterChoice {
+        const obtainedOptions = this.findAllDecisionsByType(choice.type);
+        const obtainedNames = obtainedOptions.map(({ name }) => name);
 
         return {
             ...choice,
             options: choice.options.filter(
                 (option) =>
-                    !featNames.includes(option.name) ||
-                    option.name === 'Ability Improvement',
+                    !obtainedNames.includes(option.name) ||
+                    this.filterWhitelist.has(option.name),
             ),
         };
     }
@@ -338,28 +338,29 @@ export class Character implements ICharacter {
                 return { ...cls };
             }
 
-            const choices = cls.progression[level].Features.flatMap(
-                (feature) => feature.choices,
-            )
-                .filter(Boolean)
-                .map((choice) => {
-                    if (choice?.type === CharacterPlannerStep.FEAT) {
-                        return this.filterFeatChoices(choice);
-                    }
-
-                    return choice;
-                }) as ICharacterChoice[];
-
-            const grants = cls.progression[level].Features.flatMap(
-                (feature) => feature.grants,
-            ).filter(Boolean) as unknown as GrantableEffect[];
-
             const { progression, ...rest } = cls;
+
+            const choices = cls.progression[level].Features.map(
+                (feature): ICharacterChoice => {
+                    const typedFeature = {
+                        type: CharacterPlannerStep.CLASS_FEATURE,
+                        ...feature,
+                        choices: feature.choices?.map((choice) =>
+                            this.filterOptions(choice),
+                        ),
+                    };
+
+                    return {
+                        type: CharacterPlannerStep.CLASS_FEATURE,
+                        options: [typedFeature],
+                        forcedOptions: [typedFeature],
+                    };
+                },
+            );
 
             return {
                 ...rest,
                 choices,
-                grants,
                 level,
             };
         });
@@ -734,15 +735,39 @@ export class Character implements ICharacter {
             return this.clone();
         }
 
-        const pastDecisions = levelNode.children.filter(
-            (child) => child.nodeType === CharacterTreeNodeType.DECISION,
-        ) as CharacterTreeDecision[];
+        function flattenDecisions(
+            decisions: CharacterTreeDecision[],
+        ): CharacterTreeDecision[] {
+            const childDecisions = decisions
+                .filter((node) => node.children)
+                .flatMap((node) => node.children)
+                .filter(
+                    (node) => node?.nodeType === CharacterTreeNodeType.DECISION,
+                ) as CharacterTreeDecision[];
+
+            return [
+                ...decisions,
+                ...(childDecisions.length > 0
+                    ? flattenDecisions(childDecisions)
+                    : []),
+            ];
+        }
+
+        const pastChildren = (
+            levelNode.children.filter(
+                (child) => child.nodeType === CharacterTreeNodeType.DECISION,
+            ) as CharacterTreeDecision[]
+        ).filter(
+            (node) => !(node.type && Character.LEVEL_STEPS.includes(node.type)),
+        );
+
+        const pastDecisions = flattenDecisions(pastChildren);
 
         function getFastforwardableDecisions(
             pending: PendingDecision[],
             past: CharacterTreeDecision[],
-        ): Map<PendingDecision, CharacterTreeDecision[]> {
-            const map = new Map<PendingDecision, CharacterTreeDecision[]>();
+        ): Map<PendingDecision, { name: string }[]> {
+            const map = new Map<PendingDecision, { name: string }[]>();
 
             pending.forEach((decision) => {
                 const pastDecision = past.filter(
@@ -1052,10 +1077,10 @@ export class Character implements ICharacter {
         ) as IActionEffect[];
     }
 
-    getCharacteristics(): Characteristic[] {
+    getCharacteristics(): ICharacteristic[] {
         return this.getGrantedEffects().filter(
             (effect) => effect.type === GrantableEffectType.CHARACTERISTIC,
-        ) as Characteristic[];
+        ) as ICharacteristic[];
     }
 
     getFeats(): CharacterTreeDecision[] {

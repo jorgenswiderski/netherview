@@ -24,7 +24,7 @@ export interface ICharacterTreeRoot extends ICharacterTreeNode {
 export interface ICharacterTreeEffect
     extends GrantableEffect,
         ICharacterTreeNode {
-    // parent: ICharacterTreeNode;
+    parent?: ICharacterTreeNode;
     nodeType: CharacterTreeNodeType.EFFECT;
     children?: ICharacterTreeEffect[];
 }
@@ -32,7 +32,7 @@ export interface ICharacterTreeEffect
 export interface ICharacterTreeDecision
     extends ICharacterOption,
         ICharacterTreeNode {
-    // parent: ICharacterTreeNode;
+    parent?: ICharacterTreeNode;
     nodeType: CharacterTreeNodeType.DECISION;
     choiceId: string | null;
 }
