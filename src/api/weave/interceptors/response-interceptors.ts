@@ -6,9 +6,7 @@ import { AxiosResponse } from 'axios';
 export class ResponseInterceptors {
     static Intern = [
         (response: AxiosResponse) => {
-            if (typeof response.data === 'object') {
-                response.data = InternJson.reverseIntern(response.data);
-            }
+            response.data = InternJson.reverseIntern(response.data);
 
             return response;
         },

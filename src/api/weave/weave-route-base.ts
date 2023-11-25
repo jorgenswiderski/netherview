@@ -2,7 +2,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import axiosRetry from 'axios-retry';
 import { CONFIG } from '../../models/config';
-import { log } from '../../models/logger';
 
 type ItemWithId = { id: number };
 
@@ -15,8 +14,6 @@ export class WeaveBaseRoute {
     axios: AxiosInstance;
 
     constructor(protected baseRoute: string) {
-        log(`${CONFIG.WEAVE.API_URL}${this.baseRoute}`);
-
         this.axios = axios.create({
             baseURL: `${CONFIG.WEAVE.API_URL}${this.baseRoute}`,
         });
@@ -27,8 +24,6 @@ export class WeaveBaseRoute {
         config: AxiosRequestConfig = { method: 'GET' },
     ) {
         try {
-            log(endpoint);
-
             const response = await this.axios({
                 url: endpoint,
                 ...config,
