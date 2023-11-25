@@ -2,9 +2,9 @@ import {
     Build,
     BuildId,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/builds';
-import { WeaveRouteBase } from './weave-route-base';
+import { WeaveBaseRoute } from './weave-route-base';
 
-export class WeaveBuilds extends WeaveRouteBase {
+export class WeaveBuilds extends WeaveBaseRoute {
     constructor() {
         super('/builds');
     }

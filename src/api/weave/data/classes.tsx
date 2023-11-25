@@ -1,16 +1,19 @@
-import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
-import { WeaveRouteBase } from '../weave-route-base';
 import { CharacterClassOption } from '../../../models/character/types';
+import { WeaveDataRoute } from './data';
+import { ResponseInterceptors } from '../interceptors/response-interceptors';
 
-export class WeaveClasses extends WeaveRouteBase {
+export class WeaveClasses extends WeaveDataRoute {
     constructor() {
-        super('/data/classes');
+        super('/classes');
+
+        this.axios.interceptors.response.use(
+            ...ResponseInterceptors.StaticReference,
+        );
     }
 
     getClassesInfo = async (): Promise<CharacterClassOption[]> => {
         const data = await this.fetchFromApi('/');
-        const parsed = await StaticReference.parseAllValues(data);
 
-        return parsed;
+        return data;
     };
 }

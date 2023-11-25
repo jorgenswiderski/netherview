@@ -3,11 +3,11 @@ import {
     IEquipmentItem,
     equipmentSlotTypes,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/equipment-item';
-import { WeaveRouteBase } from '../weave-route-base';
+import { WeaveDataRoute } from './data';
 
-export class WeaveItems extends WeaveRouteBase {
+export class WeaveItems extends WeaveDataRoute {
     constructor() {
-        super('/data/items');
+        super('/items');
     }
 
     getEquipmentItemInfo = async (
