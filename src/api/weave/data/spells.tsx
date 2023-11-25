@@ -1,9 +1,9 @@
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
-import { WeaveRouteBase } from '../weave-route-base';
+import { WeaveDataRoute } from './data';
 
-export class WeaveSpells extends WeaveRouteBase {
+export class WeaveSpells extends WeaveDataRoute {
     constructor() {
-        super('/data/spells');
+        super('/spells');
     }
 
     get = async (): Promise<ISpell[]> => {

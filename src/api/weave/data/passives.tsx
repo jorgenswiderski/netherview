@@ -1,10 +1,10 @@
 // passives.tsx
 import { ICharacteristic } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import { WeaveRouteBase } from '../weave-route-base';
+import { WeaveDataRoute } from './data';
 
-export class WeavePassives extends WeaveRouteBase {
+export class WeavePassives extends WeaveDataRoute {
     constructor() {
-        super('/data/passives');
+        super('/passives');
     }
 
     get = async (): Promise<ICharacteristic[]> => {
