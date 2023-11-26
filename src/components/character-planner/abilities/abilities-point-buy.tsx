@@ -5,7 +5,7 @@ import { Box, Typography, Select, MenuItem } from '@mui/material';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
     GrantableEffectType,
-    CharacteristicType,
+    PassiveType,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { AbilitiesUI } from './abilities-ui';
 import { AbilityScores } from '../../../models/character/types';
@@ -63,15 +63,15 @@ export function AbilitiesPointBuy({
             grants: [
                 {
                     name: 'Base Ability Scores',
-                    type: GrantableEffectType.CHARACTERISTIC,
-                    subtype: CharacteristicType.ABILITY_BASE,
+                    type: GrantableEffectType.PASSIVE,
+                    subtype: PassiveType.ABILITY_BASE,
                     hidden: true,
                     values: { ...pointBuyScores },
                 },
                 {
                     name: 'Racial Ability Score Bonuses',
-                    type: GrantableEffectType.CHARACTERISTIC,
-                    subtype: CharacteristicType.ABILITY_RACIAL,
+                    type: GrantableEffectType.PASSIVE,
+                    subtype: PassiveType.ABILITY_RACIAL,
                     hidden: true,
                     values: { ...bonuses[AbilitiesBonusType.RACIAL] },
                 },

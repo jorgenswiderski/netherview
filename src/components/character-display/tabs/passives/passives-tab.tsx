@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import styled from '@emotion/styled';
 import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { Paper } from '@mui/material';
-import { ICharacteristic } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { IPassive } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { TabPanel } from '../../../simple-tabs/tab-panel';
 import { TabPanelProps } from '../../../simple-tabs/types';
 import { useCharacter } from '../../../../context/character-context/character-context';
@@ -53,15 +53,12 @@ const labels2: Record<number, string> = Object.entries(labels).reduce(
     {} as Record<number, string>,
 );
 
-interface CharacteristicsTabProps extends TabPanelProps {}
+interface PassivesTabProps extends TabPanelProps {}
 
-export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
+export function PassivesTab({ ...panelProps }: PassivesTabProps) {
     const { character } = useCharacter();
 
-    const characteristics = useMemo(
-        () => character.getCharacteristics(),
-        [character],
-    );
+    const passives = useMemo(() => character.getPassives(), [character]);
 
     const getClassParent = (
         node: ICharacterTreeDecision,
@@ -74,9 +71,9 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
     };
 
     const effectGroups = useMemo(() => {
-        const m: Record<string | number, ICharacteristic[]> = {};
+        const m: Record<string | number, IPassive[]> = {};
 
-        characteristics.forEach((c) => {
+        passives.forEach((c) => {
             if (c.hidden) {
                 return;
             }
@@ -99,7 +96,7 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
 
             safeAssert(
                 typeof label === 'string',
-                `Characteristics tab section label '${label}' must be a string`,
+                `Passives tab section label '${label}' must be a string`,
             );
 
             if (!m[label]) {
@@ -110,7 +107,7 @@ export function CharacteristicsTab({ ...panelProps }: CharacteristicsTabProps) {
         });
 
         return m;
-    }, [characteristics]);
+    }, [passives]);
 
     return (
         <StyledTabPanel {...panelProps}>

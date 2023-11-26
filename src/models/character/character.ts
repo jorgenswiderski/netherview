@@ -6,11 +6,11 @@ import {
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
     GrantableEffect,
-    CharacteristicType,
+    PassiveType,
     GrantableEffectType,
     Proficiency,
     IActionEffect,
-    ICharacteristic,
+    IPassive,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import {
@@ -1024,13 +1024,13 @@ export class Character implements ICharacter {
     }
 
     getTotalAbilityScores(): AbilityScores | null {
-        const abilityFx = this.getCharacteristics().filter(
+        const abilityFx = this.getPassives().filter(
             (effect) =>
                 effect.subtype &&
                 [
-                    CharacteristicType.ABILITY_BASE,
-                    CharacteristicType.ABILITY_RACIAL,
-                    CharacteristicType.ABILITY_FEAT,
+                    PassiveType.ABILITY_BASE,
+                    PassiveType.ABILITY_RACIAL,
+                    PassiveType.ABILITY_FEAT,
                 ].includes(effect.subtype),
         );
 
@@ -1083,10 +1083,10 @@ export class Character implements ICharacter {
         ) as IActionEffect[];
     }
 
-    getCharacteristics(): ICharacteristic[] {
+    getPassives(): IPassive[] {
         return this.getGrantedEffects().filter(
-            (effect) => effect.type === GrantableEffectType.CHARACTERISTIC,
-        ) as ICharacteristic[];
+            (effect) => effect.type === GrantableEffectType.PASSIVE,
+        ) as IPassive[];
     }
 
     getFeats(): CharacterTreeDecision[] {
@@ -1103,7 +1103,7 @@ export class Character implements ICharacter {
                 effect.nodeType === CharacterTreeNodeType.EFFECT &&
                 effect.name === name &&
                 (effect as CharacterTreeEffect).type ===
-                    GrantableEffectType.CHARACTERISTIC,
+                    GrantableEffectType.PASSIVE,
         ) as CharacterTreeEffect | undefined as GrantableEffect | undefined;
 
         if (featEffect) {
@@ -1114,7 +1114,7 @@ export class Character implements ICharacter {
             name,
             description,
             image,
-            type: GrantableEffectType.CHARACTERISTIC, // FIXME
+            type: GrantableEffectType.PASSIVE, // FIXME
         };
 
         return featDummyEffect;

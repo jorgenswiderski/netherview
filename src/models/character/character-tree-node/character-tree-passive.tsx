@@ -6,9 +6,9 @@ import {
 import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
 import {
     GrantableEffectType,
-    ICharacteristic,
+    IPassive,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import { CharacteristicStubConstructor } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/stubs';
+import { PassiveStubConstructor } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/stubs';
 import { WeaveApi } from '../../../api/weave/weave';
 import { CharacterTreeEffect } from './character-tree';
 
@@ -19,13 +19,12 @@ let ref: {
 
 export class CharacterTreePassive
     extends CharacterTreeEffect
-    implements ICharacteristic, StaticallyReferenceable
+    implements IPassive, StaticallyReferenceable
 {
     id: number;
-    type: GrantableEffectType.CHARACTERISTIC =
-        GrantableEffectType.CHARACTERISTIC;
+    type: GrantableEffectType.PASSIVE = GrantableEffectType.PASSIVE;
 
-    constructor(passive: ICharacteristic) {
+    constructor(passive: IPassive) {
         super(passive);
 
         this.id = passive.id;
@@ -45,11 +44,11 @@ export class CharacterTreePassive
 // Assure that the constructor signature matches that defined by the class stub
 // See stubs.ts for more info
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const typeCheck: CharacteristicStubConstructor = CharacterTreePassive;
+const typeCheck: PassiveStubConstructor = CharacterTreePassive;
 
 ref = StaticReference.registerClass(
     CharacterTreePassive,
-    StaticReferenceIdentifier.Characteristic,
+    StaticReferenceIdentifier.Passive,
 );
 
 export const initCharacterTreePassiveRef = () => ref;

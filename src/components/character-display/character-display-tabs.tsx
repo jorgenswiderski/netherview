@@ -4,7 +4,7 @@ import ShieldIcon from '@mui/icons-material/Shield';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import FlareIcon from '@mui/icons-material/Flare';
 import BoltIcon from '@mui/icons-material/Bolt';
-import { CharacteristicsTab } from './tabs/characteristics/characteristics-tab';
+import { PassivesTab } from './tabs/passives/passives-tab';
 import { EquipmentTab } from './tabs/equipment/equipment-tab';
 import { ProgressionTab } from './tabs/progression/progression-tab';
 import { OverviewTab } from './tabs/overview/overview-tab';
@@ -36,7 +36,7 @@ export const characterDisplayTabs = [
     },
     {
         label: 'Passives',
-        element: CharacteristicsTab,
+        element: PassivesTab,
         icon: <FlareIcon />,
     },
 ];

@@ -1,5 +1,5 @@
 // passives.tsx
-import { ICharacteristic } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { IPassive } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { WeaveDataRoute } from './data';
 
 export class WeavePassives extends WeaveDataRoute {
@@ -7,15 +7,15 @@ export class WeavePassives extends WeaveDataRoute {
         super('/passives');
     }
 
-    get = async (): Promise<ICharacteristic[]> => {
+    get = async (): Promise<IPassive[]> => {
         const actions = await this.memoize(async () => this.fetchFromApi('/'));
 
-        return actions as ICharacteristic[];
+        return actions as IPassive[];
     };
 
-    getById = async (id: number): Promise<ICharacteristic> => {
+    getById = async (id: number): Promise<IPassive> => {
         await this.get();
 
-        return (await this.cacheMap)?.get(id)! as ICharacteristic;
+        return (await this.cacheMap)?.get(id)! as IPassive;
     };
 }
