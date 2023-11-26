@@ -4,12 +4,24 @@ import Typography, { TypographyProps } from '@mui/material/Typography';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { Box, Card, CardActionArea, Grid, Paper } from '@mui/material';
 import styled from '@emotion/styled';
-import { IActionEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import {
+    GrantableEffect,
+    IActionEffect,
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { Utils } from '../../../models/utils';
-import { IPendingDecision } from '../../../models/character/character-states';
+import {
+    IPendingDecision,
+    characterDecisionInfo,
+} from '../../../models/character/character-states';
 import { ProspectiveEffects } from './prospective-effects/prospective-effects';
 import { WeaveImages } from '../../../api/weave/weave-images';
 import { PlannerHeader } from '../planner-header/planner-header';
+import { useCharacter } from '../../../context/character-context/character-context';
+import { CharacterTreeNodeType } from '../../../models/character/character-tree-node/types';
+import {
+    CharacterTreeDecision,
+    CharacterTreeEffect,
+} from '../../../models/character/character-tree-node/character-tree';
 
 enum LayoutType {
     SPARSE,
@@ -127,7 +139,45 @@ export function FeaturePicker({
     onDecision,
     negate,
 }: FeaturePickerProps) {
-    const { options, count } = decision;
+    const { character } = useCharacter();
+    const { options: allOptions, count } = decision;
+
+    const makeKey = (
+        option: ICharacterOption | CharacterTreeDecision,
+    ): string => {
+        let grants: (CharacterTreeEffect | GrantableEffect)[];
+
+        if (option instanceof CharacterTreeDecision) {
+            grants = (option.children?.filter(
+                (child) => child.nodeType === CharacterTreeNodeType.EFFECT,
+            ) ?? []) as CharacterTreeEffect[];
+        } else {
+            grants = option.grants ?? [];
+        }
+
+        return JSON.stringify({
+            name: option.name,
+            grants: grants.map((child) => (child as any)?.id).filter(Boolean),
+        });
+    };
+
+    const options = useMemo(() => {
+        if (characterDecisionInfo[decision.type].allowDuplicates) {
+            return allOptions;
+        }
+
+        const obtained = new Set<string>();
+
+        const decisions = character.root.findAllNodes(
+            (node) => node.nodeType === CharacterTreeNodeType.DECISION,
+        ) as CharacterTreeDecision[];
+
+        decisions.forEach((node) => {
+            obtained.add(makeKey(node));
+        });
+
+        return allOptions.filter((option) => !obtained.has(makeKey(option)));
+    }, [allOptions]);
 
     const [selectedOptions, setSelectedOptions] = useState<ICharacterOption[]>(
         [],

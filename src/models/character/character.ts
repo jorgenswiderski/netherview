@@ -310,16 +310,18 @@ export class Character implements ICharacter {
 
     filterWhitelist = new Set(['Ability Improvement']);
 
-    private filterOptions(choice: ICharacterChoice): ICharacterChoice {
-        const obtainedOptions = this.findAllDecisionsByType(choice.type);
-        const obtainedNames = obtainedOptions.map(({ name }) => name);
+    private filterFeatChoices(choice: ICharacterChoice): ICharacterChoice {
+        assert(choice.type === CharacterPlannerStep.FEAT);
+
+        const feats = this.findAllDecisionsByType(CharacterPlannerStep.FEAT);
+        const featNames = feats.map((feat) => feat.name);
 
         return {
             ...choice,
             options: choice.options.filter(
                 (option) =>
-                    !obtainedNames.includes(option.name) ||
-                    this.filterWhitelist.has(option.name),
+                    !featNames.includes(option.name) ||
+                    option.name === 'Ability Improvement',
             ),
         };
     }
@@ -345,9 +347,13 @@ export class Character implements ICharacter {
                     const typedFeature = {
                         type: CharacterPlannerStep.CLASS_FEATURE,
                         ...feature,
-                        choices: feature.choices?.map((choice) =>
-                            this.filterOptions(choice),
-                        ),
+                        choices: feature.choices?.map((choice) => {
+                            if (choice?.type === CharacterPlannerStep.FEAT) {
+                                return this.filterFeatChoices(choice);
+                            }
+
+                            return choice;
+                        }),
                     };
 
                     return {
