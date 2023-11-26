@@ -38,6 +38,7 @@ export interface DecisionStateInfo {
     getChoices?: (character: ICharacter) => Promise<ICharacterChoice[]>;
     getOptions?: (character: ICharacter) => Promise<ICharacterOption[]>;
     extraFeaturePickerArgs?: Record<string, any>;
+    allowDuplicates?: true;
 }
 
 export interface IPendingDecision {
@@ -86,6 +87,7 @@ export const characterDecisionInfo: Record<number, DecisionStateInfo> = {
     [CharacterPlannerStep.LEVEL_UP]: {
         title: () => 'Select your class',
         description: () => 'Level up your character.',
+        allowDuplicates: true,
     },
     [CharacterPlannerStep.SECONDARY_CLASS]: {
         title: () => 'Choose a class to add',
@@ -95,6 +97,7 @@ export const characterDecisionInfo: Record<number, DecisionStateInfo> = {
         title: () => 'Choose a feat',
         description: () =>
             'Select a Feat or gain an ability score improvement.',
+        allowDuplicates: true, // custom duplicate restriction is enforced in Character model
     },
     [CharacterPlannerStep.FEAT_SUBCHOICE]: {
         title: () => 'Customize your feat choice',
