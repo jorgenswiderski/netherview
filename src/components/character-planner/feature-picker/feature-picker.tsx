@@ -276,7 +276,7 @@ export function FeaturePicker({
         if (
             (option?.choices ?? []).length === 0 &&
             option?.grants &&
-            option.grants.length === 1
+            option.grants.length > 0
         ) {
             return (
                 option.grants[0].image ??
