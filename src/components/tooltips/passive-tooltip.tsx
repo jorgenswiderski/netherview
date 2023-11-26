@@ -1,38 +1,35 @@
 // action-tooltip.tsx
 import React from 'react';
 import { Typography } from '@mui/material';
-import { ICharacteristic } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import { IPassive } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { BaseTooltip } from './base-tooltip';
 
-interface CharacteristicTooltipProps {
-    characteristic?: ICharacteristic;
+interface PassiveTooltipProps {
+    passive?: IPassive;
     children: React.ReactElement;
 }
 
-export function CharacteristicTooltip({
-    characteristic,
-    children,
-}: CharacteristicTooltipProps) {
-    if (!characteristic) {
+export function PassiveTooltip({ passive, children }: PassiveTooltipProps) {
+    if (!passive) {
         return children;
     }
 
     return (
         <BaseTooltip
-            name={characteristic.name}
-            image={characteristic.image}
+            name={passive.name}
+            image={passive.image}
             header={
                 <>
-                    <Typography variant="h6">{characteristic.name}</Typography>
+                    <Typography variant="h6">{passive.name}</Typography>
                     <Typography variant="subtitle2" color="textSecondary" />
                 </>
             }
             quote={
                 <Typography
                     variant="body2"
-                    style={{ marginRight: characteristic.image ? '90px' : 0 }}
+                    style={{ marginRight: passive.image ? '90px' : 0 }}
                 >
-                    {characteristic.description}
+                    {passive.description}
                 </Typography>
             }
         >

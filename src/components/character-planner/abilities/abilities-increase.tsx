@@ -4,7 +4,7 @@ import React from 'react';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
     GrantableEffectType,
-    CharacteristicType,
+    PassiveType,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { AbilitiesUI } from './abilities-ui';
 import { AbilityScores } from '../../../models/character/types';
@@ -39,8 +39,8 @@ export function AbilitiesIncrease({
                         .filter(([, value]) => value > 0)
                         .map(([key]) => key)
                         .join(', ')}`,
-                    type: GrantableEffectType.CHARACTERISTIC,
-                    subtype: CharacteristicType.ABILITY_FEAT,
+                    type: GrantableEffectType.PASSIVE,
+                    subtype: PassiveType.ABILITY_FEAT,
                     values: { ...pointBuyScores },
                     hidden: true,
                 },

@@ -2,13 +2,13 @@ import React from 'react';
 import { Tooltip } from '@mui/material';
 import { IActionBase } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import {
-    ICharacteristic,
+    IPassive,
     GrantableEffect,
     GrantableEffectType,
     IActionEffect,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { ActionTooltip } from './action-tooltip';
-import { CharacteristicTooltip } from './characteristic-tooltip';
+import { PassiveTooltip } from './passive-tooltip';
 import { safeAssert } from '../../models/utils';
 
 export function GrantedEffectTooltip({
@@ -28,11 +28,11 @@ export function GrantedEffectTooltip({
         );
     }
 
-    if (effect.type === GrantableEffectType.CHARACTERISTIC) {
+    if (effect.type === GrantableEffectType.PASSIVE) {
         return (
-            <CharacteristicTooltip characteristic={effect as ICharacteristic}>
+            <PassiveTooltip passive={effect as IPassive}>
                 {children}
-            </CharacteristicTooltip>
+            </PassiveTooltip>
         );
     }
 
