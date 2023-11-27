@@ -23,6 +23,7 @@ import { useSettings } from '../../context/user-settings-context/user-settings-c
 import { useResponsive } from '../../hooks/use-responsive';
 import { CharacterDisplayTabProvider } from '../../context/character-display-tab-context/character-display-tab-context';
 import { MobileNavbar } from '../mobile-navbar';
+import { characterStateComponents } from './character-state-components';
 
 const Container = styled(Box)`
     display: flex;
@@ -131,6 +132,12 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
         [nextDecision],
     );
 
+    const nextDecisionComponent = useMemo(
+        () =>
+            nextDecision ? characterStateComponents[nextDecision.type] : null,
+        [nextDecision],
+    );
+
     useEffect(() => {
         if (
             character.pendingDecisions.length < 2 &&
@@ -209,8 +216,8 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
             );
         }
 
-        return nextDecisionInfo.render ? (
-            nextDecisionInfo.render({
+        return nextDecisionComponent ? (
+            nextDecisionComponent({
                 title: nextDecisionInfo.title(nextDecision),
                 onDecision: handleDecision,
                 decision: nextDecision,

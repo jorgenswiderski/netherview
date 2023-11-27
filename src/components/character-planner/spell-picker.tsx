@@ -7,6 +7,7 @@ import { ICharacter } from '../../models/character/types';
 import { PlannerHeader } from './planner-header/planner-header';
 import { SpellIconCard } from '../icon-cards/spell-icon-card';
 import { SpellsByLevel } from '../spells-by-level';
+import { useFeaturePicker } from './feature-picker/use-feature-picker';
 
 const Container = styled.div`
     display: flex;
@@ -84,12 +85,13 @@ export function SpellPicker({
     decision,
     character,
 }: SpellPickerProps) {
-    const numSpells = decision.count;
+    const { count: numSpells } = decision;
+    const { filteredOptions: options } = useFeaturePicker(decision);
 
     const [selectedSpells, setSelectedSpells] = useState<ISpell[]>([]);
 
     const spells = useMemo(() => {
-        return decision.options.flatMap((option: ICharacterOption) => {
+        return options.flatMap((option: ICharacterOption) => {
             const spell = character.spellData.find(
                 (spell2) => spell2.name === option.name,
             );
@@ -100,13 +102,13 @@ export function SpellPicker({
 
             return spell!;
         });
-    }, [decision.options]);
+    }, [options]);
 
-    const options = useMemo(
+    const resultOptions = useMemo(
         () =>
             selectedSpells.map(
                 (spell) =>
-                    decision.options.find(
+                    options.find(
                         (opt: ICharacterOption) => opt.name === spell.name,
                     )!,
             ),
@@ -129,8 +131,8 @@ export function SpellPicker({
     };
 
     const handleConfirm = useCallback(() => {
-        onDecision(decision, options);
-    }, [options]);
+        onDecision(decision, resultOptions);
+    }, [resultOptions]);
 
     useEffect(() => setSelectedSpells([]), [decision]);
 
