@@ -222,13 +222,13 @@ export class Character implements ICharacter {
         choices.forEach((choice) => {
             const pending = new PendingDecision(parent, choice);
 
-            if (choice.forcedOptions) {
+            if (pending.forcedOptions) {
                 safeAssert(
-                    choice.forcedOptions.length === (choice.count ?? 1),
-                    `Number of forced options (${choice.forcedOptions.length}) should equal choice count (${choice.count})`,
+                    pending.forcedOptions.length === (choice.count ?? 1),
+                    `Number of forced options (${pending.forcedOptions.length}) should equal choice count (${choice.count})`,
                 );
 
-                choice.forcedOptions.forEach((option) => {
+                pending.forcedOptions.forEach((option) => {
                     const decision = new CharacterTreeDecision(
                         option,
                         pending.id,

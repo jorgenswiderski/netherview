@@ -9,12 +9,12 @@ import {
 import { AbilitiesUI } from './abilities-ui';
 import { AbilityScores } from '../../../models/character/types';
 import { AbilitiesCostMode } from './types';
+import { IPendingDecision } from '../../../models/character/character-states';
 
-// using 'any' here to resolve cyclic dependency with character-states.tsx
 interface CharacterWidgetProps {
     title: string;
-    onDecision: (decision: any, value: ICharacterOption) => void;
-    decision: any;
+    onDecision: (decision: IPendingDecision, value: ICharacterOption) => void;
+    decision: IPendingDecision;
     points: number;
     name: string;
     abilities: AbilityScores;

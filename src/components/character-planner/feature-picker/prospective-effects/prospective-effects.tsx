@@ -54,14 +54,28 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
         option: ICharacterOption,
     ): { choice: ICharacterChoice; option: ICharacterOption }[] => {
         const effects = option.choices
-            ? [...option.choices.map((choice) => ({ choice, option }))]
+            ? [
+                  ...option.choices
+                      .filter(
+                          (choice) =>
+                              !(
+                                  choice.forcedOptions ||
+                                  (choice.count ?? 1) === choice.options.length
+                              ),
+                      )
+                      .map((choice) => ({ choice, option })),
+              ]
             : [];
 
         if (option.choices) {
             effects.push(
                 ...option.choices
-                    .filter((choice) => choice.forcedOptions)
-                    .flatMap((choice) => choice.forcedOptions!)
+                    .filter(
+                        (choice) =>
+                            choice.forcedOptions ||
+                            (choice.count ?? 1) === choice.options.length,
+                    )
+                    .flatMap((choice) => choice.forcedOptions ?? choice.options)
                     .flatMap((opt) => getChoicesFromOption(opt!)),
             );
         }

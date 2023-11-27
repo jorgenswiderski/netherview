@@ -1,6 +1,9 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
+import {
+    CharacterPlannerStep,
+    ICharacterOption,
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { Paper, Box, Typography } from '@mui/material';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { ICharacter } from '../../models/character/types';
@@ -8,6 +11,7 @@ import { PlannerHeader } from './planner-header/planner-header';
 import { SpellIconCard } from '../icon-cards/spell-icon-card';
 import { SpellsByLevel } from '../spells-by-level';
 import { useFeaturePicker } from './feature-picker/use-feature-picker';
+import { IPendingDecision } from '../../models/character/character-states';
 
 const Container = styled.div`
     display: flex;
@@ -41,15 +45,23 @@ interface SelectedSpellsProps {
     spells: ISpell[];
     numSpells: number;
     onClick: (spell: ISpell) => void;
+    type: CharacterPlannerStep;
 }
 
-function SelectedSpells({ spells, numSpells, onClick }: SelectedSpellsProps) {
+function SelectedSpells({
+    spells,
+    numSpells,
+    onClick,
+    type,
+}: SelectedSpellsProps) {
     return (
         <SelectedBoxPaper elevation={2}>
             <Typography>
-                {`Select ${numSpells > 1 ? numSpells : 'a'} spell${
-                    numSpells > 1 ? 's' : ''
-                } to learn.`}
+                {`Select ${numSpells > 1 ? numSpells : 'a'} ${
+                    type === CharacterPlannerStep.LEARN_SPELLS
+                        ? 'spell'
+                        : 'cantrip'
+                }${numSpells > 1 ? 's' : ''} to learn.`}
             </Typography>
             <RowInnerBox>
                 {Array.from({ length: numSpells }).map((_, idx) => {
@@ -71,11 +83,10 @@ function SelectedSpells({ spells, numSpells, onClick }: SelectedSpellsProps) {
     );
 }
 
-// using 'any' here to resolve cyclic dependency with character-states.tsx
 interface SpellPickerProps {
     title: string;
-    onDecision: (decision: any, value: ICharacterOption[]) => void;
-    decision: any;
+    onDecision: (decision: IPendingDecision, value: ICharacterOption[]) => void;
+    decision: IPendingDecision;
     character: ICharacter;
 }
 
@@ -149,6 +160,7 @@ export function SpellPicker({
                     spells={selectedSpells}
                     numSpells={numSpells}
                     onClick={handleSpellClick}
+                    type={decision.type}
                 />
 
                 <SpellsByLevel

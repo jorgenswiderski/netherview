@@ -92,16 +92,18 @@ export const characterDecisionInfo: Record<number, DecisionStateInfo> = {
     },
     [CharacterPlannerStep.LEARN_CANTRIPS]: {
         title: () => 'Choose cantrips to learn',
-        description: () => 'Choose additional cantrips to learn.',
+        description: (option: ICharacterOption, choice: ICharacterChoice) =>
+            (choice.count ?? 1) > 1
+                ? `Learn ${choice.count} new ${option.name} cantrips.`
+                : `Learn an additional ${option.name} cantrip.`,
     },
     [CharacterPlannerStep.LEARN_SPELLS]: {
         title: () => 'Choose spells to learn',
-        description: () => 'Choose additional spells to learn.',
+        description: (option: ICharacterOption, choice: ICharacterChoice) =>
+            (choice.count ?? 1) > 1
+                ? `Learn ${choice.count} new ${option.name} spells.`
+                : `Learn an additional ${option.name} spell.`,
     },
-    // [CharacterPlannerStep.REMOVE_LEVEL]: {
-    //     title: () => 'Choose a class to remove a level from',
-    //     extraFeaturePickerArgs: { negate: true },
-    // },
     [CharacterPlannerStep.MANAGE_LEVELS]: {
         title: () => "Manage your character's levels",
         description: () => "Manage your character's levels",
@@ -119,11 +121,16 @@ export const characterDecisionInfo: Record<number, DecisionStateInfo> = {
             choice.options[0].grants?.[0].image,
     },
     [CharacterPlannerStep.CLASS_FEATURE_LEARN_SPELL]: {
-        title: (decision: IPendingDecision) =>
-            `Choose ${(decision.count ?? 1) > 1 ? decision.count : 'a'} ${
-                decision.parent!.name
-            } spell${(decision.count ?? 1) > 1 ? 's' : ''}`,
-        description: (option: ICharacterOption) =>
-            `Choose a ${option.name} spell`,
+        title: (decision: IPendingDecision) => {
+            return `Choose ${
+                (decision.count ?? 1) > 1 ? decision.count : 'a'
+            } ${decision.parent!.name} spell${
+                (decision.count ?? 1) > 1 ? 's' : ''
+            }`;
+        },
+        description: (option: ICharacterOption, choice: ICharacterChoice) =>
+            `Learn ${(choice.count ?? 1) > 1 ? choice.count : 'a'} ${
+                option.name
+            } spell${(choice.count ?? 1) > 1 ? 's' : ''}`,
     },
 };
