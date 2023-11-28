@@ -53,7 +53,7 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
     const getChoicesFromOption = (
         option: ICharacterOption,
     ): { choice: ICharacterChoice; option: ICharacterOption }[] => {
-        const effects = option.choices
+        const choices = option.choices
             ? [
                   ...option.choices
                       .filter(
@@ -68,7 +68,7 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
             : [];
 
         if (option.choices) {
-            effects.push(
+            choices.push(
                 ...option.choices
                     .filter(
                         (choice) =>
@@ -80,7 +80,7 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
             );
         }
 
-        return effects;
+        return choices;
     };
 
     const effects = useMemo(() => {
@@ -106,6 +106,7 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
                 <GrantedEffects effects={effects} />
                 {choices
                     .filter(({ choice }) => !choice.forcedOptions)
+                    .sort((a) => ((a as any)?.level ? -1 : 1))
                     .map(({ choice, option }) => (
                         <ChoiceDescription
                             option={option}

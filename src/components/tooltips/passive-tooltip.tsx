@@ -1,4 +1,4 @@
-// action-tooltip.tsx
+// passive-tooltip.tsx
 import React from 'react';
 import { Typography } from '@mui/material';
 import { IPassive } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
@@ -18,12 +18,7 @@ export function PassiveTooltip({ passive, children }: PassiveTooltipProps) {
         <BaseTooltip
             name={passive.name}
             image={passive.image}
-            header={
-                <>
-                    <Typography variant="h6">{passive.name}</Typography>
-                    <Typography variant="subtitle2" color="textSecondary" />
-                </>
-            }
+            header={<Typography variant="h6">{passive.name}</Typography>}
             quote={
                 <Typography
                     variant="body2"
