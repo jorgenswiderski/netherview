@@ -111,7 +111,7 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
                         <ChoiceDescription
                             option={option}
                             choice={choice}
-                            key={choice.type}
+                            key={`${option.name}-${option.type}-${choice.type}`}
                             elevation={4}
                         />
                     ))}

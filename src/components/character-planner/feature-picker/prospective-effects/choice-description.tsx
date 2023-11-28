@@ -26,7 +26,7 @@ export function ChoiceDescription({
     elevation,
     style,
 }: ChoiceDescriptionProps) {
-    const isLevelOption = !!(option as any).level;
+    const isLevelOption = typeof (option as any).level !== 'undefined';
 
     const label =
         characterDecisionInfo[choice.type]?.description(option, choice) ??
@@ -49,15 +49,16 @@ export function ChoiceDescription({
         return <KeyboardDoubleArrowUpIcon />;
     }, []);
 
-    const passive: IPassive | undefined = isLevelOption
-        ? undefined
-        : {
-              name: option.name,
-              image: option.image,
-              description: option.description,
-              type: GrantableEffectType.PASSIVE,
-              id: 0,
-          };
+    const passive: IPassive | undefined =
+        isLevelOption || !option?.description
+            ? undefined
+            : {
+                  name: option.name,
+                  image: option.image,
+                  description: option.description,
+                  type: GrantableEffectType.PASSIVE,
+                  id: 0,
+              };
 
     return (
         <PassiveTooltip passive={passive}>
