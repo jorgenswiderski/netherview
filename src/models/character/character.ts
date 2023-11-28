@@ -222,13 +222,13 @@ export class Character implements ICharacter {
         choices.forEach((choice) => {
             const pending = new PendingDecision(parent, choice);
 
-            if (choice.forcedOptions) {
+            if (pending.forcedOptions) {
                 safeAssert(
-                    choice.forcedOptions.length === (choice.count ?? 1),
-                    `Number of forced options (${choice.forcedOptions.length}) should equal choice count (${choice.count})`,
+                    pending.forcedOptions.length === (choice.count ?? 1),
+                    `Number of forced options (${pending.forcedOptions.length}) should equal choice count (${choice.count})`,
                 );
 
-                choice.forcedOptions.forEach((option) => {
+                pending.forcedOptions.forEach((option) => {
                     const decision = new CharacterTreeDecision(
                         option,
                         pending.id,
@@ -425,7 +425,7 @@ export class Character implements ICharacter {
 
                 let spells: ISpell[];
 
-                if (key === 'Spells Known') {
+                if (step === CharacterPlannerStep.LEARN_SPELLS) {
                     const highestSlot =
                         typeof nextLevelData['Spell Slots'] === 'number'
                             ? nextLevelData['Slot Level']!
@@ -433,28 +433,18 @@ export class Character implements ICharacter {
                                   (spellCount) => spellCount && spellCount > 0,
                               );
 
-                    const spellsKnown = this.getKnownSpells(
-                        CharacterPlannerStep.LEARN_SPELLS,
-                    ).map((effect) => effect.name);
-
                     spells = this.spellData.filter(
                         (spell) =>
                             !spell.isVariant &&
                             spell.level > 0 &&
                             spell.level <= highestSlot &&
-                            spell.classes.includes(cls.name) &&
-                            !spellsKnown.includes(spell.name),
+                            spell.classes.includes(cls.name),
                     );
                 } else {
-                    const cantripsKnown = this.getKnownSpells(
-                        CharacterPlannerStep.LEARN_CANTRIPS,
-                    ).map((effect) => effect.name);
-
                     spells = this.spellData.filter(
                         (spell) =>
                             spell.classes.includes(cls.name) &&
-                            spell.level === 0 &&
-                            !cantripsKnown.includes(spell.name),
+                            spell.level === 0,
                     );
                 }
 

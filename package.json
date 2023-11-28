@@ -58,7 +58,7 @@
         "@emotion/styled": "^11.11.0",
         "@fontsource/roboto": "^5.0.8",
         "@hotjar/browser": "^1.0.9",
-        "@jorgenswiderski/tomekeeper-shared": "^1.0.20",
+        "@jorgenswiderski/tomekeeper-shared": "^1.0.21",
         "@mui/icons-material": "^5.14.13",
         "@mui/material": "^5.14.12",
         "@sentry/nextjs": "^7.77.0",

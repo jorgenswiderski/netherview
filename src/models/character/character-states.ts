@@ -1,5 +1,4 @@
 // character-states.ts
-import React from 'react';
 import {
     CharacterPlannerStep,
     ICharacterChoice,
@@ -11,21 +10,7 @@ import {
     CharacterTreeDecision,
     CharacterTreeRoot,
 } from './character-tree-node/character-tree';
-import { AbilitiesPointBuy } from '../../components/character-planner/abilities/abilities-point-buy';
-import { AbilitiesIncrease } from '../../components/character-planner/abilities/abilities-increase';
-import { SpellPicker } from '../../components/character-planner/spell-picker';
-import { LevelManager } from '../../components/level-manager/level-manager';
 import { CharacterTreeBackground } from './character-tree-node/character-tree-background';
-
-export interface CharacterWidgetProps {
-    title: string;
-    onDecision: (
-        decision: IPendingDecision,
-        value: ICharacterOption | ICharacterOption[],
-    ) => void;
-    decision: IPendingDecision;
-    character: ICharacter;
-}
 
 export interface DecisionStateInfo {
     title: (decision: IPendingDecision) => string;
@@ -34,7 +19,6 @@ export interface DecisionStateInfo {
         option: ICharacterOption,
         choice: ICharacterChoice,
     ) => string | undefined;
-    render?: (props: CharacterWidgetProps) => JSX.Element;
     getChoices?: (character: ICharacter) => Promise<ICharacterChoice[]>;
     getOptions?: (character: ICharacter) => Promise<ICharacterOption[]>;
     extraFeaturePickerArgs?: Record<string, any>;
@@ -76,7 +60,6 @@ export const characterDecisionInfo: Record<number, DecisionStateInfo> = {
     [CharacterPlannerStep.SET_ABILITY_SCORES]: {
         title: () => 'Choose your ability scores',
         description: () => 'Assign ability scores for your character.',
-        render: (props) => <AbilitiesPointBuy {...props} />,
         getOptions: async () => [{ name: 'dummy' }],
     },
     [CharacterPlannerStep.CHOOSE_SUBCLASS]: {
@@ -106,42 +89,24 @@ export const characterDecisionInfo: Record<number, DecisionStateInfo> = {
     [CharacterPlannerStep.FEAT_ABILITY_SCORES]: {
         title: () => 'Choose an ability score to increase',
         description: () => 'Increase an ability score.',
-        render: ({ character, ...props }) => {
-            const { decision } = props;
-
-            return (
-                <AbilitiesIncrease
-                    name={decision.parent!.name}
-                    abilities={character.getTotalAbilityScores()!}
-                    points={
-                        decision.parent!.name === 'Ability Improvement' ? 2 : 1
-                    }
-                    abilityOptions={decision.options.map(
-                        (choice: any) => choice.name,
-                    )}
-                    {...props}
-                />
-            );
-        },
     },
     [CharacterPlannerStep.LEARN_CANTRIPS]: {
         title: () => 'Choose cantrips to learn',
-        description: () => 'Choose additional cantrips to learn.',
-        render: (props) => <SpellPicker {...props} />,
+        description: (option: ICharacterOption, choice: ICharacterChoice) =>
+            (choice.count ?? 1) > 1
+                ? `Learn ${choice.count} new ${option.name} cantrips.`
+                : `Learn an additional ${option.name} cantrip.`,
     },
     [CharacterPlannerStep.LEARN_SPELLS]: {
         title: () => 'Choose spells to learn',
-        description: () => 'Choose additional spells to learn.',
-        render: (props) => <SpellPicker {...props} />,
+        description: (option: ICharacterOption, choice: ICharacterChoice) =>
+            (choice.count ?? 1) > 1
+                ? `Learn ${choice.count} new ${option.name} spells.`
+                : `Learn an additional ${option.name} spell.`,
     },
-    // [CharacterPlannerStep.REMOVE_LEVEL]: {
-    //     title: () => 'Choose a class to remove a level from',
-    //     extraFeaturePickerArgs: { negate: true },
-    // },
     [CharacterPlannerStep.MANAGE_LEVELS]: {
         title: () => "Manage your character's levels",
         description: () => "Manage your character's levels",
-        render: (props) => <LevelManager {...props} />,
     },
     [CharacterPlannerStep.CLASS_FEATURE_SUBCHOICE]: {
         title: (decision: IPendingDecision) =>
@@ -154,5 +119,18 @@ export const characterDecisionInfo: Record<number, DecisionStateInfo> = {
             option.image ??
             choice.options[0].image ??
             choice.options[0].grants?.[0].image,
+    },
+    [CharacterPlannerStep.CLASS_FEATURE_LEARN_SPELL]: {
+        title: (decision: IPendingDecision) => {
+            return `Choose ${
+                (decision.count ?? 1) > 1 ? decision.count : 'a'
+            } ${decision.parent!.name} spell${
+                (decision.count ?? 1) > 1 ? 's' : ''
+            }`;
+        },
+        description: (option: ICharacterOption, choice: ICharacterChoice) =>
+            `Learn ${(choice.count ?? 1) > 1 ? choice.count : 'a'} ${
+                option.name
+            } spell${(choice.count ?? 1) > 1 ? 's' : ''}`,
     },
 };

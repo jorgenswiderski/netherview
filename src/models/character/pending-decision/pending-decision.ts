@@ -38,6 +38,10 @@ export class PendingDecision implements IPendingDecision, ICharacterChoice {
             throw new Error(`Pending decision has no options`);
         }
 
+        if (!this.forcedOptions && this.count === this.options.length) {
+            this.forcedOptions = this.options;
+        }
+
         this.preloadOptions();
 
         this.id = PendingDecision.generateUuid(
