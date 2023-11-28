@@ -1,10 +1,10 @@
 // actions.tsx
 import { IAction } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
-import { WeaveRouteBase } from '../weave-route-base';
+import { WeaveDataRoute } from './data';
 
-export class WeaveActions extends WeaveRouteBase {
+export class WeaveActions extends WeaveDataRoute {
     constructor() {
-        super('/data/actions');
+        super('/actions');
     }
 
     get = async (): Promise<IAction[]> => {

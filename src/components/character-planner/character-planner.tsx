@@ -12,7 +12,7 @@ import {
 import { Character } from '../../models/character/character';
 import {
     IPendingDecision,
-    CharacterDecisionInfo,
+    characterDecisionInfo,
 } from '../../models/character/character-states';
 import { FeaturePicker } from './feature-picker/feature-picker';
 import { CharacterDisplay } from '../character-display/character-display';
@@ -23,6 +23,7 @@ import { useSettings } from '../../context/user-settings-context/user-settings-c
 import { useResponsive } from '../../hooks/use-responsive';
 import { CharacterDisplayTabProvider } from '../../context/character-display-tab-context/character-display-tab-context';
 import { MobileNavbar } from '../mobile-navbar';
+import { characterStateComponents } from './character-state-components';
 
 const Container = styled(Box)`
     display: flex;
@@ -127,7 +128,13 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
     );
 
     const nextDecisionInfo = useMemo(
-        () => (nextDecision ? CharacterDecisionInfo[nextDecision.type] : null),
+        () => (nextDecision ? characterDecisionInfo[nextDecision.type] : null),
+        [nextDecision],
+    );
+
+    const nextDecisionComponent = useMemo(
+        () =>
+            nextDecision ? characterStateComponents[nextDecision.type] : null,
         [nextDecision],
     );
 
@@ -209,16 +216,16 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
             );
         }
 
-        return nextDecisionInfo.render ? (
-            nextDecisionInfo.render({
-                title: nextDecisionInfo.title,
+        return nextDecisionComponent ? (
+            nextDecisionComponent({
+                title: nextDecisionInfo.title(nextDecision),
                 onDecision: handleDecision,
                 decision: nextDecision,
                 character,
             })
         ) : (
             <FeaturePicker
-                title={nextDecisionInfo.title}
+                title={nextDecisionInfo.title(nextDecision)}
                 onDecision={handleDecision}
                 decision={nextDecision}
                 {...nextDecisionInfo.extraFeaturePickerArgs}

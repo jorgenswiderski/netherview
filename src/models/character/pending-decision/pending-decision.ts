@@ -5,7 +5,7 @@ import {
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import CryptoJS from 'crypto-js';
 import {
-    CharacterDecisionInfo,
+    characterDecisionInfo,
     DecisionStateInfo,
     IPendingDecision,
 } from '../character-states';
@@ -32,10 +32,14 @@ export class PendingDecision implements IPendingDecision, ICharacterChoice {
         this.options = options;
         this.count = count ?? 1;
         this.forcedOptions = forcedOptions;
-        this.info = CharacterDecisionInfo[type];
+        this.info = characterDecisionInfo[type];
 
         if (!allowOptionless && options.length === 0) {
             throw new Error(`Pending decision has no options`);
+        }
+
+        if (!this.forcedOptions && this.count === this.options.length) {
+            this.forcedOptions = this.options;
         }
 
         this.preloadOptions();

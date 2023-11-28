@@ -142,28 +142,28 @@ export function TreeVisualization({ data }: TreeVisualizationProps) {
             .attr('y', (d) => d.x + 30) // Use x for y due to 90° rotation
             .text((d) => `${d.data.name}`);
 
-        g.selectAll('.node-size-label')
-            .data(root.descendants() as TreeLayoutNode<TreeNode>[])
-            .enter()
-            .append('text')
-            .attr('class', 'node-size-label')
-            .attr('x', (d) => d.y - 20) // Adjust x and y positions as needed
-            .attr('y', (d) => d.x + 45)
-            .text((d) => `${nodeSizes.get(d.data)} bytes`)
-            .append('title')
-            .text((d) => {
-                const { children, ...rest } = d.data;
+        // g.selectAll('.node-size-label')
+        //     .data(root.descendants() as TreeLayoutNode<TreeNode>[])
+        //     .enter()
+        //     .append('text')
+        //     .attr('class', 'node-size-label')
+        //     .attr('x', (d) => d.y - 20) // Adjust x and y positions as needed
+        //     .attr('y', (d) => d.x + 45)
+        //     .text((d) => `${nodeSizes.get(d.data)} bytes`)
+        //     .append('title')
+        //     .text((d) => {
+        //         const { children, ...rest } = d.data;
 
-                return Object.entries(rest)
-                    .map(([key, value]) => [
-                        key,
-                        new Blob([JSON.stringify(key), JSON.stringify(value)])
-                            .size,
-                    ])
-                    .sort((a, b) => (b[1] as number) - (a[1] as number))
-                    .map(([key, value]) => `${key}:\t${value} bytes`)
-                    .join('\n');
-            });
+        //         return Object.entries(rest)
+        //             .map(([key, value]) => [
+        //                 key,
+        //                 new Blob([JSON.stringify(key), JSON.stringify(value)])
+        //                     .size,
+        //             ])
+        //             .sort((a, b) => (b[1] as number) - (a[1] as number))
+        //             .map(([key, value]) => `${key}:\t${value} bytes`)
+        //             .join('\n');
+        //     });
 
         g.selectAll('.link')
             .data(root.links() as TreeLayoutLink<TreeNode>[])

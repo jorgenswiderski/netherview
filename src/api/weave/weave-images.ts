@@ -2,9 +2,9 @@ import React from 'react';
 import axios from 'axios';
 import { CONFIG } from '../../models/config';
 import { error, log } from '../../models/logger';
-import { WeaveRouteBase } from './weave-route-base';
+import { WeaveBaseRoute } from './weave-route-base';
 
-class WeaveImage extends WeaveRouteBase {
+class WeaveImage extends WeaveBaseRoute {
     constructor() {
         super('/images');
     }

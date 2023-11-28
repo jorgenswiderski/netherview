@@ -1,12 +1,17 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
+import {
+    CharacterPlannerStep,
+    ICharacterOption,
+} from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { Paper, Box, Typography } from '@mui/material';
 import { ISpell } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import { ICharacter } from '../../models/character/types';
 import { PlannerHeader } from './planner-header/planner-header';
 import { SpellIconCard } from '../icon-cards/spell-icon-card';
 import { SpellsByLevel } from '../spells-by-level';
+import { useFeaturePicker } from './feature-picker/use-feature-picker';
+import { IPendingDecision } from '../../models/character/character-states';
 
 const Container = styled.div`
     display: flex;
@@ -40,15 +45,23 @@ interface SelectedSpellsProps {
     spells: ISpell[];
     numSpells: number;
     onClick: (spell: ISpell) => void;
+    type: CharacterPlannerStep;
 }
 
-function SelectedSpells({ spells, numSpells, onClick }: SelectedSpellsProps) {
+function SelectedSpells({
+    spells,
+    numSpells,
+    onClick,
+    type,
+}: SelectedSpellsProps) {
     return (
         <SelectedBoxPaper elevation={2}>
             <Typography>
-                {`Select ${numSpells > 1 ? numSpells : 'a'} spell${
-                    numSpells > 1 ? 's' : ''
-                } to learn.`}
+                {`Select ${numSpells > 1 ? numSpells : 'a'} ${
+                    type === CharacterPlannerStep.LEARN_SPELLS
+                        ? 'spell'
+                        : 'cantrip'
+                }${numSpells > 1 ? 's' : ''} to learn.`}
             </Typography>
             <RowInnerBox>
                 {Array.from({ length: numSpells }).map((_, idx) => {
@@ -61,6 +74,7 @@ function SelectedSpells({ spells, numSpells, onClick }: SelectedSpellsProps) {
                             spell={spell}
                             selected={spells.includes(spell)}
                             onClick={() => onClick(spell)}
+                            elevation={4} // boost elevation slightly for better contrast on empty card
                         />
                     );
                 })}
@@ -69,11 +83,10 @@ function SelectedSpells({ spells, numSpells, onClick }: SelectedSpellsProps) {
     );
 }
 
-// using 'any' here to resolve cyclic dependency with character-states.tsx
 interface SpellPickerProps {
     title: string;
-    onDecision: (decision: any, value: ICharacterOption[]) => void;
-    decision: any;
+    onDecision: (decision: IPendingDecision, value: ICharacterOption[]) => void;
+    decision: IPendingDecision;
     character: ICharacter;
 }
 
@@ -83,12 +96,13 @@ export function SpellPicker({
     decision,
     character,
 }: SpellPickerProps) {
-    const numSpells = decision.count;
+    const { count: numSpells } = decision;
+    const { filteredOptions: options } = useFeaturePicker(decision);
 
     const [selectedSpells, setSelectedSpells] = useState<ISpell[]>([]);
 
     const spells = useMemo(() => {
-        return decision.options.flatMap((option: ICharacterOption) => {
+        return options.flatMap((option: ICharacterOption) => {
             const spell = character.spellData.find(
                 (spell2) => spell2.name === option.name,
             );
@@ -99,13 +113,13 @@ export function SpellPicker({
 
             return spell!;
         });
-    }, [decision.options]);
+    }, [options]);
 
-    const options = useMemo(
+    const resultOptions = useMemo(
         () =>
             selectedSpells.map(
                 (spell) =>
-                    decision.options.find(
+                    options.find(
                         (opt: ICharacterOption) => opt.name === spell.name,
                     )!,
             ),
@@ -128,8 +142,8 @@ export function SpellPicker({
     };
 
     const handleConfirm = useCallback(() => {
-        onDecision(decision, options);
-    }, [options]);
+        onDecision(decision, resultOptions);
+    }, [resultOptions]);
 
     useEffect(() => setSelectedSpells([]), [decision]);
 
@@ -146,6 +160,7 @@ export function SpellPicker({
                     spells={selectedSpells}
                     numSpells={numSpells}
                     onClick={handleSpellClick}
+                    type={decision.type}
                 />
 
                 <SpellsByLevel

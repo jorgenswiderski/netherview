@@ -21,7 +21,6 @@ export class CharacterTreeNode implements ICharacterTreeNode {
     constructor(
         public name: string,
         public nodeType: CharacterTreeNodeType,
-        // public parent?: ICharacterTreeNode,
         public children?: (CharacterTreeDecision | CharacterTreeEffect)[],
     ) {
         children?.forEach((child) => {
@@ -216,7 +215,6 @@ export class CharacterTreeRoot
     implements ICharacterTreeRoot
 {
     nodeType: CharacterTreeNodeType.ROOT;
-    // parent?: undefined;
 
     constructor() {
         super('ROOT', CharacterTreeNodeType.ROOT);
@@ -231,15 +229,9 @@ class CharacterTreeChildNode extends CharacterTreeNode {
     constructor(
         public name: string,
         public nodeType: CharacterTreeNodeType,
-        // public parent: ICharacterTreeNode,
         public children?: (CharacterTreeDecision | CharacterTreeEffect)[],
     ) {
-        super(
-            name,
-            nodeType,
-            // parent,
-            children,
-        );
+        super(name, nodeType, children);
     }
 
     // Allow descendants to override in whatever manner they would like
@@ -254,7 +246,7 @@ class CharacterTreeChildNode extends CharacterTreeNode {
 
 export class CharacterTreeDecision
     extends CharacterTreeChildNode
-    implements ICharacterTreeDecision, ICharacterOption
+    implements ICharacterTreeDecision
 {
     nodeType: CharacterTreeNodeType.DECISION;
 
@@ -267,16 +259,10 @@ export class CharacterTreeDecision
 
     constructor(
         { name, choices, ...rest }: ICharacterOption,
-        // parent: CharacterTreeNode,
         public choiceId: string | null,
         children?: (CharacterTreeDecision | CharacterTreeEffect)[],
     ) {
-        super(
-            name,
-            CharacterTreeNodeType.DECISION,
-            // parent,
-            children,
-        );
+        super(name, CharacterTreeNodeType.DECISION, children);
 
         this.numChoices = choices?.length ?? 0;
         this.nodeType = CharacterTreeNodeType.DECISION;
@@ -300,15 +286,9 @@ export class CharacterTreeEffect
 
     constructor(
         { name, ...rest }: GrantableEffect,
-        // parent: CharacterTreeNode,
         children?: CharacterTreeEffect[],
     ) {
-        super(
-            name,
-            CharacterTreeNodeType.EFFECT,
-            // parent,
-            children,
-        );
+        super(name, CharacterTreeNodeType.EFFECT, children);
 
         this.nodeType = CharacterTreeNodeType.EFFECT;
         Object.assign(this, rest);

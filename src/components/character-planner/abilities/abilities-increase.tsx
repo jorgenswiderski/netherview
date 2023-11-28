@@ -4,17 +4,17 @@ import React from 'react';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
     GrantableEffectType,
-    CharacteristicType,
+    PassiveType,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import { AbilitiesUI } from './abilities-ui';
 import { AbilityScores } from '../../../models/character/types';
 import { AbilitiesCostMode } from './types';
+import { IPendingDecision } from '../../../models/character/character-states';
 
-// using 'any' here to resolve cyclic dependency with character-states.tsx
 interface CharacterWidgetProps {
     title: string;
-    onDecision: (decision: any, value: ICharacterOption) => void;
-    decision: any;
+    onDecision: (decision: IPendingDecision, value: ICharacterOption) => void;
+    decision: IPendingDecision;
     points: number;
     name: string;
     abilities: AbilityScores;
@@ -39,8 +39,8 @@ export function AbilitiesIncrease({
                         .filter(([, value]) => value > 0)
                         .map(([key]) => key)
                         .join(', ')}`,
-                    type: GrantableEffectType.CHARACTERISTIC,
-                    subtype: CharacteristicType.ABILITY_FEAT,
+                    type: GrantableEffectType.PASSIVE,
+                    subtype: PassiveType.ABILITY_FEAT,
                     values: { ...pointBuyScores },
                     hidden: true,
                 },

@@ -8,6 +8,7 @@ import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/g
 import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
 import {
     StaticReferenceHandle,
+    StaticReferenceIdentifier,
     StaticallyReferenceable,
 } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
 import { ItemSource } from '@jorgenswiderski/tomekeeper-shared/dist/types/item-sources';
@@ -74,4 +75,7 @@ export class EquipmentItem implements IEquipmentItem, StaticallyReferenceable {
     }
 }
 
-ref = StaticReference.registerClass(EquipmentItem, 'e');
+ref = StaticReference.registerClass(
+    EquipmentItem,
+    StaticReferenceIdentifier.EquipmentItem,
+);

@@ -52,19 +52,35 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
 
     const getChoicesFromOption = (
         option: ICharacterOption,
-    ): ICharacterChoice[] => {
-        const effects = option.choices ? [...option.choices] : [];
+    ): { choice: ICharacterChoice; option: ICharacterOption }[] => {
+        const choices = option.choices
+            ? [
+                  ...option.choices
+                      .filter(
+                          (choice) =>
+                              !(
+                                  choice.forcedOptions ||
+                                  (choice.count ?? 1) === choice.options.length
+                              ),
+                      )
+                      .map((choice) => ({ choice, option })),
+              ]
+            : [];
 
         if (option.choices) {
-            effects.push(
+            choices.push(
                 ...option.choices
-                    .filter((choice) => choice.forcedOptions)
-                    .flatMap((choice) => choice.forcedOptions!)
+                    .filter(
+                        (choice) =>
+                            choice.forcedOptions ||
+                            (choice.count ?? 1) === choice.options.length,
+                    )
+                    .flatMap((choice) => choice.forcedOptions ?? choice.options)
                     .flatMap((opt) => getChoicesFromOption(opt!)),
             );
         }
 
-        return effects;
+        return choices;
     };
 
     const effects = useMemo(() => {
@@ -89,11 +105,13 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
             <ItemBox>
                 <GrantedEffects effects={effects} />
                 {choices
-                    .filter((choice) => !choice.forcedOptions)
-                    .map((choice) => (
+                    .filter(({ choice }) => !choice.forcedOptions)
+                    .sort((a) => ((a as any)?.level ? -1 : 1))
+                    .map(({ choice, option }) => (
                         <ChoiceDescription
-                            key={choice.type}
-                            step={choice.type}
+                            option={option}
+                            choice={choice}
+                            key={`${option.name}-${option.type}-${choice.type}`}
                             elevation={4}
                         />
                     ))}

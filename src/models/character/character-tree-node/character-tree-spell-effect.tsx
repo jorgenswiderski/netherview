@@ -1,5 +1,6 @@
 import {
     StaticReferenceHandle,
+    StaticReferenceIdentifier,
     StaticallyReferenceable,
 } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/types';
 import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
@@ -38,5 +39,9 @@ export class CharacterTreeSpellEffect
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const typeCheck: SpellEffectStubConstructor = CharacterTreeSpellEffect;
 
-ref = StaticReference.registerClass(CharacterTreeSpellEffect, 's');
+ref = StaticReference.registerClass(
+    CharacterTreeSpellEffect,
+    StaticReferenceIdentifier.Spell,
+);
+
 export const initCharacterTreeSpellEffectRef = () => ref;

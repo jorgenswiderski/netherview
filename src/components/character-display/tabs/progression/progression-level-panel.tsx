@@ -2,10 +2,10 @@ import React, { useMemo } from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 import {
     ActionEffectType,
-    Characteristic,
     GrantableEffect,
     GrantableEffectType,
     IActionEffect,
+    IPassive,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
 import styled from '@emotion/styled';
 import { CharacterPlannerStep } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
@@ -63,13 +63,12 @@ export function ProgressionLevelPanel({
         return [Character.getFeatAsEffect(featNode)];
     }, [levelInfo.node]);
 
-    const characteristics = useMemo(
+    const passives = useMemo(
         () =>
             (
                 levelInfo.totalEffects.filter(
-                    (effect) =>
-                        effect.type === GrantableEffectType.CHARACTERISTIC,
-                ) as Characteristic[]
+                    (effect) => effect.type === GrantableEffectType.PASSIVE,
+                ) as IPassive[]
             ).filter((effect) => !feats.includes(effect)),
         [levelInfo.totalEffects, feats],
     );
@@ -78,7 +77,7 @@ export function ProgressionLevelPanel({
         { label: 'Feats', effects: feats },
         { label: 'Actions', effects: actions },
         { label: 'Spells', effects: spells },
-        { label: 'Characteristics', effects: characteristics },
+        { label: 'Passives', effects: passives },
     ];
 
     return (
@@ -167,10 +166,10 @@ export function ProgressionLevelPanel({
                         </ProgressionPanelSection>
                     )}
 
-                    {characteristics.length > 0 && (
-                        <ProgressionPanelSection label="Characteristics">
+                    {passives.length > 0 && (
+                        <ProgressionPanelSection label="Passives">
                             <GrantedEffects
-                                effects={characteristics}
+                                effects={passives}
                                 flex
                                 elevation={4}
                             />
