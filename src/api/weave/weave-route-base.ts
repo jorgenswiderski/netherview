@@ -5,17 +5,17 @@ import { CONFIG } from '../../models/config';
 
 type ItemWithId = { id: number };
 
-axiosRetry(axios, {
-    retries: 3,
-    retryDelay: axiosRetry.exponentialDelay,
-});
-
 export class WeaveBaseRoute {
     axios: AxiosInstance;
 
     constructor(protected baseRoute: string) {
         this.axios = axios.create({
             baseURL: `${CONFIG.WEAVE.API_URL}${this.baseRoute}`,
+        });
+
+        axiosRetry(this.axios, {
+            retries: 3,
+            retryDelay: axiosRetry.exponentialDelay,
         });
     }
 
