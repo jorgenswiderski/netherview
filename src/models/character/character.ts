@@ -1116,7 +1116,13 @@ export class Character implements ICharacter {
         const effects = featOptions.map((option) => {
             if (option.name === 'Ability Improvement') {
                 // Return the actual passive, with the custom name, instead
-                return option.children![0].children![0]! as GrantableEffect;
+                const passive = option.children?.[0].children?.[0] as
+                    | GrantableEffect
+                    | undefined;
+
+                if (passive) {
+                    return passive;
+                }
             }
 
             return Character.getFeatAsEffect(option);
