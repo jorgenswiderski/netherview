@@ -65,9 +65,28 @@ export class Utils extends SharedUtils {
             return;
         }
 
+        const getOptionImage = (option: ICharacterOption) => {
+            if (option.image) {
+                return option.image;
+            }
+
+            if (
+                (option?.choices ?? []).length === 0 &&
+                option?.grants &&
+                option.grants.length > 0
+            ) {
+                return (
+                    option.grants[0].image ??
+                    (option.grants[0] as IActionEffect)?.action?.image
+                );
+            }
+
+            return undefined;
+        };
+
         // Preload the main images first
         const optionImages = options
-            .map((option) => option.image)
+            .map(getOptionImage)
             .filter(Boolean) as string[];
 
         optionImages.forEach((image) => {
@@ -81,11 +100,16 @@ export class Utils extends SharedUtils {
                 const flattened = option.choices
                     .filter(
                         (choice) =>
-                            choice.forcedOptions &&
-                            choice.forcedOptions.length >=
-                                choice.options.length,
+                            (choice.forcedOptions &&
+                                choice.forcedOptions.length >=
+                                    choice.options.length) ||
+                            (choice.count ?? 1) >= choice.options.length,
                     )
-                    .flatMap((choice) => choice.forcedOptions!)
+                    .flatMap((choice) =>
+                        (choice.count ?? 1) >= choice.options.length
+                            ? choice.options
+                            : choice.forcedOptions!,
+                    )
                     .flatMap(reducer);
 
                 allOptions.push(...flattened);
@@ -110,7 +134,7 @@ export class Utils extends SharedUtils {
             WeaveImages.preloadImage(image).catch(error);
         });
 
-        // And the choice images
+        // And the choice images (used by ChoiceDescription)
         const choiceImages = allOptions
             .filter((option) => option.choices)
             .flatMap(
@@ -127,6 +151,22 @@ export class Utils extends SharedUtils {
             );
 
         choiceImages.forEach((image) => {
+            WeaveImages.preloadImage(image).catch(error);
+        });
+
+        // And the choice option images (used by the FeaturePicker CardMedia)
+        const choiceOptionImages = options
+            .filter((option) => option.choices)
+            .flatMap((option) =>
+                option.choices!.flatMap(
+                    (choice) =>
+                        choice.options
+                            .map(getOptionImage)
+                            .filter(Boolean) as string[],
+                ),
+            );
+
+        choiceOptionImages.forEach((image) => {
             WeaveImages.preloadImage(image).catch(error);
         });
     }
