@@ -1111,7 +1111,24 @@ export class Character implements ICharacter {
     }
 
     getFeatsAsEffects(): GrantableEffect[] {
-        return this.getFeats().map(Character.getFeatAsEffect);
+        const featOptions = this.getFeats();
+
+        const effects = featOptions.map((option) => {
+            if (option.name === 'Ability Improvement') {
+                // Return the actual passive, with the custom name, instead
+                const passive = option.children?.[0].children?.[0] as
+                    | GrantableEffect
+                    | undefined;
+
+                if (passive) {
+                    return passive;
+                }
+            }
+
+            return Character.getFeatAsEffect(option);
+        });
+
+        return effects;
     }
 
     private static findNodeByType(
