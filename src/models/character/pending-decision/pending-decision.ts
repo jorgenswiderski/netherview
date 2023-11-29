@@ -42,8 +42,6 @@ export class PendingDecision implements IPendingDecision, ICharacterChoice {
             this.forcedOptions = this.options;
         }
 
-        this.preloadOptions();
-
         this.id = PendingDecision.generateUuid(
             type,
             parent?.name,

@@ -1,6 +1,6 @@
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { GrantableEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
     CharacterTreeDecision,
     CharacterTreeEffect,
@@ -11,6 +11,7 @@ import {
     IPendingDecision,
     characterDecisionInfo,
 } from '../../../models/character/character-states';
+import { Utils } from '../../../models/utils';
 
 export function useFeaturePicker(decision: IPendingDecision) {
     const { options } = decision;
@@ -52,6 +53,10 @@ export function useFeaturePicker(decision: IPendingDecision) {
 
         return options.filter((option) => !obtained.has(makeOptionKey(option)));
     }, [options]);
+
+    useEffect(() => {
+        Utils.preloadOptionImages(filteredOptions);
+    }, [filteredOptions]);
 
     return { filteredOptions };
 }

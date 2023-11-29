@@ -9,8 +9,10 @@ class WeaveImage extends WeaveBaseRoute {
         super('/images');
     }
 
-    private imageCache: Record<string, { width: number; preload: boolean }> =
-        {};
+    private imageCache: Record<
+        string,
+        { width: number; preload: boolean; url: string }
+    > = {};
     private needsSizeUpdate: Record<string, true> = {};
 
     getPath(imageName: string, width: number): string;
@@ -51,25 +53,26 @@ class WeaveImage extends WeaveBaseRoute {
 
         const cache = this.imageCache[imageName];
 
-        if (cache?.width && cache.width >= width) {
-            if (cache.preload) {
-                return `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?p=post`;
-            }
-
-            width = cache.width;
-        } else {
-            if (cache?.width && cache.preload) {
-                // Image was preloaded at the wrong size, tell the server
-                this.updateImageSize(imageName, width).catch(error);
-            }
-
-            this.imageCache[imageName] = { width, preload: false };
+        if (cache?.width && cache.width >= width && cache.url) {
+            return cache.url;
         }
 
-        return `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?w=${width}`;
+        if (cache?.width && cache.preload) {
+            // Image was preloaded at the wrong size, tell the server
+            this.updateImageSize(imageName, width).catch(error);
+        }
+
+        const url = `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?w=${width}`;
+        this.imageCache[imageName] = { width, url, preload: false };
+
+        return url;
     }
 
     async preloadImage(imageName: string): Promise<void> {
+        if (this.imageCache[imageName]) {
+            return;
+        }
+
         const url = `${CONFIG.WEAVE.BASE_IMAGE_URL}/${imageName}?p=pre`;
 
         try {
@@ -99,6 +102,7 @@ class WeaveImage extends WeaveBaseRoute {
                         this.imageCache[imageName] = {
                             width: img.width,
                             preload: true,
+                            url: remote,
                         };
                     }
                 };
