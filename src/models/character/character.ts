@@ -140,10 +140,6 @@ export class Character implements ICharacter {
             : [optionOrOptions];
 
         options.forEach((option) => {
-            if (option.type === CharacterPlannerStep.STOP_LEVEL_MANAGEMENT) {
-                return;
-            }
-
             if (option.type === CharacterPlannerStep.REMOVE_LEVEL) {
                 this.removeLevel(option);
 
