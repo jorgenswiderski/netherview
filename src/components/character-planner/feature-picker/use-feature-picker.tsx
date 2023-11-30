@@ -11,7 +11,7 @@ import {
     IPendingDecision,
     characterDecisionInfo,
 } from '../../../models/character/character-states';
-import { Utils } from '../../../models/utils';
+import { Preloader } from '../../../models/preloader';
 
 export function useFeaturePicker(decision: IPendingDecision) {
     const { options } = decision;
@@ -55,7 +55,7 @@ export function useFeaturePicker(decision: IPendingDecision) {
     }, [options]);
 
     useEffect(() => {
-        Utils.preloadOptionImages(filteredOptions);
+        Preloader.preloadOptionImages(filteredOptions);
     }, [filteredOptions]);
 
     return { filteredOptions };

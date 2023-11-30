@@ -1,9 +1,12 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Paper, Typography } from '@mui/material';
+import { IconButton, Paper, Typography } from '@mui/material';
+import UndoIcon from '@mui/icons-material/Undo';
 import { useResponsive } from '../../../hooks/use-responsive';
+import { useCharacter } from '../../../context/character-context/character-context';
 
 const StyledPaper = styled(Paper)`
+    position: relative;
     width: 100%;
     text-align: center;
     padding: 1rem;
@@ -21,10 +24,19 @@ interface PlannerStepTitleProps {
 
 export function PlannerStepTitle({ title }: PlannerStepTitleProps) {
     const { isMobile } = useResponsive();
+    const { undo, canUndo } = useCharacter();
 
     return (
         <StyledPaper elevation={2}>
-            <Typography variant={isMobile ? 'h5' : 'h4'}>{title}</Typography>
+            {canUndo && !isMobile && (
+                <IconButton
+                    onClick={undo}
+                    style={{ position: 'absolute', left: '1rem' }}
+                >
+                    <UndoIcon />
+                </IconButton>
+            )}
+            <Typography variant={isMobile ? 'h6' : 'h4'}>{title}</Typography>
         </StyledPaper>
     );
 }

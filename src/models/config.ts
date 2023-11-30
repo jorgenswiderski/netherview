@@ -23,4 +23,7 @@ export const CONFIG = {
             : undefined,
     },
     DISCORD_LINK: process.env.NEXT_PUBLIC_DISCORD_LINK,
+    UNDO_LIMIT: process.env.NEXT_PUBLIC_UNDO_LIMIT
+        ? parseInt(process.env.NEXT_PUBLIC_UNDO_LIMIT, 10)
+        : 64,
 };

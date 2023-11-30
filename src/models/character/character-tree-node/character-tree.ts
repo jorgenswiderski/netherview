@@ -8,6 +8,9 @@ import {
     GrantableEffect,
     GrantableEffectType,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
+import assert from 'assert';
+import { RecordCompressor } from '@jorgenswiderski/tomekeeper-shared/dist/models/compressable-record/compressable-record';
+import { StaticReference } from '@jorgenswiderski/tomekeeper-shared/dist/models/static-reference/static-reference';
 import {
     CharacterTreeNodeType,
     ICharacterTreeDecision,
@@ -16,6 +19,8 @@ import {
     ICharacterTreeRoot,
     TraversalMethod,
 } from './types';
+import { CONFIG } from '../../config';
+import { Utils } from '../../utils';
 
 export class CharacterTreeNode implements ICharacterTreeNode {
     constructor(
@@ -207,6 +212,63 @@ export class CharacterTreeNode implements ICharacterTreeNode {
         });
 
         return foundNode;
+    }
+
+    static fromJSON(node: ICharacterTreeNode): CharacterTreeNode {
+        if (node instanceof CharacterTreeNode) {
+            // Object was already turned into a class via StaticReference or RecordCompressor
+            return node as CharacterTreeNode;
+        }
+
+        const { children, ...rest } = node;
+        let NodeConstructor: new (...args: any[]) => CharacterTreeNode;
+
+        if (node.nodeType === CharacterTreeNodeType.DECISION) {
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            NodeConstructor = CharacterTreeDecision;
+        } else if (node.nodeType === CharacterTreeNodeType.EFFECT) {
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            NodeConstructor = CharacterTreeEffect;
+        } else {
+            assert(
+                node.nodeType === CharacterTreeNodeType.ROOT,
+                `Expected nodeType to be ROOT, but it was ${node.nodeType}`,
+            );
+
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            NodeConstructor = CharacterTreeRoot;
+        }
+
+        const nodeClassBased = new NodeConstructor({ name: node.name });
+        Object.assign(nodeClassBased, rest);
+
+        if (children) {
+            children.forEach((child) => {
+                nodeClassBased.addChild(
+                    this.fromJSON(child) as
+                        | CharacterTreeEffect
+                        | CharacterTreeDecision,
+                );
+            });
+        }
+
+        return nodeClassBased;
+    }
+
+    async clone(): Promise<CharacterTreeNode> {
+        const clone = JSON.parse(JSON.stringify(this));
+        const parsed1 = await StaticReference.parseAllValues(clone);
+        const parsed2 = await RecordCompressor.parseAllValues(parsed1);
+        const node = CharacterTreeNode.fromJSON(parsed2);
+
+        if (CONFIG.IS_DEV) {
+            assert(
+                Utils.compareObjects(node, this, ['parent']),
+                'Cloned node should be identical',
+            );
+        }
+
+        return node;
     }
 }
 

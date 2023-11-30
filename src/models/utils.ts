@@ -1,11 +1,7 @@
-import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { SharedUtils } from '@jorgenswiderski/tomekeeper-shared/dist/models/utils';
 import assert from 'assert';
-import { IActionEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import { WeaveImages } from '../api/weave/weave-images';
 import { error } from './logger';
 import { CONFIG } from './config';
-import { characterDecisionInfo } from './character/character-states';
 
 type Difference = {
     path: string;
@@ -41,94 +37,6 @@ export class Utils extends SharedUtils {
         }
 
         return response.json();
-    }
-
-    static preloadImages(
-        input: string | string[] | Record<string, string>,
-    ): void {
-        const load = (url: string) => {
-            const img = new Image();
-            img.src = url;
-        };
-
-        if (typeof input === 'string') {
-            load(input);
-        } else if (Array.isArray(input)) {
-            input.forEach(load);
-        } else {
-            Object.values(input).forEach(load);
-        }
-    }
-
-    static preloadOptionImages(options?: ICharacterOption[]): void {
-        if (!options) {
-            return;
-        }
-
-        // Preload the main images first
-        const optionImages = options
-            .map((option) => option.image)
-            .filter(Boolean) as string[];
-
-        optionImages.forEach((image) => {
-            WeaveImages.preloadImage(image).catch(error);
-        });
-
-        function reducer(option: ICharacterOption): ICharacterOption[] {
-            const allOptions = [option];
-
-            if (option?.choices) {
-                const flattened = option.choices
-                    .filter(
-                        (choice) =>
-                            choice.forcedOptions &&
-                            choice.forcedOptions.length >=
-                                choice.options.length,
-                    )
-                    .flatMap((choice) => choice.forcedOptions!)
-                    .flatMap(reducer);
-
-                allOptions.push(...flattened);
-            }
-
-            return allOptions;
-        }
-
-        const allOptions = options.flatMap(reducer);
-
-        // Then the effect images
-        const fxImages = allOptions
-            .flatMap((option) => option.grants ?? [])
-            .map((effect) => {
-                return (
-                    effect?.image ?? (effect as IActionEffect)?.action?.image
-                );
-            })
-            .filter(Boolean) as string[]; // Filters out null or undefined values
-
-        fxImages.forEach((image) => {
-            WeaveImages.preloadImage(image).catch(error);
-        });
-
-        // And the choice images
-        const choiceImages = allOptions
-            .filter((option) => option.choices)
-            .flatMap(
-                (option) =>
-                    option
-                        .choices!.map(
-                            (choice) =>
-                                characterDecisionInfo[choice.type]?.image?.(
-                                    option,
-                                    choice,
-                                ),
-                        )
-                        .filter(Boolean) as string[],
-            );
-
-        choiceImages.forEach((image) => {
-            WeaveImages.preloadImage(image).catch(error);
-        });
     }
 
     static isNonEmptyArray(a?: any[] | null): boolean {

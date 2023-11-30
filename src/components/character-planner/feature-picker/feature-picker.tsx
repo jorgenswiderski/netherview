@@ -5,12 +5,12 @@ import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/
 import { Box, Card, CardActionArea, Grid, Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import { IActionEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
 import { ProspectiveEffects } from './prospective-effects/prospective-effects';
 import { WeaveImages } from '../../../api/weave/weave-images';
 import { PlannerHeader } from '../planner-header/planner-header';
 import { useFeaturePicker } from './use-feature-picker';
+import { Preloader } from '../../../models/preloader';
 
 enum LayoutType {
     SPARSE,
@@ -141,9 +141,26 @@ export function FeaturePicker({
 
     // Preload subchoice assets for the selected options
     useEffect(() => {
-        selectedOptions.forEach((option) =>
-            // Only need to preload first choice, others handled by decision queue preloader
-            Utils.preloadOptionImages(option.choices?.[0]?.options),
+        selectedOptions.forEach(
+            (option) =>
+                option.choices
+                    ?.map((choice) => {
+                        // Collapse choice if there's only one possible outcome
+                        if ((choice.count ?? 1) >= choice.options.length) {
+                            return choice.options[0].choices?.[0].options;
+                        }
+
+                        // Or if the option is forced
+                        if (
+                            choice.forcedOptions &&
+                            choice.forcedOptions.length >= (choice.count ?? 1)
+                        ) {
+                            return choice.forcedOptions[0].choices?.[0].options;
+                        }
+
+                        return choice.options;
+                    })
+                    .forEach(Preloader.preloadOptionImages),
         );
     }, [selectedOptions]);
 
