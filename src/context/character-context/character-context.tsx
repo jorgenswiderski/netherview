@@ -12,6 +12,7 @@ import { CharacterContext, CharacterContextType } from './types';
 import { useGameData } from '../game-data-context/game-data-context';
 import { Character } from '../../models/character/character';
 import { log } from '../../models/logger';
+import { CONFIG } from '../../models/config';
 
 interface CharacterProviderProps {
     children: ReactNode;
@@ -42,12 +43,18 @@ export function CharacterProvider({ children }: CharacterProviderProps) {
                     decisions[decisions.length - 1]
             ) {
                 const char = await character.snapshot();
-                setHistory((prevHistory) => [...prevHistory, char]);
 
-                setDecisions((prevDec) => [
-                    ...prevDec,
-                    character.pendingDecisions[0]?.id,
-                ]);
+                setHistory((prevHistory) => {
+                    const h = [...prevHistory, char];
+
+                    return h.length > CONFIG.UNDO_LIMIT ? h.slice(1) : h;
+                });
+
+                setDecisions((prevDec) => {
+                    const d = [...prevDec, character.pendingDecisions[0]?.id];
+
+                    return d.length > CONFIG.UNDO_LIMIT ? d.slice(1) : d;
+                });
             }
         }
 
