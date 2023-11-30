@@ -7,6 +7,8 @@ export interface CharacterContextType {
     setBuild: (data?: Build) => void;
     character: Character;
     setCharacter: (character: Character) => void;
+    undo: () => void;
+    canUndo: boolean;
 }
 
 export const CharacterContext = createContext<CharacterContextType | undefined>(

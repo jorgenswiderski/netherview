@@ -5,12 +5,12 @@ import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/
 import { Box, Card, CardActionArea, Grid, Paper } from '@mui/material';
 import styled from '@emotion/styled';
 import { IActionEffect } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import { Utils } from '../../../models/utils';
 import { IPendingDecision } from '../../../models/character/character-states';
 import { ProspectiveEffects } from './prospective-effects/prospective-effects';
 import { WeaveImages } from '../../../api/weave/weave-images';
 import { PlannerHeader } from '../planner-header/planner-header';
 import { useFeaturePicker } from './use-feature-picker';
+import { Preloader } from '../../../models/preloader';
 
 enum LayoutType {
     SPARSE,
@@ -160,7 +160,7 @@ export function FeaturePicker({
 
                         return choice.options;
                     })
-                    .forEach(Utils.preloadOptionImages),
+                    .forEach(Preloader.preloadOptionImages),
         );
     }, [selectedOptions]);
 

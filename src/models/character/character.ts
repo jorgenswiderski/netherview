@@ -50,7 +50,7 @@ import { EquipmentItemFactory } from '../items/equipment-item-factory';
 import { CharacterTreeSpell } from './character-tree-node/character-tree-spell';
 import { TreeCompressor } from '../tree-compressor';
 import { WeaponItem } from '../items/weapon-item';
-import { error } from '../logger';
+import { error, log } from '../logger';
 import { safeAssert } from '../utils';
 
 export class Character implements ICharacter {
@@ -209,6 +209,95 @@ export class Character implements ICharacter {
         );
     }
 
+    // Deep clone the character for use with Undo state
+    async snapshot(): Promise<Character> {
+        const char = new Character(this.baseClassData, this.spellData);
+
+        const skipKeys: (keyof this)[] = ['baseClassData', 'spellData'];
+
+        await Promise.all(
+            Object.entries(this)
+                .filter(([, val]) => val instanceof CharacterTreeNode)
+                .map(async ([key, val]) => {
+                    const tree = val as CharacterTreeNode;
+                    const transformed = await tree.clone();
+
+                    (char as any)[key] = transformed;
+                    skipKeys.push(key as any);
+                }),
+        );
+
+        function buildPaths(
+            node: CharacterTreeNode,
+            path: string = '',
+            map: Map<string, CharacterTreeNode> = new Map(),
+        ): Map<string, CharacterTreeNode> {
+            map.set(path, node);
+
+            node.children?.forEach((child, index) => {
+                buildPaths(child, `${path}.${index}`, map);
+            });
+
+            return map;
+        }
+
+        Object.entries(this)
+            .filter(([key]) => !skipKeys.includes(key as any))
+            .forEach(([key, val]): any => {
+                if (key === 'pendingDecisions') {
+                    const oldPaths = buildPaths(this.root);
+                    const newPaths = buildPaths(char.root);
+
+                    const nodeMap = new WeakMap(
+                        [...oldPaths.keys()].map((k) => [
+                            oldPaths.get(k)!,
+                            newPaths.get(k)!,
+                        ]),
+                    );
+
+                    const decisions = (val as PendingDecision[]).map(
+                        ({ parent, type, options, count, forcedOptions }) => {
+                            const newParent = parent
+                                ? (nodeMap.get(parent) as
+                                      | CharacterTreeDecision
+                                      | CharacterTreeRoot)
+                                : char.root;
+
+                            assert(
+                                newParent,
+                                `Couldn't find matching node on path`,
+                            );
+
+                            return new PendingDecision(
+                                newParent,
+                                {
+                                    type,
+                                    options,
+                                    count,
+                                    forcedOptions,
+                                },
+                                true,
+                            );
+                        },
+                    );
+
+                    (char as any)[key] = decisions;
+
+                    return;
+                }
+
+                try {
+                    (char as any)[key] = structuredClone(val);
+                } catch (err) {
+                    error(`Couldn't structure clone property '${key}'`);
+                    (char as any)[key] = val;
+                    log(key, typeof val, val);
+                }
+            });
+
+        return char;
+    }
+
     private queueSubchoices(
         parent: CharacterTreeDecision,
         choices?: ICharacterChoice[],
@@ -307,8 +396,6 @@ export class Character implements ICharacter {
             };
         });
     }
-
-    filterWhitelist = new Set(['Ability Improvement']);
 
     private filterFeatChoices(choice: ICharacterChoice): ICharacterChoice {
         assert(choice.type === CharacterPlannerStep.FEAT);
@@ -1285,39 +1372,6 @@ export class Character implements ICharacter {
         return TreeCompressor.deflate(this.root, validate);
     }
 
-    private static transformToClassTree(
-        node: ICharacterTreeNode,
-    ): CharacterTreeNode {
-        if (node instanceof CharacterTreeNode) {
-            // Object was already turned into a class via StaticReference or RecordCompressor
-            return node as CharacterTreeNode;
-        }
-
-        const { children, ...rest } = node;
-        let NodeConstructor: new (...args: any[]) => CharacterTreeNode;
-
-        if (node.nodeType === CharacterTreeNodeType.DECISION) {
-            NodeConstructor = CharacterTreeDecision;
-        } else {
-            NodeConstructor = CharacterTreeEffect;
-        }
-
-        const nodeClassBased = new NodeConstructor({ name: node.name });
-        Object.assign(nodeClassBased, rest);
-
-        if (children) {
-            children.forEach((child) => {
-                nodeClassBased.addChild(
-                    Character.transformToClassTree(child) as
-                        | CharacterTreeEffect
-                        | CharacterTreeDecision,
-                );
-            });
-        }
-
-        return nodeClassBased;
-    }
-
     static async import(
         importStr: string,
         classData: CharacterClassOption[],
@@ -1327,7 +1381,7 @@ export class Character implements ICharacter {
         const char = new Character(classData, spellData);
         char.pendingDecisions.length = 0;
         char.pendingSteps.length = 0;
-        char.root = Character.transformToClassTree(root) as CharacterTreeRoot;
+        char.root = CharacterTreeNode.fromJSON(root) as CharacterTreeRoot;
 
         return char;
     }
