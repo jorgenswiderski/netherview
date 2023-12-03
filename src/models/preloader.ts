@@ -6,7 +6,12 @@ import { error } from './logger';
 
 export class Preloader {
     static preloadOptionImages(options?: ICharacterOption[]): void {
-        if (!options) {
+        if (!Array.isArray(options)) {
+            error(
+                `Expected options to be an array but it was an ${typeof options}.`,
+                options,
+            );
+
             return;
         }
 
