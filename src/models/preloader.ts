@@ -8,7 +8,7 @@ export class Preloader {
     static preloadOptionImages(options?: ICharacterOption[]): void {
         if (!Array.isArray(options)) {
             error(
-                `Expected options to be an array but it was an ${typeof options}.`,
+                `Expected options to be an array but it was a ${typeof options}.`,
                 options,
             );
 
