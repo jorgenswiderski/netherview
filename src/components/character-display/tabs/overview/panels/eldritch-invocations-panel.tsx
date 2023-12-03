@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Paper } from '@mui/material';
 import { useCharacter } from '../../../../../context/character-context/character-context';
 import { TabPanelItem } from '../../../../simple-tabs/tab-panel-item';
@@ -7,7 +7,6 @@ import {
     CharacterTreeDecision,
     CharacterTreeEffect,
 } from '../../../../../models/character/character-tree-node/character-tree';
-import { log } from '../../../../../models/logger';
 
 export function EldritchInvocationsPanel() {
     const { character } = useCharacter();
@@ -26,10 +25,6 @@ export function EldritchInvocationsPanel() {
                 ),
         [character],
     );
-
-    useEffect(() => {
-        character.getPassives().forEach(log);
-    }, [character]);
 
     if (invocations.length === 0) {
         return null;
