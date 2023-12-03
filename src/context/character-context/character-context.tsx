@@ -11,7 +11,6 @@ import { Build } from '@jorgenswiderski/tomekeeper-shared/dist/types/builds';
 import { CharacterContext, CharacterContextType } from './types';
 import { useGameData } from '../game-data-context/game-data-context';
 import { Character } from '../../models/character/character';
-import { log } from '../../models/logger';
 import { CONFIG } from '../../models/config';
 
 interface CharacterProviderProps {
@@ -84,7 +83,6 @@ export function CharacterProvider({ children }: CharacterProviderProps) {
             setHistory((prev) => prev.slice(0, index));
             setDecisions((prev) => prev.slice(0, index));
             setCharacter(snapshot);
-            log('undo');
         }
     }, [history]);
 
