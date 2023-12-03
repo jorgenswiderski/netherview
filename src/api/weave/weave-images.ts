@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { CONFIG } from '../../models/config';
-import { error, log } from '../../models/logger';
+import { error } from '../../models/logger';
 import { WeaveBaseRoute } from './weave-route-base';
 
 class WeaveImage extends WeaveBaseRoute {
@@ -109,7 +109,7 @@ class WeaveImage extends WeaveBaseRoute {
 
                 img.src = remote;
             } else {
-                log(`Failed to preload image ${imageName}`);
+                error(`Failed to preload image ${imageName}`);
             }
         } catch (err) {
             // Failed request will be logged automatically, no need to double log

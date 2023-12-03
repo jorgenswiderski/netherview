@@ -50,7 +50,7 @@ import { EquipmentItemFactory } from '../items/equipment-item-factory';
 import { CharacterTreeSpell } from './character-tree-node/character-tree-spell';
 import { TreeCompressor } from '../tree-compressor';
 import { WeaponItem } from '../items/weapon-item';
-import { error, log } from '../logger';
+import { error } from '../logger';
 import { safeAssert } from '../utils';
 
 export class Character implements ICharacter {
@@ -285,9 +285,14 @@ export class Character implements ICharacter {
                 try {
                     (char as any)[key] = structuredClone(val);
                 } catch (err) {
-                    error(`Couldn't structure clone property '${key}'`);
+                    error(
+                        `Couldn't structure clone property '${key}'`,
+                        key,
+                        typeof val,
+                        val,
+                    );
+
                     (char as any)[key] = val;
-                    log(key, typeof val, val);
                 }
             });
 

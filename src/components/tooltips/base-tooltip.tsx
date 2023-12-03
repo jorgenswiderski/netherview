@@ -5,7 +5,6 @@ import styled from '@emotion/styled';
 import { darken } from '@mui/system';
 import { WeaveImages } from '../../api/weave/weave-images';
 import { useResponsive } from '../../hooks/use-responsive';
-import { log } from '../../models/logger';
 
 const MainBox = styled(Box)`
     position: relative;
@@ -92,7 +91,6 @@ export function BaseTooltip({
             setTimeout(() => {
                 setLongPressActive(null);
                 handleTooltipOpen();
-                log('show');
             }, longPressDelay),
         );
     };
