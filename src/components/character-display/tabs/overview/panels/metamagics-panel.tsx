@@ -4,25 +4,29 @@ import { useCharacter } from '../../../../../context/character-context/character
 import { TabPanelItem } from '../../../../simple-tabs/tab-panel-item';
 import { GrantedEffects } from '../../../../character-planner/feature-picker/prospective-effects/granted-effects';
 
-export function FeatsPanel() {
+export function MetamagicsPanel() {
     const { character } = useCharacter();
 
-    const feats = useMemo(
-        () => character.getFeatsAsEffects().filter((effect) => !effect.hidden),
+    const metamagics = useMemo(
+        () =>
+            character
+                .getPassives()
+                .filter((effect) => !effect.hidden)
+                .filter((effect) => effect.name.match(/^Metamagic: /)),
         [character],
     );
 
-    if (feats.length === 0) {
+    if (metamagics.length === 0) {
         return null;
     }
 
     return (
         <TabPanelItem
-            label="Feats"
+            label="Metamagics"
             component={Paper}
             componentProps={{ elevation: 2 }}
         >
-            <GrantedEffects effects={feats} elevation={3} flex />
+            <GrantedEffects effects={metamagics} elevation={3} flex />
         </TabPanelItem>
     );
 }

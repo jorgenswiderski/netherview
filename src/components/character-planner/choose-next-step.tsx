@@ -1,8 +1,16 @@
 import React, { ReactNode, useCallback } from 'react';
-import { Box, Typography, Card, CardActionArea, Grid } from '@mui/material';
+import {
+    Box,
+    Typography,
+    Card,
+    CardActionArea,
+    Grid,
+    Button,
+} from '@mui/material';
 import styled from '@emotion/styled';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import EditIcon from '@mui/icons-material/Edit';
+import UndoIcon from '@mui/icons-material/Undo';
 import { useCharacter } from '../../context/character-context/character-context';
 import { Character } from '../../models/character/character';
 import { PlannerStepTitle } from './planner-header/planner-step-title';
@@ -14,6 +22,7 @@ const StyledGridContainer = styled(Grid)`
     @media (max-width: 600px) {
         flex: unset;
         margin-left: -6px;
+        margin-right: -6px;
         width: calc(100% + 12px);
 
         & > .MuiGrid-item {
@@ -96,7 +105,7 @@ function NextStepGrid({ options }: { options: StepInfo[] }) {
 
 export function ChooseNextStep() {
     const { isMobile } = useResponsive();
-    const { character, setCharacter } = useCharacter();
+    const { character, setCharacter, undo, canUndo } = useCharacter();
 
     const levelUpCharacter = useCallback(() => {
         const newCharacter = character.levelUp();
@@ -123,7 +132,14 @@ export function ChooseNextStep() {
     ];
 
     return isMobile ? (
-        <NextStepGrid options={options} />
+        <Box display="flex" gap="0.75rem">
+            {isMobile && canUndo && (
+                <Button variant="contained" color="inherit" onClick={undo}>
+                    <UndoIcon />
+                </Button>
+            )}
+            <NextStepGrid options={options} />
+        </Box>
     ) : (
         <Box
             style={{

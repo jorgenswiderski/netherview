@@ -1,7 +1,5 @@
-import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import { SharedUtils } from '@jorgenswiderski/tomekeeper-shared/dist/models/utils';
 import assert from 'assert';
-import { WeaveImages } from '../api/weave/weave-images';
 import { error } from './logger';
 import { CONFIG } from './config';
 
@@ -39,49 +37,6 @@ export class Utils extends SharedUtils {
         }
 
         return response.json();
-    }
-
-    static preloadImages(
-        input: string | string[] | Record<string, string>,
-    ): void {
-        const load = (url: string) => {
-            const img = new Image();
-            img.src = url;
-        };
-
-        if (typeof input === 'string') {
-            load(input);
-        } else if (Array.isArray(input)) {
-            input.forEach(load);
-        } else {
-            Object.values(input).forEach(load);
-        }
-    }
-
-    static preloadOptionImages(options?: ICharacterOption[]): void {
-        if (!options) {
-            return;
-        }
-
-        // Preload the main images first
-        const optionImages = options
-            .map((option) => option.image)
-            .filter(Boolean) as string[];
-
-        optionImages.forEach((image) => {
-            WeaveImages.preloadImage(image).catch(error);
-        });
-
-        // Then the effect images
-        const fxImages = options
-            .flatMap((option) => [
-                ...(option.grants ? option.grants.map((fx) => fx.image) : []),
-            ])
-            .filter(Boolean) as string[]; // Filters out null or undefined values
-
-        fxImages.forEach((image) => {
-            WeaveImages.preloadImage(image).catch(error);
-        });
     }
 
     static isNonEmptyArray(a?: any[] | null): boolean {

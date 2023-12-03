@@ -1,5 +1,4 @@
-// abilities-point-buy.tsx
-
+// abilities-increase.tsx
 import React from 'react';
 import { ICharacterOption } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
 import {
@@ -31,18 +30,26 @@ export function AbilitiesIncrease({
     abilityOptions,
 }: CharacterWidgetProps) {
     const handleConfirm = (pointBuyScores: AbilityScores) => {
+        const { image } = decision.parent as ICharacterOption;
+
+        const bonusAbilities = Object.entries(pointBuyScores)
+            .filter(([, value]) => value > 0)
+            .map(([key]) => key);
+
         const choice: ICharacterOption = {
             name,
             grants: [
                 {
-                    name: `${name}: ${Object.entries(pointBuyScores)
-                        .filter(([, value]) => value > 0)
-                        .map(([key]) => key)
-                        .join(', ')}`,
+                    name: `${name}: ${bonusAbilities.join(', ')}`,
+                    image,
+                    description: `Increases your ${bonusAbilities.join(
+                        ' and ',
+                    )} ability score${
+                        bonusAbilities.length > 1 ? 's' : ''
+                    } by ${bonusAbilities.length > 1 ? '1' : '2'}.`,
                     type: GrantableEffectType.PASSIVE,
                     subtype: PassiveType.ABILITY_FEAT,
                     values: { ...pointBuyScores },
-                    hidden: true,
                 },
             ],
         };

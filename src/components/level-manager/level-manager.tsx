@@ -4,9 +4,7 @@ import {
     CharacterPlannerStep,
     ICharacterOption,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/character-feature-customization-option';
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import { IconButton, Box, DialogContentText } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Box, DialogContentText } from '@mui/material';
 import { ClassCollapsible } from './class-collapsible';
 import {
     CharacterClassLevelInfo,
@@ -18,19 +16,6 @@ import { CharacterClassInfoToggled } from './types';
 import { ConfirmDialog } from './confirm-dialog';
 import { PlannerStepTitle } from '../character-planner/planner-header/planner-step-title';
 import { GrantedEffects } from '../character-planner/feature-picker/prospective-effects/granted-effects';
-import { useResponsive } from '../../hooks/use-responsive';
-
-const BackIconButton = styled(IconButton)`
-    position: absolute;
-    left: 1.5rem;
-    top: 2rem;
-
-    @media (max-width: 768px) {
-        left: unset;
-        right: 1.5rem;
-        top: 1.25rem;
-    }
-`;
 
 const StyledBox = styled(Box)`
     display: flex;
@@ -55,8 +40,6 @@ export function LevelManager({
     onDecision,
     decision,
 }: LevelManagerProps) {
-    const { isMobile } = useResponsive();
-
     const initInfo = () =>
         character.getClassInfo().map((info) => ({
             ...info,
@@ -188,22 +171,10 @@ export function LevelManager({
         [decision],
     );
 
-    // Back button ============================================================
-
-    const onBack = useCallback(() => {
-        onDecision(decision, {
-            name: 'Canceled Level Management',
-            type: CharacterPlannerStep.STOP_LEVEL_MANAGEMENT,
-        });
-    }, [decision]);
-
     return (
         <>
             <PlannerStepTitle title="Revise Levels" />
 
-            <BackIconButton onClick={onBack}>
-                {isMobile ? <CloseIcon /> : <KeyboardBackspaceIcon />}
-            </BackIconButton>
             <StyledBox>
                 {classInfo.map((info, index) => (
                     <ClassCollapsible

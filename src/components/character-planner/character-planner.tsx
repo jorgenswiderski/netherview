@@ -233,6 +233,13 @@ export function CharacterPlanner({ character }: CharacterPlannerProps) {
         );
     }, [character, nextDecision, nextDecisionInfo]);
 
+    useEffect(() => {
+        if (character.pendingDecisions.length > 1) {
+            // Preload the assets for the next step
+            character.pendingDecisions[1].preloadOptions();
+        }
+    }, [character]);
+
     return (
         <>
             {debugMode && (

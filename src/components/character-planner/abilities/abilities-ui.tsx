@@ -12,6 +12,7 @@ import styled from '@emotion/styled';
 import { AbilityScores } from '../../../models/character/types';
 import { AbilitiesBonusType, AbilitiesCostMode } from './types';
 import { PlannerHeader } from '../planner-header/planner-header';
+import { useResponsive } from '../../../hooks/use-responsive';
 
 const MainBox = styled(Box)`
     display: flex;
@@ -88,6 +89,8 @@ export function AbilitiesUI({
     children,
     abilityOptions,
 }: AbilitiesUIProps) {
+    const { isMobile } = useResponsive();
+
     const [currentAbilities, setCurrentAbilities] = useState<AbilityScores>(
         abilities ?? baseAbilities,
     );
@@ -256,35 +259,45 @@ export function AbilitiesUI({
                                             </Button>
                                         </Box>
                                     </TableCell>
-                                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                        <Box display="flex" alignItems="center">
+                                    {!isMobile && (
+                                        <TableCell
+                                            sx={{ whiteSpace: 'nowrap' }}
+                                        >
                                             <Box
-                                                mx={2}
-                                                sx={{
-                                                    display: 'flex',
-                                                    flexWrap: 'nowrap',
-                                                }}
+                                                display="flex"
+                                                alignItems="center"
                                             >
-                                                {Array.from({
-                                                    length: dots,
-                                                }).map((_, index) => (
-                                                    <Dot
-                                                        // eslint-disable-next-line react/no-array-index-key
-                                                        key={index}
-                                                        filled={index < score}
-                                                        racialBonus={
-                                                            index >= score &&
-                                                            index <
-                                                                score +
-                                                                    getAbilityBonusTotal(
-                                                                        ability,
-                                                                    )
-                                                        }
-                                                    />
-                                                ))}
+                                                <Box
+                                                    mx={2}
+                                                    sx={{
+                                                        display: 'flex',
+                                                        flexWrap: 'nowrap',
+                                                    }}
+                                                >
+                                                    {Array.from({
+                                                        length: dots,
+                                                    }).map((_, index) => (
+                                                        <Dot
+                                                            // eslint-disable-next-line react/no-array-index-key
+                                                            key={index}
+                                                            filled={
+                                                                index < score
+                                                            }
+                                                            racialBonus={
+                                                                index >=
+                                                                    score &&
+                                                                index <
+                                                                    score +
+                                                                        getAbilityBonusTotal(
+                                                                            ability,
+                                                                        )
+                                                            }
+                                                        />
+                                                    ))}
+                                                </Box>
                                             </Box>
-                                        </Box>
-                                    </TableCell>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             );
                         })}

@@ -13,7 +13,7 @@ import {
     CharacterTreeDecision,
     CharacterTreeRoot,
 } from '../character-tree-node/character-tree';
-import { Utils } from '../../utils';
+import { Preloader } from '../../preloader';
 
 export class PendingDecision implements IPendingDecision, ICharacterChoice {
     public info?: DecisionStateInfo;
@@ -42,8 +42,6 @@ export class PendingDecision implements IPendingDecision, ICharacterChoice {
             this.forcedOptions = this.options;
         }
 
-        this.preloadOptions();
-
         this.id = PendingDecision.generateUuid(
             type,
             parent?.name,
@@ -52,7 +50,7 @@ export class PendingDecision implements IPendingDecision, ICharacterChoice {
     }
 
     preloadOptions(): void {
-        Utils.preloadOptionImages(this.options);
+        Preloader.preloadOptionImages(this.options);
     }
 
     // static history: Map<string, Record<string, any>> = new Map();
