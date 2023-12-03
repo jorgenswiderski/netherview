@@ -160,6 +160,7 @@ export function FeaturePicker({
 
                         return choice.options;
                     })
+                    .filter(Boolean)
                     .forEach(Preloader.preloadOptionImages),
         );
     }, [selectedOptions]);
