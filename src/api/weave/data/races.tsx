@@ -12,7 +12,7 @@ export class WeaveRaces extends WeaveDataRoute {
     }
 
     getRacesInfo = async (): Promise<CharacterRaceOption[]> => {
-        const data = await this.fetchFromApi('/info');
+        const data = await this.fetchFromApi('/');
 
         return data;
     };
