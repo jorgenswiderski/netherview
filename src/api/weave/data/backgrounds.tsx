@@ -13,9 +13,10 @@ export class WeaveBackgrounds extends WeaveDataRoute {
     getBackgroundById = async (
         id: number,
     ): Promise<CharacterBackgroundOption> => {
-        const keyed: Record<string, CharacterBackgroundOption> =
-            await this.fetchFromApi(`/id?ids=${id}`);
+        const background: CharacterBackgroundOption = await this.fetchFromApi(
+            `/${id}`,
+        );
 
-        return Object.values(keyed)[0];
+        return background;
     };
 }
