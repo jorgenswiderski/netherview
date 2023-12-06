@@ -9,7 +9,7 @@ export interface CharacterContextType {
     setCharacter: (character: Character) => void;
     undo: () => void;
     canUndo: boolean;
-    resetHistory: () => void;
+    resetCharacter: () => void;
 }
 
 export const CharacterContext = createContext<CharacterContextType | undefined>(

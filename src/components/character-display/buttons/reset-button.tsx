@@ -6,27 +6,17 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import { IconButton, Paper, Tooltip, Typography } from '@mui/material';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { useRouter } from 'next/router';
 import { useCharacter } from '../../../context/character-context/character-context';
-import { Character } from '../../../models/character/character';
 
 export function ResetButton() {
-    const router = useRouter();
-    const { character, setCharacter, setBuild, resetHistory } = useCharacter();
+    const { character, resetCharacter } = useCharacter();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const handleConfirm = useCallback(async () => {
-        resetHistory();
-
-        setCharacter(
-            new Character(character.baseClassData, character.spellData),
-        );
-
-        setBuild(undefined);
+        resetCharacter();
         setIsDialogOpen(false);
-        router.push('/', '/', { shallow: true });
-    }, [character]);
+    }, [character, resetCharacter]);
 
     return (
         <>
