@@ -13,7 +13,6 @@ import { CharacterContext, CharacterContextType } from './types';
 import { useGameData } from '../game-data-context/game-data-context';
 import { Character } from '../../models/character/character';
 import { CONFIG } from '../../models/config';
-import { log } from '../../models/logger';
 
 interface CharacterProviderProps {
     children: ReactNode;
@@ -101,8 +100,6 @@ export function CharacterProvider({ children }: CharacterProviderProps) {
         setBuild(undefined);
         router.push('/', '/', { shallow: true });
     }, [classData, spellData]);
-
-    useEffect(() => log(history), [history]);
 
     // Context Initialization =================================================
     const contextValue = useMemo(
