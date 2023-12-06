@@ -86,6 +86,8 @@ export function CharacterProvider({ children }: CharacterProviderProps) {
         }
     }, [history]);
 
+    const resetHistory = () => setHistory([]);
+
     // Context Initialization =================================================
     const contextValue = useMemo(
         () => ({
@@ -95,8 +97,9 @@ export function CharacterProvider({ children }: CharacterProviderProps) {
             setCharacter,
             undo,
             canUndo,
+            resetHistory,
         }),
-        [build, setBuild, character, setCharacter, undo, canUndo],
+        [build, setBuild, character, setCharacter, undo, canUndo, resetHistory],
     );
 
     if (!character) {

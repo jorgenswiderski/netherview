@@ -12,11 +12,13 @@ import { Character } from '../../../models/character/character';
 
 export function ResetButton() {
     const router = useRouter();
-    const { character, setCharacter, setBuild } = useCharacter();
+    const { character, setCharacter, setBuild, resetHistory } = useCharacter();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const handleConfirm = useCallback(async () => {
+        resetHistory();
+
         setCharacter(
             new Character(character.baseClassData, character.spellData),
         );
