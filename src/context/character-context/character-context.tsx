@@ -8,10 +8,12 @@ import React, {
 } from 'react';
 import { CircularProgress, Box } from '@mui/material';
 import { Build } from '@jorgenswiderski/tomekeeper-shared/dist/types/builds';
+import { useRouter } from 'next/router';
 import { CharacterContext, CharacterContextType } from './types';
 import { useGameData } from '../game-data-context/game-data-context';
 import { Character } from '../../models/character/character';
 import { CONFIG } from '../../models/config';
+import { log } from '../../models/logger';
 
 interface CharacterProviderProps {
     children: ReactNode;
@@ -31,6 +33,8 @@ export function CharacterProvider({ children }: CharacterProviderProps) {
     }, [classData, spellData, character]);
 
     // Undo History ===========================================================
+    const router = useRouter();
+
     const [history, setHistory] = useState<Character[]>([]);
     const [decisions, setDecisions] = useState<(string | undefined)[]>([]);
 
@@ -86,6 +90,20 @@ export function CharacterProvider({ children }: CharacterProviderProps) {
         }
     }, [history]);
 
+    const resetCharacter = useCallback(() => {
+        if (!classData || !spellData) {
+            return;
+        }
+
+        setHistory([]);
+        setDecisions([]);
+        setCharacter(new Character(classData, spellData));
+        setBuild(undefined);
+        router.push('/', '/', { shallow: true });
+    }, [classData, spellData]);
+
+    useEffect(() => log(history), [history]);
+
     // Context Initialization =================================================
     const contextValue = useMemo(
         () => ({
@@ -95,8 +113,17 @@ export function CharacterProvider({ children }: CharacterProviderProps) {
             setCharacter,
             undo,
             canUndo,
+            resetCharacter,
         }),
-        [build, setBuild, character, setCharacter, undo, canUndo],
+        [
+            build,
+            setBuild,
+            character,
+            setCharacter,
+            undo,
+            canUndo,
+            resetCharacter,
+        ],
     );
 
     if (!character) {
