@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,10 +16,6 @@ export function ResetButton() {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const tooltipText = useMemo(() => {
-        return 'Reset character';
-    }, []);
-
     const handleConfirm = useCallback(async () => {
         setCharacter(
             new Character(character.baseClassData, character.spellData),
@@ -32,7 +28,10 @@ export function ResetButton() {
 
     return (
         <>
-            <Tooltip title={tooltipText}>
+            <Tooltip
+                title="Reset character"
+                PopperProps={{ style: { pointerEvents: 'none' } }}
+            >
                 {/* Wrap in span so tooltip doesn't get disabled */}
                 <span>
                     <IconButton onClick={() => setIsDialogOpen(true)}>
