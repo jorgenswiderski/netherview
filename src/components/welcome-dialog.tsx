@@ -18,7 +18,7 @@ const content: { title: string; body: ReactNode[] }[] = [
     {
         title: 'Beta Disclaimer',
         body: [
-            "As this is a beta, you may notice a few rough edges. I'm working hard to improve Tomekeeper as fast as possible, but your patience is appreciated!",
+            `As this is a beta, you may notice a few rough edges. I'm working hard to improve ${CONFIG.APP_NAME} as fast as possible, but your patience is appreciated!`,
             <>
                 <Typography>
                     If there are any bugs or missing features that prevent it
