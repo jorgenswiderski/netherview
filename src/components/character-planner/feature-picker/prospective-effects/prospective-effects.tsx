@@ -33,6 +33,13 @@ interface ProspectiveEffectsProps {
 }
 
 export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
+    const flattenEffects = (effects: GrantableEffect[]): GrantableEffect[] => {
+        return effects.flatMap((effect) => [
+            effect,
+            ...flattenEffects((effect.grants ?? []) as GrantableEffect[]),
+        ]);
+    };
+
     const getEffectsFromOption = (
         option: ICharacterOption,
     ): GrantableEffect[] => {
@@ -85,10 +92,12 @@ export function ProspectiveEffects({ options, text }: ProspectiveEffectsProps) {
 
     const effects = useMemo(() => {
         if (Array.isArray(options)) {
-            return options.flatMap((option) => getEffectsFromOption(option));
+            return flattenEffects(
+                options.flatMap((option) => getEffectsFromOption(option)),
+            );
         }
 
-        return getEffectsFromOption(options) ?? [];
+        return flattenEffects(getEffectsFromOption(options) ?? []);
     }, [options]);
 
     const choices = useMemo(() => {
