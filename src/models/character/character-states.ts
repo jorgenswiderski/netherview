@@ -134,3 +134,6 @@ export const characterDecisionInfo: Record<number, DecisionStateInfo> = {
             } spell${(choice.count ?? 1) > 1 ? 's' : ''}`,
     },
 };
+
+characterDecisionInfo[CharacterPlannerStep.WARLOCK_PACT_BOON] =
+    characterDecisionInfo[CharacterPlannerStep.CLASS_FEATURE_SUBCHOICE];

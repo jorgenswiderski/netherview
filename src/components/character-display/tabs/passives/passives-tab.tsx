@@ -29,6 +29,8 @@ const labels: Record<string, CharacterPlannerStep[]> = {
         CharacterPlannerStep.CLASS_FEATURE_SUBCHOICE,
         CharacterPlannerStep.CHOOSE_SUBCLASS,
         CharacterPlannerStep.SUBCLASS_FEATURE,
+        CharacterPlannerStep.WARLOCK_PACT_BOON,
+        CharacterPlannerStep.WARLOCK_DEEPENED_PACT,
     ],
     Racial: [
         CharacterPlannerStep.SET_RACE,
