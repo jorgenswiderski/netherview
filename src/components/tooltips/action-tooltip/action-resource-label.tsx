@@ -6,7 +6,7 @@ import {
 import { Typography } from '@mui/material';
 import { Utils, safeAssert } from '../../../models/utils';
 
-const handlerConfig: {
+const formatterConfig: {
     resources: ActionResource[];
     formatter:
         | ((
@@ -69,8 +69,8 @@ const handlerConfig: {
     },
 ];
 
-const handlers = Object.fromEntries(
-    handlerConfig.flatMap(({ resources, formatter }) =>
+const formatters = Object.fromEntries(
+    formatterConfig.flatMap(({ resources, formatter }) =>
         resources.map((resource) => [resource, formatter]),
     ),
 );
@@ -83,7 +83,7 @@ Object.keys(ActionResource).forEach((resource) => {
     }
 
     safeAssert(
-        handlers[res] || res === ActionResource.NONE,
+        formatters[res] || res === ActionResource.NONE,
         `Expected action resource '${ActionResource[res]}' (${res}) to have a defined label formatter!`,
     );
 });
@@ -96,15 +96,19 @@ export function ActionResourceLabel({
     cost: { resource, amount },
 }: ActionResourceLabelProps) {
     const label = useMemo(() => {
-        if (typeof handlers[resource] === 'string') {
-            return handlers[resource];
+        if (typeof formatters[resource] === 'string') {
+            return formatters[resource];
         }
 
         const defaultValue = Utils.toProperCase(
             ActionResource[resource].replaceAll(/(?<=.)([A-Z])/g, ' $1'),
         );
 
-        return (handlers[resource] as Function)(amount, resource, defaultValue);
+        return (formatters[resource] as Function)(
+            amount,
+            resource,
+            defaultValue,
+        );
     }, [resource, amount]);
 
     return (
