@@ -1154,24 +1154,9 @@ export class Character implements ICharacter {
     }
 
     getGrantedEffects(): GrantableEffect[] {
-        const fx: GrantableEffect[] = this.root.findAllNodes(
+        return this.root.findAllNodes(
             (node) => node.nodeType === CharacterTreeNodeType.EFFECT,
         ) as CharacterTreeEffect[] as GrantableEffect[];
-
-        // FIXME: Remove this once its clear that nodes is always empty
-        const nodes = this.root.findAllNodes(
-            (node) =>
-                node.nodeType === CharacterTreeNodeType.DECISION &&
-                typeof (node as CharacterTreeDecision).grants !== 'undefined',
-        );
-
-        assert(nodes.length === 0);
-
-        fx.push(
-            ...nodes.flatMap((node) => (node as CharacterTreeDecision).grants!),
-        );
-
-        return fx;
     }
 
     getProficiencies(): Proficiency[] {
