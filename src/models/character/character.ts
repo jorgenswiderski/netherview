@@ -338,8 +338,12 @@ export class Character implements ICharacter {
         this.pendingDecisions.unshift(...pd);
     }
 
-    private static restrictSubclassFeatures(
-        subclassNode: CharacterTreeDecision,
+    // For features like subclass features or Deepened Pact, inject a
+    // forcedOption property which constrains the feature based on the previous
+    // choice
+    private static restrictDependentFeature(
+        rootDecision: CharacterTreeDecision,
+        step: CharacterPlannerStep,
         data: CharacterClassOption[],
     ): CharacterClassOption[] {
         return data.map((cls) => {
@@ -352,36 +356,35 @@ export class Character implements ICharacter {
                             return feature;
                         }
 
-                        const subclassChoices = feature.choices.filter(
+                        const targetChoices = feature.choices.filter(
                             (choice) =>
-                                choice.type ===
-                                    CharacterPlannerStep.SUBCLASS_FEATURE &&
+                                choice.type === step &&
                                 choice.options.find(
                                     (option) =>
-                                        option.name === subclassNode.name,
+                                        option.name === rootDecision.name,
                                 ),
                         );
 
-                        if (subclassChoices.length === 0) {
+                        if (targetChoices.length === 0) {
                             return feature;
                         }
 
                         const otherChoices = feature.choices.filter(
-                            (choice) => !subclassChoices.includes(choice),
+                            (choice) => !targetChoices.includes(choice),
                         );
 
                         return {
                             ...feature,
                             choices: [
                                 ...otherChoices,
-                                ...subclassChoices.map((choice) => {
+                                ...targetChoices.map((choice) => {
                                     const option = choice.options.find(
-                                        (opt) => opt.name === subclassNode.name,
+                                        (opt) => opt.name === rootDecision.name,
                                     );
 
                                     if (!option) {
                                         throw new Error(
-                                            'could not find option when restricing subclass features',
+                                            'could not find option when restricing dependent features',
                                         );
                                     }
 
@@ -585,17 +588,40 @@ export class Character implements ICharacter {
         });
     }
 
-    getCurrentClassData(): ICharacterOption[] {
-        const subclassNodes = this.findAllDecisionsByType(
-            CharacterPlannerStep.CHOOSE_SUBCLASS,
-        );
+    static dependentFeatures: {
+        decision: CharacterPlannerStep;
+        dependents: CharacterPlannerStep;
+    }[] = [
+        {
+            decision: CharacterPlannerStep.CHOOSE_SUBCLASS,
+            dependents: CharacterPlannerStep.SUBCLASS_FEATURE,
+        },
+        {
+            decision: CharacterPlannerStep.WARLOCK_PACT_BOON,
+            dependents: CharacterPlannerStep.WARLOCK_DEEPENED_PACT,
+        },
+    ];
 
+    protected restrictDependentFeatures(): CharacterClassOption[] {
         let data = this.baseClassData;
 
-        subclassNodes.forEach((node) => {
-            data = Character.restrictSubclassFeatures(node, data);
+        Character.dependentFeatures.forEach(({ decision, dependents }) => {
+            const rootDecisions = this.findAllDecisionsByType(decision);
+
+            rootDecisions.forEach((node) => {
+                data = Character.restrictDependentFeature(
+                    node,
+                    dependents,
+                    data,
+                );
+            });
         });
 
+        return data;
+    }
+
+    getCurrentClassData(): ICharacterOption[] {
+        const data = this.restrictDependentFeatures();
         const options = this.updateClassFeatures(data);
 
         return this.updateClassSpellOptions(options);
@@ -1128,24 +1154,9 @@ export class Character implements ICharacter {
     }
 
     getGrantedEffects(): GrantableEffect[] {
-        const fx: GrantableEffect[] = this.root.findAllNodes(
+        return this.root.findAllNodes(
             (node) => node.nodeType === CharacterTreeNodeType.EFFECT,
         ) as CharacterTreeEffect[] as GrantableEffect[];
-
-        // FIXME: Remove this once its clear that nodes is always empty
-        const nodes = this.root.findAllNodes(
-            (node) =>
-                node.nodeType === CharacterTreeNodeType.DECISION &&
-                typeof (node as CharacterTreeDecision).grants !== 'undefined',
-        );
-
-        assert(nodes.length === 0);
-
-        fx.push(
-            ...nodes.flatMap((node) => (node as CharacterTreeDecision).grants!),
-        );
-
-        return fx;
     }
 
     getProficiencies(): Proficiency[] {

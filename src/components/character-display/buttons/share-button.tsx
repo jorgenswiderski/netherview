@@ -92,7 +92,10 @@ export function ShareButton() {
 
     return (
         <>
-            <Tooltip title={tooltipText}>
+            <Tooltip
+                title={tooltipText}
+                PopperProps={{ style: { pointerEvents: 'none' } }}
+            >
                 {/* Wrap in span so tooltip doesn't get disabled */}
                 <span>
                     <IconButton

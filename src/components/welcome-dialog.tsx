@@ -18,14 +18,12 @@ const content: { title: string; body: ReactNode[] }[] = [
     {
         title: 'Beta Disclaimer',
         body: [
-            "As this is a beta, you may notice a few issues. If you're paying close attention, you'll probably notice many issues.",
+            `As this is a beta, you may notice a few rough edges. I'm working hard to improve ${CONFIG.APP_NAME} as fast as possible, but your patience is appreciated!`,
             <>
                 <Typography>
-                    Despite that, I decided to launch the project as I think the
-                    commmunity will still find it useful. If there are any bugs
-                    or missing features that prevent it from being useful to
-                    you, I&apos;d especially like to hear about it in the
-                    discord:
+                    If there are any bugs or missing features that prevent it
+                    from being useful to you, I&apos;d especially like to hear
+                    about it in the discord:
                 </Typography>
                 <Link href={CONFIG.DISCORD_LINK} target="_blank">
                     {CONFIG.DISCORD_LINK}

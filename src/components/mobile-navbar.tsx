@@ -17,14 +17,15 @@ const NavBox = styled(Box)<ThemeProps>`
     z-index: ${({ theme }) => theme.zIndex.appBar};
 `;
 
-const NavbarButton = styled.button<ThemeProps>`
+const NavbarButton = styled.button<ThemeProps & { isActive: boolean }>`
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     flex: 1;
     height: 64px;
-    background-color: transparent;
+    background-color: ${({ theme, isActive }) =>
+        isActive ? theme.palette.action.selected : 'transparent'};
     color: ${({ theme }) => theme.palette.text.primary};
     border: none;
     outline: none;
@@ -35,12 +36,16 @@ const NavbarButton = styled.button<ThemeProps>`
 `;
 
 export function MobileNavbar() {
-    const { setTabIndex } = useCharacterDisplayTab();
+    const { tabIndex, setTabIndex } = useCharacterDisplayTab();
 
     return (
         <NavBox>
             {characterDisplayTabs.map(({ label, labelMobile, icon }, index) => (
-                <NavbarButton onClick={() => setTabIndex(index)}>
+                <NavbarButton
+                    key={label}
+                    isActive={index === tabIndex}
+                    onClick={() => setTabIndex(index)}
+                >
                     {icon}
                     <Typography variant="caption">
                         {labelMobile ?? label}
