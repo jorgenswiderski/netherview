@@ -4,15 +4,14 @@ import { Box, Typography } from '@mui/material';
 import {
     ActionRangeType,
     ActionSchool,
-    ActionResource,
     IActionBase,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/action';
 import styled from '@emotion/styled';
 import { AbilityScore } from '@jorgenswiderski/tomekeeper-shared/dist/types/ability';
-import { BaseTooltip } from './base-tooltip';
-import { Utils } from '../../models/utils';
-import { DamageText } from '../damage-text';
-import { WeaveImages } from '../../api/weave/weave-images';
+import { BaseTooltip } from '../base-tooltip';
+import { DamageText } from '../../damage-text';
+import { WeaveImages } from '../../../api/weave/weave-images';
+import { ActionResourceLabel } from './action-resource-label';
 
 const ConditionBox = styled(Box)`
     display: flex;
@@ -192,12 +191,8 @@ export function ActionTooltip({ action, children }: ActionTooltipProps) {
             }
             footer={
                 <ActionDetailsBox>
-                    {action.costs.map(({ resource, amount }) => (
-                        <Typography variant="body2" key={resource}>
-                            {`${
-                                amount > 1 ? `${amount} ` : ''
-                            }${Utils.toProperCase(ActionResource[resource])}`}
-                        </Typography>
+                    {action.costs.map((cost) => (
+                        <ActionResourceLabel key={cost.resource} cost={cost} />
                     ))}
                     {action.ritual && (
                         <Typography variant="body2" color="textSecondary">

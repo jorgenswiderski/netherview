@@ -3,7 +3,7 @@ import { CardActionArea, CardMedia } from '@mui/material';
 import React, { RefObject, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { WeaveImages } from '../../api/weave/weave-images';
-import { ActionTooltip } from '../tooltips/action-tooltip';
+import { ActionTooltip } from '../tooltips/action-tooltip/action-tooltip';
 import { StyledIconCard } from './styled-icon-card';
 
 const ActionArea = styled(CardActionArea)`
