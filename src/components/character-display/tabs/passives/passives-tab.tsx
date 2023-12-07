@@ -73,14 +73,14 @@ export function PassivesTab({ ...panelProps }: PassivesTabProps) {
     };
 
     const effectGroups = useMemo(() => {
-        const m: Record<string | number, IPassive[]> = {};
+        const groups: Record<string | number, IPassive[]> = {};
 
-        passives.forEach((c) => {
-            if (c.hidden) {
+        passives.forEach((passive) => {
+            if (passive.hidden) {
                 return;
             }
 
-            const { parent } = c as CharacterTreePassive as {
+            const { parent } = passive as CharacterTreePassive as {
                 parent?: CharacterTreeDecision;
             };
 
@@ -101,14 +101,14 @@ export function PassivesTab({ ...panelProps }: PassivesTabProps) {
                 `Passives tab section label '${label}' must be a string`,
             );
 
-            if (!m[label]) {
-                m[label] = [];
+            if (!groups[label]) {
+                groups[label] = [];
             }
 
-            m[label].push(c);
+            groups[label].push(passive);
         });
 
-        return m;
+        return groups;
     }, [passives]);
 
     return (
