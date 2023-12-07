@@ -43,7 +43,6 @@ const formatterConfig: {
             ActionResource.channelDivinity,
             ActionResource.channelOath,
             ActionResource.fungalInfestation,
-            ActionResource.ki,
             ActionResource.layOnHands,
             ActionResource.naturalRecovery,
             ActionResource.rage,
@@ -52,7 +51,12 @@ const formatterConfig: {
             ActionResource.tidesOfChaos,
         ],
         formatter: (amount, resource, defaultValue) =>
-            `${defaultValue} Charges`,
+            `${defaultValue} Charge${amount > 1 ? 's' : ''}`,
+    },
+    {
+        resources: [ActionResource.ki],
+        formatter: (amount, resource, defaultValue) =>
+            `${defaultValue} Point${amount > 1 ? 's' : ''}`,
     },
     {
         resources: [
