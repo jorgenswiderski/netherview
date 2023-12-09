@@ -5,6 +5,7 @@ import React, { ElementType, ReactNode } from 'react';
 // (adding overflow prop to this div breaks the column behavior)
 const ColumnBox = styled.div`
     display: ${({ hidden }) => (hidden ? 'none' : 'block')};
+    height: 100%;
     width: 100%;
     column-count: 2;
     column-gap: 1rem;
