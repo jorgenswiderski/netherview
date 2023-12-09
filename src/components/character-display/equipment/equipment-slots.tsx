@@ -15,6 +15,19 @@ import { EquipmentSlotCard } from './equipment-slot-card';
 import { CharacterEquipment, ItemColors } from '../../../models/items/types';
 import { ItemSourceText } from '../../tooltips/item-tooltip/item-source-text';
 
+const CompactBox = styled(Box)`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    width: calc(300px + 2.5rem);
+    justify-content: center;
+
+    @media (min-width: 1401px) and (max-width: 1525px) {
+        width: calc(200px + 2.5rem);
+    }
+`;
+
 interface SlotsCompactProps {
     slots: EquipmentSlot[];
     items: CharacterEquipment;
@@ -31,13 +44,7 @@ function SlotsCompact({
     disabledSlots,
 }: SlotsCompactProps) {
     return (
-        <Box
-            sx={{ width: 'calc(300px + 2.5rem)' }}
-            display="flex"
-            flexWrap="wrap"
-            gap="0.5rem"
-            justifyContent="center"
-        >
+        <CompactBox>
             {slots.map((slot) => (
                 <EquipmentSlotCard
                     key={slot}
@@ -50,7 +57,7 @@ function SlotsCompact({
                     filter={slotFilters[slot]}
                 />
             ))}
-        </Box>
+        </CompactBox>
     );
 }
 
