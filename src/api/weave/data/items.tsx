@@ -16,17 +16,17 @@ export class WeaveItems extends WeaveDataRoute {
         const types = equipmentSlotTypes[slot];
 
         const keyed: Record<string, IEquipmentItem[]> = await this.fetchFromApi(
-            `/equipment/type?types=${types.join(',')}`,
+            `/equipment?types=${types.join(',')}`,
         );
 
         return Object.values(keyed).flat();
     };
 
     getEquipmentItemInfoById = async (id: number): Promise<IEquipmentItem> => {
-        const keyed: Record<string, IEquipmentItem> = await this.fetchFromApi(
-            `/equipment/id?ids=${id}`,
+        const item: IEquipmentItem = await this.fetchFromApi(
+            `/equipment/${id}`,
         );
 
-        return Object.values(keyed)[0];
+        return item;
     };
 }

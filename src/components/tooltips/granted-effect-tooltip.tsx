@@ -7,7 +7,7 @@ import {
     GrantableEffectType,
     IActionEffect,
 } from '@jorgenswiderski/tomekeeper-shared/dist/types/grantable-effect';
-import { ActionTooltip } from './action-tooltip';
+import { ActionTooltip } from './action-tooltip/action-tooltip';
 import { PassiveTooltip } from './passive-tooltip';
 import { safeAssert } from '../../models/utils';
 
