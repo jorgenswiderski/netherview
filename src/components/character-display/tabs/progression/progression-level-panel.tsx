@@ -21,6 +21,10 @@ import { CharacterTreeDecision } from '../../../../models/character/character-tr
 
 const StyledTabPanelItem = styled(TabPanelItem)`
     padding: 0.5rem 1rem;
+
+    @media (max-width: 768px) {
+        padding: 0.5rem 0.75rem;
+    }
 `;
 
 interface ProgressionLevelPanelProps {
