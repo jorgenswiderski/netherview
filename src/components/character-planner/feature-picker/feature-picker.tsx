@@ -182,6 +182,22 @@ export function FeaturePicker({
         }
     };
 
+    const handleOptionAuxClick = (
+        { button }: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+        option: ICharacterOption,
+    ) => {
+        // Middle click
+        if (button === 1) {
+            if (option.id) {
+                window.open(
+                    // FIXME: hardcoded URL
+                    `https://bg3.wiki/wiki/index.php?curid=${option.id}`,
+                    '_blank',
+                );
+            }
+        }
+    };
+
     const renderCardMedia = (props: CardMediaPropsExtended) => {
         const { layout, ...restProps } = props;
 
@@ -277,6 +293,9 @@ export function FeaturePicker({
                             >
                                 <ActionArea
                                     onClick={() => handleOptionClick(option)}
+                                    onAuxClick={(e) =>
+                                        handleOptionAuxClick(e, option)
+                                    }
                                     layout={layoutType}
                                     ref={imageContainerRef}
                                 >
