@@ -15,10 +15,7 @@ import { ICharacterTreeDecision } from '../../../../models/character/character-t
 import { CharacterTreePassive } from '../../../../models/character/character-tree-node/character-tree-passive';
 
 const StyledTabPanel = styled(TabPanel)``;
-
-const StyledTabPanelItem = styled(TabPanelItem)`
-    break-inside: auto;
-`;
+const StyledTabPanelItem = styled(TabPanelItem)``;
 
 const labels: Record<string, CharacterPlannerStep[]> = {
     Class: [

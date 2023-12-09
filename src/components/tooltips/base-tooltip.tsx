@@ -98,12 +98,12 @@ export function BaseTooltip({
     const handleLongPressEnd: React.TouchEventHandler<HTMLDivElement> = (
         event,
     ) => {
-        // Prevent context menu from appearing
-        event.preventDefault();
-
         if (longPressActive) {
             clearTimeout(longPressActive);
             setLongPressActive(null);
+        } else {
+            // Prevent context menu from appearing
+            event.preventDefault();
         }
     };
 

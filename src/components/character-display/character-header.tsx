@@ -12,6 +12,10 @@ import { useResponsive } from '../../hooks/use-responsive';
 const StyledPaper = styled(Paper)`
     padding: 1rem;
     position: relative;
+
+    @media (max-width: 768px) {
+        padding: 0.5rem;
+    }
 `;
 
 const ImageContainer = styled(Box)`
@@ -36,7 +40,7 @@ const LevelBox = styled(Box)`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 3em;
+    font-size: 3rem;
     font-weight: bold;
     color: white;
     text-shadow:
@@ -50,6 +54,20 @@ const LevelBox = styled(Box)`
         0px 2px 0px black;
 `;
 
+const DescriptionBox = styled(Box)`
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+`;
+
+const DetailsTypography = styled(Typography)<{ numClasses: number }>`
+    @media (max-width: 768px) {
+        font-size: ${({ numClasses }) =>
+            numClasses > 1 ? '1rem' : '1.125rem'};
+    }
+`;
+
 const ClassLevel = styled.span`
     color: gray;
 `;
@@ -58,6 +76,11 @@ const ButtonBox = styled(Box)`
     position: absolute;
     right: 0.75rem;
     top: 0.75rem;
+
+    @media (max-width: 768px) {
+        right: 0.5rem;
+        top: 0.5rem;
+    }
 `;
 
 export function CharacterHeader() {
@@ -101,6 +124,7 @@ export function CharacterHeader() {
 
     const race = useMemo(() => character.getRace(), [character]);
     const subrace = useMemo(() => character.getSubrace(), [character]);
+    const classInfo = useMemo(() => character.getClassInfo(), [character]);
 
     return (
         <StyledPaper elevation={2}>
@@ -122,38 +146,31 @@ export function CharacterHeader() {
                         </ImageContainer>
                     )}
 
-                    <Box>
+                    <DescriptionBox>
                         <Typography
                             variant={isMobile ? 'h4' : 'h3'}
                             align="left"
                         >
                             {character.name}
                         </Typography>
-                        <Typography
+                        <DetailsTypography
                             variant={isMobile ? 'h6' : 'h5'}
                             align="left"
+                            numClasses={classInfo.length}
                         >
                             {subrace?.name ?? race?.name}{' '}
-                            {character.root.children &&
-                                character.root.children.length > 1 && (
-                                    <span>
-                                        {character
-                                            .getClassInfo()
-                                            .map((data, index) => (
-                                                <React.Fragment
-                                                    key={data.class.name}
-                                                >
-                                                    {formatClassLevel(data)}
-                                                    {index !==
-                                                        character.getClassInfo()
-                                                            .length -
-                                                            1 && ' / '}
-                                                </React.Fragment>
-                                            ))}
-                                    </span>
-                                )}
-                        </Typography>
-                    </Box>
+                            <span>
+                                {classInfo.map((data, index) => (
+                                    <React.Fragment key={data.class.name}>
+                                        {formatClassLevel(data)}
+                                        {index !==
+                                            character.getClassInfo().length -
+                                                1 && ' / '}
+                                    </React.Fragment>
+                                ))}
+                            </span>
+                        </DetailsTypography>
+                    </DescriptionBox>
                 </Box>
             </Box>
         </StyledPaper>
