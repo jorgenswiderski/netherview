@@ -12,18 +12,28 @@ const StyledTabPanel = styled(TabPanel)`
     column-gap: 0;
 `;
 
-const EmptyStateOverlay = styled(Box)`
+const OverlayBlur = styled(Box)`
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     backdrop-filter: blur(10px);
     z-index: 10;
     cursor: pointer;
+`;
+
+const OverlayLabelBox = styled(Box)`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+
+    @media (max-width: 768px) {
+        padding-top: 200px;
+        align-items: flex-start;
+    }
 `;
 
 interface EquipmentTabProps extends TabPanelProps {}
@@ -43,12 +53,14 @@ export function EquipmentTab({ ...panelProps }: EquipmentTabProps) {
     return (
         <StyledTabPanel {...panelProps}>
             {!hasAnyEquippedItems && !dismissedOverlay && (
-                <EmptyStateOverlay onClick={() => setDismissedOverlay(true)}>
-                    <Typography variant="body1">
-                        No equipment yet, {isMobile ? 'tap' : 'click'} here to
-                        add some!
-                    </Typography>
-                </EmptyStateOverlay>
+                <OverlayBlur onClick={() => setDismissedOverlay(true)}>
+                    <OverlayLabelBox>
+                        <Typography variant="body1">
+                            No equipment yet, {isMobile ? 'tap' : 'click'} here
+                            to add some!
+                        </Typography>
+                    </OverlayLabelBox>
+                </OverlayBlur>
             )}
             <EquipmentSlots />
         </StyledTabPanel>
