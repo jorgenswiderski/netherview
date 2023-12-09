@@ -90,6 +90,10 @@ const EquipmentSlotBox = styled(Box)<{
             #0000
         );
     }
+
+    @media (max-width: 768px) {
+        padding: 0.75rem;
+    }
 `;
 
 const EquipmentSlotTextBox = styled(Box)`
